@@ -32,6 +32,17 @@ window.SITE = {
       external: false
     },
     {
+      id: "translator",
+      emoji: "🌐",
+      title: "Multilingual Poetic Translator",
+      kind: "NLP research · Persian ↔ German ↔ Polish",
+      desc: "A research desktop app for comparing NLLB-200 and M2M100 on literary translation, with BLEU and semantic-similarity metrics, poetic-feature analysis, structured human evaluation, collaboration tools, analytics, and JSON/CSV export.",
+      tags: ["Python", "NLP", "NLLB-200", "M2M100", "Machine Translation", "Poetry", "BLEU", "Human Evaluation"],
+      cta: "View research & source",
+      url: "https://github.com/Josephsjr96/NLP-project-Multilanguage-poetic-translator",
+      external: true
+    },
+    {
       id: "polish",
       emoji: "🇵🇱",
       title: "Polish A1",
