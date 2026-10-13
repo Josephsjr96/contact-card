@@ -1,6 +1,6 @@
 /* gaby.js — "Gaby", Joe's assistant. Floating chat like a helpdesk bot, plus an AI agent.
    • Quick replies and common questions are answered instantly from built-in knowledge (works offline).
-   • Free-text questions go to the AI through your Cloudflare Worker (<WORKER_URL>/gaby).
+   • Free-text questions go to the AI through your Cloudflare Worker (<WORKER_URL>).
    • If the AI can't be reached, Gaby falls back to her built-in knowledge — she never just breaks.
    • She can act: open the Work / CV tabs, launch a demo, or open WhatsApp / LinkedIn.
    Needs: site-config.js (window.SITE) and the PORTFOLIO helper from index.html. */
@@ -173,7 +173,7 @@ ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:wo
     if (!WORKER) throw new Error("NOWORKER");
     const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 20000);
     try {
-      const res = await fetch(WORKER + "/gaby", {
+      const res = await fetch(WORKER, {
         method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
         body: JSON.stringify({ messages: [{ role: "system", content: SYSTEM }].concat(hist.filter(m => m.content !== "__talk__").slice(-8)), max_tokens: 300, temperature: 0.5 })
       });
