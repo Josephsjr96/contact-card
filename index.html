@@ -51,8 +51,6 @@
   #boot-inner .ar { color: #ff9a6b; font-family: "Inter", sans-serif; }
   #boot-inner .fa { color: #b48cff; font-family: "Inter", sans-serif; }
   #boot-inner .pl { color: #ff6b9d; font-family: "Inter", sans-serif; }
-  #bar { margin-top: 10px; display: none; font-family: inherit; color: var(--dos); }
-  #bar .frame { color: #2a6b46; }
   #boot-title { text-align: center; font-family: "Inter", sans-serif; font-weight: 900; letter-spacing: 6px; font-size: 22px; color: var(--dos);
     text-shadow: 0 0 12px rgba(34,255,136,0.9), 0 0 32px rgba(34,255,136,0.5); margin-bottom: 20px; opacity: 0; animation: titleGlitch 0.7s ease forwards 0.1s; }
   @keyframes titleGlitch { 0% { opacity: 0; letter-spacing: 18px; filter: blur(4px); } 60% { opacity: 1; letter-spacing: 4px; filter: blur(0); } 80% { letter-spacing: 8px; } 100% { opacity: 1; letter-spacing: 6px; } }
@@ -200,7 +198,6 @@
   <div id="boot-inner">
     <div id="boot-title">SYSTEM INIT</div>
     <div id="boot-lines"></div>
-    <div id="bar"><span class="frame">[</span><span id="bar-fill"></span><span class="frame">]</span><span id="bar-pct"> 0%</span></div>
   </div>
   <div id="boot-skip">tap to skip</div>
 </div>
@@ -315,9 +312,6 @@
   const bootEl = document.getElementById("boot");
   const pageEl = document.getElementById("page");
   const linesEl = document.getElementById("boot-lines");
-  const barWrap = document.getElementById("bar");
-  const barFill = document.getElementById("bar-fill");
-  const barPct = document.getElementById("bar-pct");
   let finished = false, timers = [];
   const later = (fn, ms) => { const t = setTimeout(fn, ms); timers.push(t); };
 
@@ -380,7 +374,7 @@
   let i = 0;
   function next() {
     if (finished) return;
-    if (i >= LINES.length) return progress();
+    if (i >= LINES.length) { later(finish, 2000); return; }
     const line = LINES[i++];
     const div = document.createElement("div");
     div.className = "line " + (line.cls || "");
@@ -390,20 +384,6 @@
     later(next, line.delay);
   }
   next();
-
-  function progress() {
-    barWrap.style.display = "block";
-    let pct = 0; const total = 40;
-    const tick = () => {
-      if (finished) return;
-      pct++;
-      const filled = "█".repeat(Math.floor(pct / 100 * total));
-      const empty = "░".repeat(total - filled.length);
-      barFill.textContent = filled + empty; barPct.textContent = " " + pct + "%";
-      if (pct < 100) later(tick, 45); else later(finish, 350);
-    };
-    tick();
-  }
 
   function finish() {
     if (finished) return;
