@@ -1,0 +1,7 @@
+torch==2.4.1
+transformers==4.44.2
+peft==0.13.0
+datasets==2.21.0
+mlflow==2.16.2
+minio==7.2.9
+requests==2.32.3

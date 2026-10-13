@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HP Prestige Collection — Engineered for the Few</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF2F6;
+    --surface:#FFFFFF;
+    --ink:#101B2D;
+    --ink-soft:#55647A;
+    --gold:#B98D46;
+    --gold-soft:rgba(185,141,70,0.12);
+    --line:#D7DEE7;
+    --line-strong:#C3CCD8;
+    --radius:2px;
+    --font-display:'Fraunces', serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+  html[lang="fa"] { --font-display:'Vazirmatn', sans-serif; --font-body:'Vazirmatn', sans-serif; --font-mono:'Vazirmatn', sans-serif; }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  html[dir="rtl"] body{ text-align:right; }
+
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  button{font-family:inherit; cursor:pointer;}
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  html[lang="fa"] .eyebrow{ letter-spacing:normal; text-transform:none; }
+
+  /* ============ LOADER ============ */
+  #loader{
+    position:fixed; inset:0; z-index:9999;
+    background: linear-gradient(160deg,#101B2D 0%, #16233A 55%, #0C1420 100%);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    transition:opacity .7s ease, visibility .7s ease;
+  }
+  #loader.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+  .rig{ position:relative; width:180px; height:130px; perspective:900px; }
+  .base{
+    position:absolute; bottom:0; left:0; right:0; height:8px;
+    background:linear-gradient(180deg,#8b93a3,#4b5566);
+    border-radius:0 0 6px 6px;
+    box-shadow:0 6px 18px rgba(0,0,0,.5);
+  }
+  .lid{
+    position:absolute; bottom:8px; left:0; width:180px; height:118px;
+    background:linear-gradient(135deg,#1a2740,#0e1626);
+    border:1px solid #2a3a58;
+    border-radius:6px;
+    transform-origin:bottom center;
+    transform:rotateX(90deg);
+    animation:openLid 1.6s cubic-bezier(.65,0,.35,1) forwards .2s;
+    box-shadow:0 0 40px rgba(185,141,70,.08);
+  }
+  .lid::before{
+    content:'';
+    position:absolute; inset:10px;
+    background:#050a12;
+    border-radius:3px;
+  }
+  .lid-glow{
+    position:absolute; inset:10px; border-radius:3px;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; animation:glowIn .8s ease forwards 1.5s;
+  }
+  .lid-glow span{
+    font-family:var(--font-display); font-style:italic;
+    color:var(--gold); font-size:15px; letter-spacing:.08em;
+  }
+  @keyframes openLid{ to{ transform:rotateX(8deg); } }
+  @keyframes glowIn{ to{ opacity:1; } }
+  .loader-caption{
+    margin-top:34px; font-family:var(--font-mono); font-size:11px;
+    letter-spacing:.2em; text-transform:uppercase; color:#8593a8;
+    display:flex; gap:10px; align-items:center;
+  }
+  .loader-caption .dot{
+    width:5px; height:5px; border-radius:50%; background:var(--gold);
+    animation:pulseDot 1.2s ease-in-out infinite;
+  }
+  .loader-caption .dot:nth-child(2){ animation-delay:.15s; }
+  .loader-caption .dot:nth-child(3){ animation-delay:.3s; }
+  @keyframes pulseDot{ 0%,100%{opacity:.25; transform:scale(.8);} 50%{opacity:1; transform:scale(1);} }
+
+  @media (prefers-reduced-motion: reduce){
+    .lid{ animation:none; transform:rotateX(8deg); }
+    .lid-glow{ animation:none; opacity:1; }
+    .loader-caption .dot{ animation:none; }
+  }
+
+  /* ============ HEADER ============ */
+  header{
+    position:sticky; top:0; z-index:500;
+    background:rgba(238,242,246,.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-wrap{
+    max-width:1180px; margin:0 auto; padding:20px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{ display:flex; align-items:baseline; gap:8px; }
+  .brand strong{ font-family:var(--font-display); font-weight:600; font-size:19px; letter-spacing:.02em; }
+  .brand span{ font-family:var(--font-mono); font-size:10px; letter-spacing:.16em; color:var(--gold); text-transform:uppercase; }
+  html[lang="fa"] .brand span{ letter-spacing:normal; }
+  nav.links{ display:flex; gap:34px; }
+  nav.links a{ font-size:14px; color:var(--ink-soft); transition:color .2s; position:relative; }
+  nav.links a:hover{ color:var(--ink); }
+  .nav-right{ display:flex; align-items:center; gap:14px; }
+  .lang-btn{
+    border:1px solid var(--line-strong); background:var(--surface);
+    padding:9px 16px; font-size:13px; font-weight:500; color:var(--ink);
+    border-radius:2px; display:flex; align-items:center; gap:8px;
+    transition:border-color .2s, background .2s;
+  }
+  .lang-btn:hover{ border-color:var(--gold); background:var(--gold-soft); }
+  .lang-btn svg{ width:14px; height:14px; }
+
+  /* ============ HERO ============ */
+  .hero{
+    max-width:1180px; margin:0 auto; padding:88px 32px 64px;
+    position:relative;
+  }
+  .hero::before{
+    content:''; position:absolute; top:0; right:0; width:46%; height:100%;
+    background:
+      repeating-linear-gradient(100deg, rgba(185,141,70,.05) 0 2px, transparent 2px 44px);
+    pointer-events:none;
+  }
+  html[dir="rtl"] .hero::before{ right:auto; left:0; }
+  .hero .eyebrow{ margin-bottom:18px; }
+  .hero h1{
+    font-family:var(--font-display); font-weight:400; font-size:clamp(38px,6vw,64px);
+    line-height:1.05; letter-spacing:-.01em;
+  }
+  .hero h1 em{ font-style:italic; color:var(--gold); font-weight:400; display:block; }
+  .hero-sub{
+    max-width:460px; margin-top:22px; color:var(--ink-soft); font-size:16px;
+  }
+  .hero-meta{
+    margin-top:38px; padding-top:26px; border-top:1px solid var(--line);
+    display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;
+  }
+  .hero-meta .price-tag .lbl{ font-family:var(--font-mono); font-size:11px; letter-spacing:.14em; color:var(--ink-soft); text-transform:uppercase; }
+  html[lang="fa"] .hero-meta .price-tag .lbl{ letter-spacing:normal; }
+  .hero-meta .price-tag .amt{ font-family:var(--font-display); font-size:30px; margin-top:2px; }
+  .cta-primary{
+    background:var(--ink); color:#fff; padding:14px 26px; font-size:14px; font-weight:500;
+    border:none; border-radius:2px; transition:background .2s;
+  }
+  .cta-primary:hover{ background:var(--gold); }
+
+  /* ============ SECTION SHELL ============ */
+  section{ max-width:1180px; margin:0 auto; padding:80px 32px; }
+  .section-head{ margin-bottom:44px; display:flex; justify-content:space-between; align-items:flex-end; gap:20px; flex-wrap:wrap; }
+  .section-head h2{ font-family:var(--font-display); font-weight:400; font-size:34px; margin-top:10px; }
+  .section-head p{ color:var(--ink-soft); max-width:420px; font-size:14.5px; }
+  .rule{ border:none; border-top:1px solid var(--line); }
+
+  /* ============ CATALOG ============ */
+  .catalog{ padding-top:0; }
+  .product{
+    border-top:1px solid var(--line);
+    padding:40px 0;
+    display:grid; grid-template-columns:1.1fr 300px; gap:40px; align-items:center;
+  }
+  .product:last-child{ border-bottom:1px solid var(--line); }
+  .p-code{ font-family:var(--font-mono); font-size:11px; color:var(--gold); letter-spacing:.1em; }
+  .p-title-row{ display:flex; align-items:center; gap:12px; margin-top:6px; flex-wrap:wrap; }
+  .p-title-row h3{ font-family:var(--font-display); font-size:26px; font-weight:500; }
+  .badge{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    background:var(--gold-soft); color:var(--gold); padding:4px 9px; border-radius:2px;
+  }
+  html[lang="fa"] .badge{ letter-spacing:normal; text-transform:none; }
+  .p-tagline{ color:var(--ink-soft); font-size:14.5px; margin-top:6px; }
+  .p-specs{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .p-specs span{
+    font-family:var(--font-mono); font-size:11.5px; border:1px solid var(--line-strong);
+    padding:5px 10px; border-radius:2px; color:var(--ink-soft);
+  }
+  .p-finish{ display:flex; align-items:center; gap:8px; margin-top:16px; }
+  .swatch{ width:14px; height:14px; border-radius:50%; border:1px solid rgba(0,0,0,.15); flex:none; }
+  .p-finish-name{ font-size:12.5px; color:var(--ink-soft); font-family:var(--font-mono); }
+  .p-details-toggle{
+    margin-top:18px; background:none; border:none; color:var(--ink); font-size:13px;
+    font-weight:500; padding:0; display:flex; align-items:center; gap:6px;
+    border-bottom:1px solid var(--ink); padding-bottom:2px; width:fit-content;
+  }
+  .p-details-toggle .chev{ transition:transform .25s; font-size:10px; }
+  .p-details-toggle.open .chev{ transform:rotate(180deg); }
+  .p-details{
+    grid-column:1 / -1; overflow:hidden; max-height:0; transition:max-height .35s ease;
+  }
+  .p-details.open{ max-height:260px; }
+  .p-details-inner{
+    padding-top:22px; display:grid; grid-template-columns:repeat(4,1fr); gap:22px;
+  }
+  .p-details-inner div{ border-top:1px solid var(--line); padding-top:10px; }
+  .p-details-inner .k{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
+  html[lang="fa"] .p-details-inner .k{ letter-spacing:normal; text-transform:none; }
+  .p-details-inner .v{ font-size:14px; margin-top:4px; }
+  .p-media{
+    aspect-ratio:4/3; background:linear-gradient(150deg,#dbe2ea,#c7d0dc);
+    border-radius:2px; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .p-media .glyph{ opacity:.5; }
+  .p-price{ margin-top:16px; display:flex; align-items:baseline; justify-content:space-between; }
+  .p-price .amt{ font-family:var(--font-display); font-size:22px; }
+  .p-price button{
+    background:transparent; border:1px solid var(--ink); color:var(--ink);
+    padding:9px 18px; font-size:12.5px; font-weight:600; letter-spacing:.04em;
+    text-transform:uppercase; border-radius:2px; transition:.2s;
+  }
+  .p-price button:hover{ background:var(--ink); color:#fff; }
+  @media(max-width:760px){ .product{ grid-template-columns:1fr;} .p-details-inner{grid-template-columns:1fr 1fr;} }
+
+  /* ============ CRAFT ============ */
+  .craft{ background:var(--surface); }
+  .craft-grid{ display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+  .craft-copy p{ color:var(--ink-soft); font-size:15px; margin-top:16px; max-width:440px; }
+  .material-strip{ display:flex; gap:18px; margin-top:30px; flex-wrap:wrap; }
+  .material{ text-align:center; }
+  .material .disc{
+    width:56px; height:56px; border-radius:50%; margin:0 auto 8px;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.08), 0 4px 14px rgba(0,0,0,.12);
+  }
+  .material .name{ font-family:var(--font-mono); font-size:10.5px; color:var(--ink-soft); }
+  .craft-visual{
+    aspect-ratio:1/1; border-radius:2px;
+    background:conic-gradient(from 220deg, #101B2D, #2b3c5c, #B98D46, #101B2D);
+    position:relative;
+  }
+  .craft-visual::after{
+    content:''; position:absolute; inset:22%;
+    background:var(--surface); border-radius:2px;
+  }
+  @media(max-width:760px){ .craft-grid{ grid-template-columns:1fr; } }
+
+  /* ============ COMPARE ============ */
+  .compare-table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  .compare-table th, .compare-table td{ padding:14px 12px; border-top:1px solid var(--line); text-align:left; }
+  html[dir="rtl"] .compare-table th, html[dir="rtl"] .compare-table td{ text-align:right; }
+  .compare-table th{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); font-weight:500; }
+  html[lang="fa"] .compare-table th{ letter-spacing:normal; text-transform:none; }
+  .compare-table tbody tr:hover{ background:var(--gold-soft); }
+  .compare-scroll{ overflow-x:auto; }
+
+  /* ============ SUPPORT / FAQ ============ */
+  .faq-item{ border-top:1px solid var(--line); padding:22px 0; }
+  .faq-item:last-child{ border-bottom:1px solid var(--line); }
+  .faq-q{
+    display:flex; justify-content:space-between; align-items:center; cursor:pointer;
+    font-size:15.5px; font-weight:500;
+  }
+  .faq-q .chev{ font-size:12px; color:var(--ink-soft); transition:transform .25s; }
+  .faq-item.open .chev{ transform:rotate(180deg); }
+  .faq-a{ max-height:0; overflow:hidden; transition:max-height .3s ease; color:var(--ink-soft); font-size:14.5px; }
+  .faq-a-inner{ padding-top:14px; max-width:600px; }
+  .faq-item.open .faq-a{ max-height:200px; }
+
+  /* ============ ABOUT ============ */
+  .about{ background:var(--surface); }
+  .about-grid{ display:grid; grid-template-columns:.8fr 1.2fr; gap:60px; }
+  .about-grid p{ color:var(--ink-soft); font-size:15px; margin-top:14px; max-width:520px; }
+  .stat-row{ display:flex; gap:44px; margin-top:30px; flex-wrap:wrap; }
+  .stat .n{ font-family:var(--font-display); font-size:30px; }
+  .stat .l{ font-family:var(--font-mono); font-size:10.5px; color:var(--ink-soft); letter-spacing:.08em; text-transform:uppercase; margin-top:4px; }
+  html[lang="fa"] .stat .l{ letter-spacing:normal; text-transform:none; }
+  @media(max-width:760px){ .about-grid{ grid-template-columns:1fr; } }
+
+  /* ============ FOOTER ============ */
+  footer{ border-top:1px solid var(--line); padding:44px 32px; }
+  .footer-in{ max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .footer-in .fine{ font-size:12.5px; color:var(--ink-soft); }
+  .footer-links{ display:flex; gap:22px; }
+  .footer-links a{ font-size:12.5px; color:var(--ink-soft); }
+  .footer-links a:hover{ color:var(--ink); }
+
+  /* ============ CHATBOT ============ */
+  #chat-fab{
+    position:fixed; bottom:26px; right:26px; z-index:800;
+    width:58px; height:58px; border-radius:50%; border:none;
+    background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 30px rgba(16,27,45,.35); transition:transform .2s, background .2s;
+  }
+  html[dir="rtl"] #chat-fab{ right:auto; left:26px; }
+  #chat-fab:hover{ transform:translateY(-3px); background:var(--gold); }
+  #chat-fab svg{ width:24px; height:24px; }
+  .fab-ping{
+    position:absolute; top:-3px; right:-3px; width:12px; height:12px; border-radius:50%;
+    background:var(--gold); border:2px solid var(--bg);
+  }
+  html[dir="rtl"] .fab-ping{ right:auto; left:-3px; }
+
+  #chat-panel{
+    position:fixed; bottom:98px; right:26px; z-index:800;
+    width:360px; max-width:calc(100vw - 40px); height:480px; max-height:calc(100vh - 140px);
+    background:var(--surface); border:1px solid var(--line-strong); border-radius:8px;
+    box-shadow:0 24px 60px rgba(16,27,45,.25);
+    display:flex; flex-direction:column; overflow:hidden;
+    transform:translateY(16px) scale(.98); opacity:0; pointer-events:none;
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  html[dir="rtl"] #chat-panel{ right:auto; left:26px; }
+  #chat-panel.open{ transform:translateY(0) scale(1); opacity:1; pointer-events:auto; }
+  .chat-head{
+    background:var(--ink); color:#fff; padding:16px 18px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .chat-head .who{ display:flex; align-items:center; gap:10px; }
+  .chat-head .dotlive{ width:8px; height:8px; border-radius:50%; background:#57d38c; }
+  .chat-head strong{ font-size:14px; }
+  .chat-head small{ display:block; font-size:11px; opacity:.65; }
+  .chat-head button{ background:none; border:none; color:#fff; opacity:.7; font-size:18px; line-height:1; }
+  .chat-head button:hover{ opacity:1; }
+  #chat-body{ flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; background:#F7F9FB; }
+  .msg{ max-width:82%; font-size:13.5px; padding:10px 13px; border-radius:12px; line-height:1.45; }
+  .msg.bot{ background:#fff; border:1px solid var(--line); align-self:flex-start; border-bottom-left-radius:2px; }
+  html[dir="rtl"] .msg.bot{ align-self:flex-end; border-bottom-left-radius:12px; border-bottom-right-radius:2px; }
+  .msg.user{ background:var(--ink); color:#fff; align-self:flex-end; border-bottom-right-radius:2px; }
+  html[dir="rtl"] .msg.user{ align-self:flex-start; border-bottom-right-radius:12px; border-bottom-left-radius:2px; }
+  .chat-suggest{ display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 12px; background:#F7F9FB; }
+  .chat-suggest button{
+    font-size:11.5px; border:1px solid var(--line-strong); background:#fff; padding:6px 10px;
+    border-radius:14px; color:var(--ink-soft);
+  }
+  .chat-suggest button:hover{ border-color:var(--gold); color:var(--ink); }
+  .chat-input-row{ border-top:1px solid var(--line); padding:10px; display:flex; gap:8px; background:#fff; }
+  .chat-input-row input{
+    flex:1; border:1px solid var(--line-strong); border-radius:20px; padding:10px 14px; font-size:13px;
+    font-family:inherit; outline:none;
+  }
+  .chat-input-row input:focus{ border-color:var(--gold); }
+  .chat-input-row button{
+    width:38px; height:38px; border-radius:50%; border:none; background:var(--ink); color:#fff;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .chat-input-row button:hover{ background:var(--gold); }
+  .typing{ display:flex; gap:4px; padding:10px 13px; }
+  .typing span{ width:6px; height:6px; border-radius:50%; background:var(--ink-soft); opacity:.4; animation:tbounce 1s infinite; }
+  .typing span:nth-child(2){ animation-delay:.15s; }
+  .typing span:nth-child(3){ animation-delay:.3s; }
+  @keyframes tbounce{ 0%,60%,100%{ transform:translateY(0); opacity:.4;} 30%{ transform:translateY(-4px); opacity:1;} }
+
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:4px; }
+
+  @media(max-width:600px){
+    .nav-wrap{ padding:16px 18px; }
+    nav.links{ display:none; }
+    .hero{ padding:56px 18px 44px; }
+    section{ padding:56px 18px; }
+    #chat-panel{ right:12px; left:12px; width:auto; bottom:88px; }
+    html[dir="rtl"] #chat-panel{ left:12px; right:12px; }
+    #chat-fab{ right:16px; }
+    html[dir="rtl"] #chat-fab{ left:16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= LOADER ================= -->
+<div id="loader">
+  <div class="rig">
+    <div class="lid"><div class="lid-glow"><span>HP</span></div></div>
+    <div class="base"></div>
+  </div>
+  <div class="loader-caption">
+    <span data-i18n="loading">Waking the machines</span>
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+  </div>
+</div>
+
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="nav-wrap">
+    <div class="brand">
+      <strong>HP</strong>
+      <span data-i18n="brandTag">Prestige Collection</span>
+    </div>
+    <nav class="links">
+      <a href="#catalog" data-i18n="navLaptops">Laptops</a>
+      <a href="#compare" data-i18n="navCompare">Compare</a>
+      <a href="#support" data-i18n="navSupport">Support</a>
+      <a href="#about" data-i18n="navAbout">About</a>
+    </nav>
+    <div class="nav-right">
+      <button class="lang-btn" id="lang-toggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9z"/></svg>
+        <span id="lang-btn-text">فارسی</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="eyebrow" data-i18n="heroEyebrow">2025 – 2026 Collection</div>
+  <h1 data-i18n="heroTitle">Engineered<em data-i18n="heroTitleEm">for the few.</em></h1>
+  <p class="hero-sub" data-i18n="heroSub">Six exceptional machines. Each selected for those who demand more than performance — they demand permanence.</p>
+  <div class="hero-meta">
+    <div class="price-tag">
+      <div class="lbl" data-i18n="startingFrom">Starting from</div>
+      <div class="amt">$1,299</div>
+    </div>
+    <button class="cta-primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})" data-i18n="heroCta">View the collection</button>
+  </div>
+</section>
+
+<hr class="rule" style="max-width:1180px;margin:0 auto;">
+
+<!-- ================= CATALOG ================= -->
+<section class="catalog" id="catalog">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow" data-i18n="catalogEyebrow">The Lineup</div>
+      <h2 data-i18n="catalogTitle">Six machines, one standard.</h2>
+    </div>
+    <p data-i18n="catalogSub">Every configuration below is the only trim we ship — no stripped-down base model, no upsell ladder.</p>
+  </div>
+  <div id="product-list"></div>
+</section>
+
+<!-- ================= CRAFTSMANSHIP ================= -->
+<section class="craft" id="craft">
+  <div class="craft-grid">
+    <div class="craft-copy">
+      <div class="eyebrow" data-i18n="craftEyebrow">Materials</div>
+      <h2 data-i18n="craftTitle" style="font-family:var(--font-display); font-weight:400; font-size:32px; margin-top:8px;">Finished by hand, tested by machine.</h2>
+      <p data-i18n="craftP1">Each chassis is CNC-milled from a single aluminum billet, then bead-blasted and anodized in one of five archival finishes. No two batches are dyed from the same bath twice.</p>
+      <p data-i18n="craftP2">Every hinge is rated to 30,000 open-close cycles — roughly fifteen years of daily use — before it ever reaches a keyboard.</p>
+      <div class="material-strip">
+        <div class="material"><div class="disc" style="background:#1c1f24"></div><div class="name" data-i18n="m1">Nightfall Black</div></div>
+        <div class="material"><div class="disc" style="background:#2b3c56"></div><div class="name" data-i18n="m2">Poseidon Blue</div></div>
+        <div class="material"><div class="disc" style="background:#cfd3d8"></div><div class="name" data-i18n="m3">Natural Silver</div></div>
+        <div class="material"><div class="disc" style="background:#aeb4bb"></div><div class="name" data-i18n="m4">Pike Silver</div></div>
+        <div class="material"><div class="disc" style="background:#111214"></div><div class="name" data-i18n="m5">Shadow Black</div></div>
+        <div class="material"><div class="disc" style="background:#0e0e10"></div><div class="name" data-i18n="m6">Sparkling Black</div></div>
+      </div>
+    </div>
+    <div class="craft-visual"></div>
+  </div>
+</section>
+
+<!-- ================= COMPARE ================= -->
+<section id="compare">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow" data-i18n="compareEyebrow">Side by Side</div>
+      <h2 data-i18n="compareTitle">Compare the lineup.</h2>
+    </div>
+    <p data-i18n="compareSub">Every spec that actually changes how a machine feels in daily use.</p>
+  </div>
+  <div class="compare-scroll">
+    <table class="compare-table" id="compare-table"></table>
+  </div>
+</section>
+
+<!-- ================= SUPPORT ================= -->
+<section id="support">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow" data-i18n="supportEyebrow">Support</div>
+      <h2 data-i18n="supportTitle">Before you ask, we answered.</h2>
+    </div>
+    <p data-i18n="supportSub">Can't find it here — the assistant in the corner has the rest.</p>
+  </div>
+  <div id="faq-list"></div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="about" id="about">
+  <div class="about-grid">
+    <div>
+      <div class="eyebrow" data-i18n="aboutEyebrow">About the Collection</div>
+      <h2 data-i18n="aboutTitle" style="font-family:var(--font-display); font-weight:400; font-size:32px; margin-top:8px;">Six machines. One standard.</h2>
+    </div>
+    <div>
+      <p data-i18n="aboutP1">Prestige is HP's smallest lineup by design. Where the general catalog spans forty-odd configurations, this collection ships exactly six — each one the best version of what it's built to do, with nothing added to hit a price point and nothing removed to hit one either.</p>
+      <p data-i18n="aboutP2">It exists for people who've already made their choice between thin, fast, and durable, and refused to give any of the three up.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n">6</div><div class="l" data-i18n="statModels">Models, no variants</div></div>
+        <div class="stat"><div class="n">30k</div><div class="l" data-i18n="statHinge">Hinge cycles tested</div></div>
+        <div class="stat"><div class="n">3yr</div><div class="l" data-i18n="statWarranty">Warranty, standard</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-in">
+    <div class="fine" data-i18n="footerFine">© 2026 HP Prestige Collection. Not an official HP product — concept build.</div>
+    <div class="footer-links">
+      <a href="#" data-i18n="footerPrivacy">Privacy</a>
+      <a href="#" data-i18n="footerTerms">Terms</a>
+      <a href="#support" data-i18n="footerSupport">Support</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= CHATBOT ================= -->
+<button id="chat-fab" aria-label="Open assistant">
+  <span class="fab-ping"></span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+</button>
+
+<div id="chat-panel">
+  <div class="chat-head">
+    <div class="who">
+      <span class="dotlive"></span>
+      <div>
+        <strong data-i18n="chatTitle">Prestige Assistant</strong>
+        <small data-i18n="chatOnline">Usually replies instantly</small>
+      </div>
+    </div>
+    <button id="chat-close" aria-label="Close">✕</button>
+  </div>
+  <div id="chat-body"></div>
+  <div class="chat-suggest" id="chat-suggest"></div>
+  <div class="chat-input-row">
+    <input id="chat-input" type="text" data-i18n-ph="chatPh" placeholder="Ask about specs, pricing, shipping…">
+    <button id="chat-send" aria-label="Send">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+const PRODUCTS = [
+  { code:'01', badge:{en:'Best Seller',fa:'پرفروش‌ترین'}, name:{en:'Spectre x360 14',fa:'اسپکتر ایکس۳۶۰ ۱۴'},
+    tag:{en:'Where intelligence meets form',fa:'جایی که هوشمندی با فرم دیدار می‌کند'},
+    specs:['Intel Core Ultra 7 155H','32 GB LPDDR5x','2 TB SSD','2.8K OLED Touch'],
+    finish:{en:'Nightfall Black / Poseidon Blue',fa:'مشکی نایت‌فال / آبی پوزایدون'}, swatch:'#2b3c56', price:'$1,799',
+    details:[
+      {k:{en:'Battery',fa:'باتری'}, v:{en:'17 hrs video playback',fa:'۱۷ ساعت پخش ویدیو'}},
+      {k:{en:'Weight',fa:'وزن'}, v:{en:'1.36 kg',fa:'۱.۳۶ کیلوگرم'}},
+      {k:{en:'Ports',fa:'پورت‌ها'}, v:{en:'2x TB4, 1x USB-A',fa:'۲ عدد TB4، ۱ عدد USB-A'}},
+      {k:{en:'Hinge',fa:'لولا'}, v:{en:'360° convertible',fa:'۳۶۰ درجه تبدیل‌شونده'}},
+    ]},
+  { code:'02', badge:{en:"Editor's Pick",fa:'انتخاب سردبیر'}, name:{en:'Envy 16 OLED',fa:'اِنوی ۱۶ اُلد'},
+    tag:{en:'Crafted for creative professionals',fa:'ساخته‌شده برای متخصصان خلاق'},
+    specs:['AMD Ryzen 9 8945HS','16 GB DDR5','1 TB SSD','16" 3.2K OLED 120Hz'],
+    finish:{en:'Natural Silver',fa:'نقره‌ای طبیعی'}, swatch:'#cfd3d8', price:'$1,299',
+    details:[
+      {k:{en:'Battery',fa:'باتری'}, v:{en:'13 hrs video playback',fa:'۱۳ ساعت پخش ویدیو'}},
+      {k:{en:'Weight',fa:'وزن'}, v:{en:'1.99 kg',fa:'۱.۹۹ کیلوگرم'}},
+      {k:{en:'Ports',fa:'پورت‌ها'}, v:{en:'1x TB4, 2x USB-A, SD',fa:'۱ عدد TB4، ۲ عدد USB-A، SD'}},
+      {k:{en:'GPU',fa:'کارت گرافیک'}, v:{en:'RTX 4060 8GB',fa:'RTX 4060 هشت گیگ'}},
+    ]},
+  { code:'03', badge:{en:'Business',fa:'تجاری'}, name:{en:'EliteBook 840 G11',fa:'الایت‌بوک ۸۴۰ جی۱۱'},
+    tag:{en:'Enterprise precision, executive finish',fa:'دقت سازمانی، ظاهری اجرایی'},
+    specs:['Intel Core Ultra 5 135U','16 GB LPDDR5','512 GB SSD','14" IPS Anti-glare'],
+    finish:{en:'Pike Silver',fa:'نقره‌ای پایک'}, swatch:'#aeb4bb', price:'$1,649',
+    details:[
+      {k:{en:'Battery',fa:'باتری'}, v:{en:'15 hrs video playback',fa:'۱۵ ساعت پخش ویدیو'}},
+      {k:{en:'Weight',fa:'وزن'}, v:{en:'1.36 kg',fa:'۱.۳۶ کیلوگرم'}},
+      {k:{en:'Security',fa:'امنیت'}, v:{en:'IR cam, fingerprint, TPM',fa:'دوربین مادون‌قرمز، اثر انگشت، TPM'}},
+      {k:{en:'Certified',fa:'استاندارد'}, v:{en:'MIL-STD 810H',fa:'MIL-STD 810H'}},
+    ]},
+  { code:'04', badge:{en:'Performance',fa:'کارایی بالا'}, name:{en:'Omen Transcend 14',fa:'اُمن ترنسند ۱۴'},
+    tag:{en:'Full power in a 14-inch shell',fa:'قدرت کامل در بدنه‌ای ۱۴ اینچی'},
+    specs:['Intel Core Ultra 9 185H','RTX 4070 8GB','32 GB DDR5','14" 2.8K 120Hz'],
+    finish:{en:'Shadow Black',fa:'مشکی سایه'}, swatch:'#111214', price:'$2,199',
+    details:[
+      {k:{en:'Battery',fa:'باتری'}, v:{en:'10 hrs mixed use',fa:'۱۰ ساعت استفاده ترکیبی'}},
+      {k:{en:'Weight',fa:'وزن'}, v:{en:'1.86 kg',fa:'۱.۸۶ کیلوگرم'}},
+      {k:{en:'Cooling',fa:'خنک‌کننده'}, v:{en:'Vapor chamber, dual fan',fa:'محفظه بخار، دوفن'}},
+      {k:{en:'Ports',fa:'پورت‌ها'}, v:{en:'2x TB4, HDMI 2.1',fa:'۲ عدد TB4، HDMI 2.1'}},
+    ]},
+  { code:'05', badge:{en:'Ultraportable',fa:'فوق‌سبک'}, name:{en:'Dragonfly G4',fa:'دراگون‌فلای جی۴'},
+    tag:{en:'The lightest machine we make',fa:'سبک‌ترین دستگاهی که می‌سازیم'},
+    specs:['Intel Core Ultra 7 165U','16 GB LPDDR5x','1 TB SSD','13.5" 3K2K Touch'],
+    finish:{en:'Sparkling Black',fa:'مشکی درخشان'}, swatch:'#0e0e10', price:'$1,899',
+    details:[
+      {k:{en:'Battery',fa:'باتری'}, v:{en:'16 hrs video playback',fa:'۱۶ ساعت پخش ویدیو'}},
+      {k:{en:'Weight',fa:'وزن'}, v:{en:'0.99 kg',fa:'۰.۹۹ کیلوگرم'}},
+      {k:{en:'Build',fa:'بدنه'}, v:{en:'Magnesium-aluminum',fa:'منیزیم-آلومینیوم'}},
+      {k:{en:'Audio',fa:'صدا'}, v:{en:'Quad speaker, Poly certified',fa:'چهار بلندگو، تاییدیه Poly'}},
+    ]},
+  { code:'06', badge:{en:'Creator Workstation',fa:'ایستگاه کاری خلاق'}, name:{en:'ZBook Firefly 16 G11',fa:'زدبوک فایرفلای ۱۶ جی۱۱'},
+    tag:{en:'Certified for the tools you already run',fa:'تاییدشده برای ابزارهایی که همین حالا استفاده می‌کنید'},
+    specs:['Intel Core Ultra 7 155H','RTX 500 Ada 4GB','32 GB DDR5','16" 2.5K Display'],
+    finish:{en:'Mineral Silver',fa:'نقره‌ای مینرال'}, swatch:'#b7bdc4', price:'$1,999',
+    details:[
+      {k:{en:'Battery',fa:'باتری'}, v:{en:'12 hrs mixed use',fa:'۱۲ ساعت استفاده ترکیبی'}},
+      {k:{en:'Weight',fa:'وزن'}, v:{en:'1.79 kg',fa:'۱.۷۹ کیلوگرم'}},
+      {k:{en:'ISV Certified',fa:'تاییدیه ISV'}, v:{en:'Adobe, Autodesk, Avid',fa:'Adobe، Autodesk، Avid'}},
+      {k:{en:'Color',fa:'رنگ‌دقت'}, v:{en:'100% DCI-P3, factory calibrated',fa:'۱۰۰٪ DCI-P3، کالیبره کارخانه‌ای'}},
+    ]},
+];
+
+const FAQ = [
+  { q:{en:'Do all six models ship worldwide?',fa:'آیا هر شش مدل به سراسر جهان ارسال می‌شوند؟'},
+    a:{en:'Yes — every configuration ships to 38 countries with a 2–5 business day window.',fa:'بله — همه پیکربندی‌ها به ۳۸ کشور و در بازه ۲ تا ۵ روز کاری ارسال می‌شوند.'} },
+  { q:{en:'Can I upgrade RAM or storage after purchase?',fa:'آیا می‌توانم رم یا حافظه را بعد از خرید ارتقا دهم؟'},
+    a:{en:'Storage is user-replaceable on all six models. RAM is soldered on the ultraportables, socketed on Omen and ZBook.',fa:'حافظه ذخیره‌سازی در هر شش مدل قابل تعویض توسط کاربر است. رم در مدل‌های فوق‌سبک لحیم‌شده و در اُمن و زدبوک قابل تعویض است.'} },
+  { q:{en:'What does the 3-year warranty cover?',fa:'گارانتی سه‌ساله چه چیزی را پوشش می‌دهد؟'},
+    a:{en:'Parts, labor, and one accidental-damage claim per year, including drops and spills.',fa:'قطعات، اجرت تعمیر و یک ادعای خسارت تصادفی در سال، شامل افتادن و ریختن مایعات.'} },
+  { q:{en:'Is financing available?',fa:'آیا امکان خرید اقساطی وجود دارد؟'},
+    a:{en:'Yes, 0% APR for 12 months on any model, handled at checkout.',fa:'بله، بدون بهره برای ۱۲ ماه روی هر مدل، در مرحله پرداخت.'} },
+];
+
+const I18N = {
+  loading:{en:'Waking the machines',fa:'در حال روشن‌کردن دستگاه‌ها'},
+  brandTag:{en:'Prestige Collection',fa:'مجموعه پرستیژ'},
+  navLaptops:{en:'Laptops',fa:'لپ‌تاپ‌ها'}, navCompare:{en:'Compare',fa:'مقایسه'},
+  navSupport:{en:'Support',fa:'پشتیبانی'}, navAbout:{en:'About',fa:'درباره ما'},
+  heroEyebrow:{en:'2025 – 2026 Collection',fa:'مجموعه ۲۰۲۵ تا ۲۰۲۶'},
+  heroTitle:{en:'Engineered',fa:'مهندسی‌شده'},
+  heroTitleEm:{en:'for the few.',fa:'برای معدودی خاص.'},
+  heroSub:{en:'Six exceptional machines. Each selected for those who demand more than performance — they demand permanence.',
+           fa:'شش دستگاه استثنایی. هرکدام برای کسانی انتخاب شده‌اند که بیش از عملکرد، ماندگاری می‌خواهند.'},
+  startingFrom:{en:'Starting from',fa:'شروع قیمت از'},
+  heroCta:{en:'View the collection',fa:'مشاهده مجموعه'},
+  catalogEyebrow:{en:'The Lineup',fa:'خط تولید'},
+  catalogTitle:{en:'Six machines, one standard.',fa:'شش دستگاه، یک استاندارد.'},
+  catalogSub:{en:"Every configuration below is the only trim we ship — no stripped-down base model, no upsell ladder.",
+              fa:'هر پیکربندی زیر تنها نسخه‌ای است که ارسال می‌کنیم — بدون مدل پایه ساده‌شده و بدون نردبان فروش اضافه.'},
+  detailsOpen:{en:'Full specifications',fa:'مشخصات کامل'},
+  detailsClose:{en:'Hide specifications',fa:'پنهان‌کردن مشخصات'},
+  select:{en:'Select',fa:'انتخاب'},
+  craftEyebrow:{en:'Materials',fa:'متریال‌ها'},
+  craftTitle:{en:'Finished by hand, tested by machine.',fa:'پرداخت با دست، آزمایش با دستگاه.'},
+  craftP1:{en:'Each chassis is CNC-milled from a single aluminum billet, then bead-blasted and anodized in one of five archival finishes. No two batches are dyed from the same bath twice.',
+           fa:'هر بدنه از یک بلوک آلومینیومی یکپارچه با دستگاه CNC تراشیده و سپس با یکی از پنج پرداخت آرشیوی، ساچمه‌زنی و آنودایز می‌شود. هیچ دو محموله‌ای دوبار در یک حمام رنگ نمی‌شوند.'},
+  craftP2:{en:'Every hinge is rated to 30,000 open-close cycles — roughly fifteen years of daily use — before it ever reaches a keyboard.',
+           fa:'هر لولا برای ۳۰ هزار بار باز و بسته شدن — تقریباً پانزده سال استفاده روزانه — آزمایش می‌شود، پیش از آنکه به هیچ صفحه‌کلیدی برسد.'},
+  m1:{en:'Nightfall Black',fa:'مشکی نایت‌فال'}, m2:{en:'Poseidon Blue',fa:'آبی پوزایدون'},
+  m3:{en:'Natural Silver',fa:'نقره‌ای طبیعی'}, m4:{en:'Pike Silver',fa:'نقره‌ای پایک'},
+  m5:{en:'Shadow Black',fa:'مشکی سایه'}, m6:{en:'Sparkling Black',fa:'مشکی درخشان'},
+  compareEyebrow:{en:'Side by Side',fa:'مقایسه کنار هم'},
+  compareTitle:{en:'Compare the lineup.',fa:'خط تولید را مقایسه کنید.'},
+  compareSub:{en:'Every spec that actually changes how a machine feels in daily use.',
+              fa:'هر مشخصه‌ای که واقعاً بر حس روزمره استفاده از دستگاه تأثیر می‌گذارد.'},
+  supportEyebrow:{en:'Support',fa:'پشتیبانی'},
+  supportTitle:{en:'Before you ask, we answered.',fa:'پیش از آنکه بپرسید، پاسخ داده‌ایم.'},
+  supportSub:{en:"Can't find it here — the assistant in the corner has the rest.",
+              fa:'اگر پاسخ خود را اینجا پیدا نکردید، دستیار گوشه صفحه بقیه را می‌داند.'},
+  aboutEyebrow:{en:'About the Collection',fa:'درباره مجموعه'},
+  aboutTitle:{en:'Six machines. One standard.',fa:'شش دستگاه. یک استاندارد.'},
+  aboutP1:{en:"Prestige is HP's smallest lineup by design. Where the general catalog spans forty-odd configurations, this collection ships exactly six — each one the best version of what it's built to do, with nothing added to hit a price point and nothing removed to hit one either.",
+           fa:'پرستیژ کوچک‌ترین خط تولید اچ‌پی است، عمداً. جایی که کاتالوگ عمومی حدود چهل پیکربندی دارد، این مجموعه دقیقاً شش مدل ارائه می‌دهد — هرکدام بهترین نسخه از هدفی که برایش ساخته شده، بدون افزودن چیزی برای رسیدن به یک قیمت و بدون حذف چیزی برای همین منظور.'},
+  aboutP2:{en:"It exists for people who've already made their choice between thin, fast, and durable, and refused to give any of the three up.",
+           fa:'این مجموعه برای کسانی است که پیش‌تر بین نازک، سریع و بادوام انتخاب کرده‌اند و حاضر نیستند از هیچ‌کدام بگذرند.'},
+  statModels:{en:'Models, no variants',fa:'مدل، بدون تنوع اضافه'},
+  statHinge:{en:'Hinge cycles tested',fa:'چرخه آزمایش لولا'},
+  statWarranty:{en:'Warranty, standard',fa:'گارانتی استاندارد'},
+  footerFine:{en:'© 2026 HP Prestige Collection. Not an official HP product — concept build.',
+              fa:'© ۲۰۲۶ مجموعه پرستیژ اچ‌پی. محصول رسمی اچ‌پی نیست — یک نمونه مفهومی.'},
+  footerPrivacy:{en:'Privacy',fa:'حریم خصوصی'}, footerTerms:{en:'Terms',fa:'قوانین'}, footerSupport:{en:'Support',fa:'پشتیبانی'},
+  chatTitle:{en:'Prestige Assistant',fa:'دستیار پرستیژ'},
+  chatOnline:{en:'Usually replies instantly',fa:'معمولاً فوراً پاسخ می‌دهد'},
+  chatPh:{en:'Ask about specs, pricing, shipping…',fa:'درباره مشخصات، قیمت یا ارسال بپرسید…'},
+  chatGreeting:{en:"Hi — I'm the Prestige Assistant. Ask me about any model's specs, pricing, finishes, or shipping, and I'll pull it up.",
+                fa:'سلام — من دستیار پرستیژ هستم. درباره مشخصات، قیمت، رنگ یا ارسال هر مدلی بپرسید تا برایتان بیاورم.'},
+  compareHead0:{en:'Model',fa:'مدل'}, compareHead1:{en:'Processor',fa:'پردازنده'},
+  compareHead2:{en:'Memory',fa:'حافظه'}, compareHead3:{en:'Storage',fa:'ذخیره‌سازی'},
+  compareHead4:{en:'Display',fa:'نمایشگر'}, compareHead5:{en:'Price',fa:'قیمت'},
+};
+
+/* ============================================================
+   RENDER PRODUCTS
+============================================================ */
+const listEl = document.getElementById('product-list');
+function glyphSvg(){
+  return `<svg class="glyph" width="64" height="44" viewBox="0 0 64 44" fill="none" stroke="#101B2D" stroke-width="1.4">
+    <rect x="8" y="4" width="48" height="30" rx="1.5"/>
+    <path d="M2 40h60l-4-6H6z"/></svg>`;
+}
+function renderProducts(){
+  listEl.innerHTML = PRODUCTS.map((p,i)=>`
+    <div class="product">
+      <div class="p-copy">
+        <div class="p-code">${p.code}</div>
+        <div class="p-title-row">
+          <h3>${p.name[CUR]}</h3>
+          <span class="badge">${p.badge[CUR]}</span>
+        </div>
+        <div class="p-tagline">${p.tag[CUR]}</div>
+        <div class="p-specs">${p.specs.map(s=>`<span>${s}</span>`).join('')}</div>
+        <div class="p-finish"><span class="swatch" style="background:${p.swatch}"></span><span class="p-finish-name">${p.finish[CUR]}</span></div>
+        <button class="p-details-toggle" data-idx="${i}"><span class="lbl">${I18N.detailsOpen[CUR]}</span><span class="chev">▾</span></button>
+        <div class="p-details" id="pd-${i}">
+          <div class="p-details-inner">
+            ${p.details.map(d=>`<div><div class="k">${d.k[CUR]}</div><div class="v">${d.v[CUR]}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="p-media">${glyphSvg()}</div>
+        <div class="p-price"><div class="amt">${p.price}</div><button data-select="${i}">${I18N.select[CUR]}</button></div>
+      </div>
+    </div>
+  `).join('');
+
+  listEl.querySelectorAll('.p-details-toggle').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = btn.dataset.idx;
+      const panel = document.getElementById('pd-'+idx);
+      const willOpen = !panel.classList.contains('open');
+      panel.classList.toggle('open', willOpen);
+      btn.classList.toggle('open', willOpen);
+      btn.querySelector('.lbl').textContent = willOpen ? I18N.detailsClose[CUR] : I18N.detailsOpen[CUR];
+    });
+  });
+  listEl.querySelectorAll('[data-select]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const p = PRODUCTS[btn.dataset.select];
+      openChat();
+      pushBotMessage( CUR==='en'
+        ? `Good pick. The ${p.name.en} runs ${p.price} in ${p.finish.en}. Want the checkout link or the full spec sheet?`
+        : `انتخاب خوبی است. ${p.name.fa} با قیمت ${p.price} در رنگ ${p.finish.fa} موجود است. لینک خرید یا برگه کامل مشخصات را می‌خواهید؟`
+      );
+    });
+  });
+}
+
+/* ============================================================
+   RENDER COMPARE TABLE
+============================================================ */
+function renderCompare(){
+  const heads = [I18N.compareHead0[CUR],I18N.compareHead1[CUR],I18N.compareHead2[CUR],I18N.compareHead3[CUR],I18N.compareHead4[CUR],I18N.compareHead5[CUR]];
+  const rows = PRODUCTS.map(p=>{
+    const [proc, mem, storage, disp] = p.specs;
+    return `<tr><td><strong>${p.name[CUR]}</strong></td><td>${proc}</td><td>${mem}</td><td>${storage}</td><td>${disp}</td><td>${p.price}</td></tr>`;
+  }).join('');
+  document.getElementById('compare-table').innerHTML =
+    `<thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody>`;
+}
+
+/* ============================================================
+   RENDER FAQ
+============================================================ */
+function renderFaq(){
+  const el = document.getElementById('faq-list');
+  el.innerHTML = FAQ.map((f,i)=>`
+    <div class="faq-item" id="faq-${i}">
+      <div class="faq-q"><span>${f.q[CUR]}</span><span class="chev">▾</span></div>
+      <div class="faq-a"><div class="faq-a-inner">${f.a[CUR]}</div></div>
+    </div>`).join('');
+  el.querySelectorAll('.faq-item').forEach(item=>{
+    item.querySelector('.faq-q').addEventListener('click', ()=> item.classList.toggle('open'));
+  });
+}
+
+/* ============================================================
+   LANGUAGE TOGGLE
+============================================================ */
+let CUR = 'en';
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.dataset.i18n;
+    if(I18N[key]) el.textContent = I18N[key][CUR];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const key = el.dataset.i18nPh;
+    if(I18N[key]) el.placeholder = I18N[key][CUR];
+  });
+  document.getElementById('lang-btn-text').textContent = CUR==='en' ? 'فارسی' : 'English';
+  document.documentElement.lang = CUR;
+  document.documentElement.dir = CUR==='fa' ? 'rtl' : 'ltr';
+  renderProducts();
+  renderCompare();
+  renderFaq();
+}
+document.getElementById('lang-toggle').addEventListener('click', ()=>{
+  CUR = CUR==='en' ? 'fa' : 'en';
+  applyI18n();
+});
+
+/* ============================================================
+   CHATBOT LOGIC (rule-based, no external API)
+============================================================ */
+const chatFab = document.getElementById('chat-fab');
+const chatPanel = document.getElementById('chat-panel');
+const chatBody = document.getElementById('chat-body');
+const chatSuggest = document.getElementById('chat-suggest');
+const chatInput = document.getElementById('chat-input');
+let greeted = false;
+
+function openChat(){
+  chatPanel.classList.add('open');
+  if(!greeted){
+    greeted = true;
+    pushBotMessage(I18N.chatGreeting[CUR]);
+    renderSuggestions();
+  }
+}
+chatFab.addEventListener('click', ()=>{
+  chatPanel.classList.contains('open') ? chatPanel.classList.remove('open') : openChat();
+});
+document.getElementById('chat-close').addEventListener('click', ()=> chatPanel.classList.remove('open'));
+
+function pushMessage(text, who){
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  div.textContent = text;
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+function pushBotMessage(text){
+  const typing = document.createElement('div');
+  typing.className = 'msg bot';
+  typing.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  chatBody.appendChild(typing);
+  chatBody.scrollTop = chatBody.scrollHeight;
+  setTimeout(()=>{
+    typing.remove();
+    pushMessage(text, 'bot');
+  }, 550 + Math.random()*400);
+}
+
+function renderSuggestions(){
+  const chips = CUR==='en'
+    ? ['Cheapest model?','Which one has OLED?','Shipping time?','Warranty details']
+    : ['ارزان‌ترین مدل کدام است؟','کدام مدل اُلد دارد؟','زمان ارسال چقدر است؟','جزئیات گارانتی'];
+  chatSuggest.innerHTML = chips.map(c=>`<button type="button">${c}</button>`).join('');
+  chatSuggest.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{ handleUserInput(b.textContent); });
+  });
+}
+
+function findCheapest(){ return [...PRODUCTS].sort((a,b)=> parseInt(a.price.replace(/\D/g,'')) - parseInt(b.price.replace(/\D/g,'')))[0]; }
+function findMostExpensive(){ return [...PRODUCTS].sort((a,b)=> parseInt(b.price.replace(/\D/g,'')) - parseInt(a.price.replace(/\D/g,'')))[0]; }
+
+function botReply(raw){
+  const t = raw.toLowerCase();
+
+  // price
+  if(/cheap|lowest|budget|ارزان/.test(t)){
+    const p = findCheapest();
+    return CUR==='en' ? `The ${p.name.en} is the most accessible at ${p.price}.` : `${p.name.fa} با قیمت ${p.price} مقرون‌به‌صرفه‌ترین مدل است.`;
+  }
+  if(/expensive|priciest|top end|گران/.test(t)){
+    const p = findMostExpensive();
+    return CUR==='en' ? `The ${p.name.en} tops the range at ${p.price}, built for raw performance.` : `${p.name.fa} با قیمت ${p.price} بالاترین مدل مجموعه است، ساخته‌شده برای کارایی خام.`;
+  }
+  // oled
+  if(/oled/.test(t)){
+    const matches = PRODUCTS.filter(p=> p.specs.some(s=>/OLED/.test(s)));
+    const names = matches.map(p=>p.name[CUR]).join(', ');
+    return CUR==='en' ? `OLED panels ship on the ${names}.` : `پنل اُلد در مدل‌های ${names} موجود است.`;
+  }
+  // gaming/gpu
+  if(/gam|gpu|graphic|rtx|رندر|گرافیک|بازی/.test(t)){
+    return CUR==='en'
+      ? `For GPU-heavy work, look at the Omen Transcend 14 (RTX 4070) or the ZBook Firefly 16 (RTX 500 Ada, ISV-certified).`
+      : `برای کارهای سنگین گرافیکی، اُمن ترنسند ۱۴ (RTX 4070) یا زدبوک فایرفلای ۱۶ (RTX 500 Ada، تاییدیه ISV) را ببینید.`;
+  }
+  // shipping
+  if(/ship|deliver|arrive|ارسال|تحویل/.test(t)){
+    return CUR==='en' ? 'Every model ships to 38 countries, 2–5 business days.' : 'همه مدل‌ها به ۳۸ کشور و در بازه ۲ تا ۵ روز کاری ارسال می‌شوند.';
+  }
+  // warranty
+  if(/warrant|guarantee|گارانتی|ضمانت/.test(t)){
+    return CUR==='en' ? 'All six models include a 3-year warranty with one accidental-damage claim per year.' : 'هر شش مدل شامل ۳ سال گارانتی همراه با یک ادعای خسارت تصادفی در سال هستند.';
+  }
+  // lightest / portable
+  if(/light|portable|thin|سبک|نازک/.test(t)){
+    return CUR==='en' ? 'The Dragonfly G4 is the lightest at 0.99 kg.' : 'دراگون‌فلای جی۴ با وزن ۰.۹۹ کیلوگرم سبک‌ترین مدل است.';
+  }
+  // business
+  if(/business|enterprise|security|تجاری|امنیت/.test(t)){
+    return CUR==='en' ? 'The EliteBook 840 G11 is our business pick — IR camera, fingerprint reader, TPM, and MIL-STD 810H durability.' : 'الایت‌بوک ۸۴۰ جی۱۱ گزینه تجاری ماست — دوربین مادون‌قرمز، اثر انگشت، TPM و استاندارد دوام MIL-STD 810H.';
+  }
+  // specific model lookups
+  for(const p of PRODUCTS){
+    if(t.includes(p.name.en.toLowerCase().split(' ')[0].toLowerCase())){
+      return CUR==='en'
+        ? `${p.name.en}: ${p.specs.join(', ')} — ${p.price}, in ${p.finish.en}.`
+        : `${p.name.fa}: ${p.specs.join('، ')} — ${p.price}، رنگ ${p.finish.fa}.`;
+    }
+  }
+  // greeting
+  if(/^(hi|hello|hey|سلام)/.test(t)){
+    return CUR==='en' ? 'Hey! Ask me about specs, pricing, finishes, or shipping for any of the six models.' : 'سلام! درباره مشخصات، قیمت، رنگ یا ارسال هر یک از شش مدل بپرسید.';
+  }
+  // fallback
+  return CUR==='en'
+    ? "I don't have that on file yet — try asking about a specific model, price range, or feature like OLED or GPU."
+    : 'این موضوع را هنوز ندارم — درباره یک مدل خاص، بازه قیمتی یا ویژگی‌ای مثل اُلد یا گرافیک بپرسید.';
+}
+
+function handleUserInput(text){
+  if(!text.trim()) return;
+  pushMessage(text, 'user');
+  chatInput.value = '';
+  pushBotMessage(botReply(text));
+}
+document.getElementById('chat-send').addEventListener('click', ()=> handleUserInput(chatInput.value));
+chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter') handleUserInput(chatInput.value); });
+
+/* ============================================================
+   INIT
+============================================================ */
+applyI18n();
+
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById('loader').classList.add('hide');
+  }, 2000);
+});
+// Fallback in case load event already fired
+if(document.readyState === 'complete'){
+  setTimeout(()=> document.getElementById('loader').classList.add('hide'), 2000);
+}
+</script>
+</body>
+</html>

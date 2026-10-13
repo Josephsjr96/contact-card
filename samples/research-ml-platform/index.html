@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research ML Platform — case study</title>
+<style>
+:root{--bg:#0b0d12;--card:#141823;--line:#252b3a;--text:#e9ecf3;--muted:#98a1b5;--a:#7c3aed;--b:#00d4ff;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:24px 18px 60px}
+main{max-width:760px;margin:0 auto}
+h1{font-size:1.9rem;letter-spacing:-.5px;margin-bottom:6px}
+.sub{color:var(--muted);margin-bottom:22px}
+h2{font-size:.78rem;text-transform:uppercase;letter-spacing:1.4px;color:var(--b);margin:34px 0 12px}
+p{color:#c9cfdd;margin-bottom:10px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.pill{padding:4px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:.74rem;color:var(--muted)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0}
+.step{padding:9px 13px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:.85rem;font-weight:600}
+.step.c{border-color:var(--warn);color:var(--warn)}.step.p{border-color:var(--ok);color:var(--ok)}.step.r{border-color:var(--bad);color:var(--bad)}
+.arr{color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.86rem;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);background:#10131c}
+tr:last-child td{border-bottom:none}code{font-family:ui-monospace,Consolas,monospace;font-size:.82em;color:var(--b)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.box b{display:block;margin-bottom:4px}.box span{color:var(--muted);font-size:.85rem}
+.big{font-size:1.7rem;font-weight:800;color:#fff}
+.rule{border-left:3px solid var(--a);background:rgba(124,58,237,.1);padding:12px 14px;border-radius:0 10px 10px 0;margin:10px 0}
+ul{margin:6px 0 10px 20px;color:#c9cfdd}li{margin-bottom:4px}
+pre{background:#080a0f;border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;font-size:.8rem;color:#bfe9ff}
+a{color:var(--b)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Research ML Platform</h1>
+  <p class="sub">A production-style MLOps system for training, registering, canary-testing, promoting and automatically rolling back machine-translation models.</p>
+  <div class="pills"><span class="pill">Python 3.11</span><span class="pill">FastAPI</span><span class="pill">Streamlit</span><span class="pill">Docker Compose</span><span class="pill">Redis</span><span class="pill">Prometheus</span><span class="pill">MLflow</span><span class="pill">MinIO (S3)</span><span class="pill">LoRA / NLLB-200</span><span class="pill">SQLite</span><span class="pill">pytest</span></div>
+
+  <h2>The problem</h2>
+  <p>The research project compares NLLB-200 and M2M-100 on Persian ↔ German ↔ Polish <em>poetic</em> translation. New fine-tuned models must reach users safely, without anyone hand-editing production. This platform makes every model change a tracked, reversible event.</p>
+
+  <h2>Model lifecycle</h2>
+  <div class="flow"><span class="step">Train (LoRA)</span><span class="arr">→</span><span class="step">Register</span><span class="arr">→</span><span class="step c">Canary 5%</span><span class="arr">→</span><span class="step">Monitor</span><span class="arr">→</span><span class="step p">Promote</span><span class="arr">or</span><span class="step r">Auto-rollback</span></div>
+  <div class="rule"><b>Boundary rule.</b> The Registry decides deployment state. Redis routes traffic. Inference serves but never decides. Prometheus observes. The rollback worker reacts. Nothing outside the Registry writes model or deployment state — enforced in <code>services/registry/app/lifecycle.py</code>.</div>
+
+  <h2>Architecture</h2>
+  <table>
+    <tr><th>Service</th><th>Responsibility</th><th>Port</th></tr>
+    <tr><td><b>registry</b></td><td>Source of truth for versions &amp; deployment state, with an audit log</td><td>8001</td></tr>
+    <tr><td><b>inference</b></td><td>Serves <code>/translate</code>; splits stable / canary traffic via Redis; exposes Prometheus metrics</td><td>8002</td></tr>
+    <tr><td><b>research</b></td><td>Stores translations, human ratings and the discussion board</td><td>8003</td></tr>
+    <tr><td><b>rollback-worker</b></td><td>Polls Prometheus; triggers rollback when the canary’s error rate crosses the threshold</td><td>8004</td></tr>
+    <tr><td><b>dashboard</b></td><td>Streamlit console: Translation, Evaluation, Deployment, Analytics, Collaboration</td><td>8501</td></tr>
+    <tr><td>redis · minio · mlflow · prometheus</td><td>Routing cache · model artifacts · experiment tracking · metrics</td><td>6379 · 9000 · 5000 · 9090</td></tr>
+  </table>
+
+  <h2>By the numbers</h2>
+  <div class="grid">
+    <div class="box"><span class="big">9</span><br><span>containers in one <code>docker compose up</code></span></div>
+    <div class="box"><span class="big">4</span><br><span>Python services plus a Streamlit dashboard</span></div>
+    <div class="box"><span class="big">17</span><br><span>automated tests, all passing</span></div>
+    <div class="box"><span class="big">2,300+</span><br><span>lines of Python across services, training and tests</span></div>
+  </div>
+
+  <h2>What’s inside</h2>
+  <ul>
+    <li><b>Registry state machine</b> — register, deploy-canary (percentage-controlled), promote, rollback, with one active candidate at a time and a full audit trail.</li>
+    <li><b>Deterministic traffic split</b> — inference reads routing state from Redis, refreshed from the Registry in the background.</li>
+    <li><b>Automatic rollback</b> — a worker queries Prometheus for the canary’s error rate over a rolling window and calls the Registry to roll back.</li>
+    <li><b>LoRA fine-tuning pipeline</b> — trains NLLB with LoRA, logs to MLflow, uploads the adapter to MinIO and registers the version <em>without</em> touching production traffic.</li>
+    <li><b>Poetic-feature analysis</b> — heuristic detectors per language surfaced in the dashboard.</li>
+    <li><b>Researcher tooling</b> — human ratings, side-by-side NLLB-200 vs M2M-100 output, JSON / CSV export, discussion board.</li>
+  </ul>
+
+  <h2>Testing</h2>
+  <p>Unit tests cover the lifecycle rules and the routing split. A golden integration test proves <code>register → deploy → canary → promote</code> and <code>register → deploy → canary → rollback</code> end-to-end against the real Registry app, no Docker needed.</p>
+  <pre>pip install pytest fastapi httpx
+python -m pytest tests/ -v      # 17 passed</pre>
+
+  <h2>Run it</h2>
+  <pre>cp .env.example .env
+docker compose up --build
+# Dashboard http://localhost:8501  ·  Registry docs http://localhost:8001/docs</pre>
+
+  <h2>Honest scope notes</h2>
+  <ul>
+    <li>No real parallel poetry corpus yet — training falls back to a tiny synthetic set so the pipeline is runnable end-to-end.</li>
+    <li>Rollback is error-rate based; a sampled quality metric (chrF++/COMET) is the planned second signal.</li>
+    <li>SQLite-first by design; each service isolates SQL so moving to PostgreSQL is a contained change.</li>
+    <li>No authentication / RBAC (explicit MVP non-goal).</li>
+  </ul>
+
+  <h2>Source</h2>
+  <p>The complete project lives in this repository under <code>samples/research-ml-platform/</code> — see the <a href="README.md">README</a>, <a href="docker-compose.yml">docker-compose.yml</a> and <a href="services/registry/app/lifecycle.py">lifecycle.py</a>.</p>
+</main>
+</body>
+</html>

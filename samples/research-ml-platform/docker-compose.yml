@@ -1,0 +1,164 @@
+version: "3.9"
+
+x-common-env: &common-env
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+services:
+  registry:
+    build: ./services/registry
+    ports:
+      - "8001:8001"
+    environment:
+      <<: *common-env
+      REGISTRY_DB_PATH: /data/registry.db
+      CANARY_PERCENTAGE: ${CANARY_PERCENTAGE:-5}
+    volumes:
+      - registry_data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  research:
+    build: ./services/research
+    ports:
+      - "8003:8003"
+    environment:
+      <<: *common-env
+      RESEARCH_DB_PATH: /data/research.db
+    volumes:
+      - research_data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.16.2
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////data/mlflow.db
+      --default-artifact-root /data/artifacts
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/data
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - inference
+
+  inference:
+    build: ./services/inference
+    ports:
+      - "8002:8002"
+    environment:
+      <<: *common-env
+      REGISTRY_URL: http://registry:8001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MODEL_NAME: ${MODEL_NAME:-translation}
+      NLLB_BASE_MODEL: ${NLLB_BASE_MODEL:-facebook/nllb-200-distilled-600M}
+      M2M_BASE_MODEL: ${M2M_BASE_MODEL:-facebook/m2m100_418M}
+      TORCH_DTYPE: ${TORCH_DTYPE:-float16}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minioadmin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minioadmin}
+      S3_BUCKET: ${S3_BUCKET:-models}
+    volumes:
+      - inference_model_cache:/data/model_cache
+    depends_on:
+      registry:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  rollback-worker:
+    build: ./services/rollback
+    ports:
+      - "8004:8004"
+    environment:
+      <<: *common-env
+      REGISTRY_URL: http://registry:8001
+      PROMETHEUS_URL: http://prometheus:9090
+      MODEL_NAME: ${MODEL_NAME:-translation}
+      ROLLBACK_THRESHOLD: ${ROLLBACK_THRESHOLD:-0.1}
+      OBSERVATION_WINDOW: ${METRIC_WINDOW:-5m}
+      POLL_INTERVAL_SECONDS: ${POLL_INTERVAL_SECONDS:-30}
+    depends_on:
+      registry:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
+
+  dashboard:
+    build: ./services/dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      REGISTRY_URL: http://registry:8001
+      INFERENCE_URL: http://inference:8002
+      RESEARCH_URL: http://research:8003
+      MODEL_NAME: ${MODEL_NAME:-translation}
+    depends_on:
+      registry:
+        condition: service_healthy
+      research:
+        condition: service_healthy
+
+volumes:
+  registry_data:
+  research_data:
+  redis_data:
+  minio_data:
+  mlflow_data:
+  prometheus_data:
+  inference_model_cache:
