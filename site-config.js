@@ -1,7 +1,7 @@
 /* Public configuration for the GitHub Pages contact card.
    Keep project URLs relative so the demos work at the site root and in local previews. */
 window.SITE = {
-  WORKER_URL: "",
+  WORKER_URL: "https://flat-waterfall-436c.josephsanjari1996.workers.dev",
   whatsapp: "48730504025",
   whatsappText: "Hi Joe! I saw your contact card.",
   linkedin: "https://linkedin.com/in/yousef-sanjari-712947207",
