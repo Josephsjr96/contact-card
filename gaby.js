@@ -17,16 +17,23 @@
 FACTS (use only these, never invent anything else):
 - Joe is a Software & Systems Engineer working in AI / NLP, MLOps and full-stack development, based in Warsaw. Languages: Arabic, Persian, English, German; he is learning Polish.
 - Contact: WhatsApp and phone +48 730 504 025, LinkedIn (yousef-sanjari), GitHub @Josephsjr96.
-- Work samples (the Work tab): 1) HP Prestige Collection - a bilingual English/Persian laptop-store demo with six-laptop catalogue, comparison table, FAQ, right-to-left layout and a built-in assistant (independent demo, not affiliated with HP). 2) Research ML Platform - MLOps: train, register, 5% canary, monitor, promote or automatic rollback; FastAPI, Docker Compose (9 containers), Redis, Prometheus, MLflow, MinIO, LoRA fine-tuning of NLLB-200 for Persian-German-Polish poetic translation, Streamlit dashboard, 17 passing tests. 3) Polish A1 - an installable PWA for learning Polish with a pronunciation engine, dictionary, story-based Easy Mode and an AI tutor agent through a Cloudflare Worker.
+- Selected work (the Work tab): SIMON, Multilingual Poetic Translator, Animation Production Workspace, Research ML Platform, and Polish A1.
+- SIMON: Rust/libp2p peer-to-peer inference harness, Ed25519-signed answer receipts, admission control, job orchestration, and research into audit cost and honest numerical drift. Receipts bind a node to an answer; they do not prove model execution. Automatic slashing is not enabled.
+- Multilingual Poetic Translator: Persian-German-Polish research desktop app comparing NLLB-200 and M2M100, automatic metrics and human evaluation. On 20 October 2026 local version-integrity validation passed 49 HTTP generations, 22 evidence checks, 47 Python tests and five HTTP regression scenarios. Untrained adapter fixtures establish isolation/rollback behavior, not translation quality or Docker/Redis/PromQL readiness.
+- Animation Production Workspace: MVP for storyboard panel detection, OCR extraction, reviewing corrections and merging structured shot data.
+- Research ML Platform: MLOps case study with model registration, 5% canary routing, monitoring and rollback; FastAPI, Docker Compose, Redis, Prometheus, MLflow and MinIO.
+- Polish A1: offline-capable installable PWA with everyday dialogues, grammar, browser pronunciation, quizzes, saved exam scores and personal word lists.
 - The CV tab lists skills, projects and languages; full work history and education are on LinkedIn; a PDF CV may be downloadable there.
 - The card hides a fruit-slicing mini-game behind the watermelon button.
 RULES: Be warm and concise (max 70 words). Reply in the language the visitor writes in. If asked about salary, availability, years of experience, employers, education or anything not in FACTS, say you don't have that and suggest messaging Joe on WhatsApp or LinkedIn. Never promise anything on Joe's behalf. Don't do general tasks (code, essays, homework); politely steer back to Joe and his work.
-ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:work]] [[open:cv]] [[open:hp]] [[open:mlops]] [[open:polish]] [[open:whatsapp]] [[open:linkedin]].`;
+ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:work]] [[open:cv]] [[open:simon]] [[open:translator]] [[open:animation]] [[open:mlops]] [[open:polish]] [[open:whatsapp]] [[open:linkedin]].`;
 
   const ACTIONS = {
     work: { label: "🛠 Open Work tab", run: () => { PORTFOLIO.show("work"); } },
     cv: { label: "📄 Open CV tab", run: () => { PORTFOLIO.show("cv"); } },
-    hp: { label: "💻 Open laptop-store demo", run: () => { PORTFOLIO.show("work"); PORTFOLIO.open("hp"); } },
+    simon: { label: "🔎 Open SIMON", run: () => { PORTFOLIO.open("simon"); } },
+    translator: { label: "🌐 Open translator research", run: () => { PORTFOLIO.open("translator"); } },
+    animation: { label: "🎬 Open animation workspace", run: () => { PORTFOLIO.open("animation"); } },
     mlops: { label: "🧠 Open MLOps case study", run: () => { PORTFOLIO.show("work"); PORTFOLIO.open("mlops"); } },
     polish: { label: "🇵🇱 Open Polish app", run: () => { PORTFOLIO.open("polish"); } },
     whatsapp: { label: "💬 WhatsApp Joe", run: () => window.open(WA + "?text=" + encodeURIComponent(S.whatsappText || "Hi Joe!"), "_blank", "noopener") },
@@ -37,10 +44,12 @@ ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:wo
   const FAQ = [
     { k: ["hello", "hi ", "hey", "cześć", "czesc", "salam", "سلام", "hallo", "good morning", "good evening"], a: "Hi! I'm Gaby, Joe's assistant. I can tell you about Joe, show his work samples, or connect you with him. What would you like?", b: ["work"] },
     { k: ["who", "about joe", "tell me about", "introduce", "background"], a: "Joe is a Software & Systems Engineer in Warsaw working across **AI / NLP**, **MLOps** and **full-stack** development. He builds machine-translation research tools, the infrastructure that ships models safely, and polished web apps.", b: ["work", "cv"] },
-    { k: ["mlops", "ml platform", "research platform", "canary", "rollback", "machine learning", "model deploy"], a: "The **Research ML Platform** is Joe's MLOps project: train → register → 5% canary → monitor → promote or automatic rollback. FastAPI, Docker Compose (9 containers), Redis, Prometheus, MLflow, MinIO and a Streamlit dashboard, with 17 passing tests. It supports his Persian ↔ German ↔ Polish poetic-translation research.", b: ["mlops"] },
-    { k: ["laptop", "hp ", "store", "shop", "prestige", "ecommerce", "e-commerce"], a: "The **HP Prestige Collection** is a bilingual (English / Persian, with right-to-left layout) laptop-store demo: six-machine catalogue, comparison table, FAQ and a built-in assistant. It's an independent demo, not affiliated with HP.", b: ["hp"] },
-    { k: ["polish", "polski", "learning app", "a1", "tutor"], a: "**Polish A1** is Joe's installable app for learning Polish — pronunciation engine, dictionary, story-based Easy Mode and an AI tutor agent. Joe is learning Polish himself, so it's built from real experience.", b: ["polish"] },
-    { k: ["work", "project", "portfolio", "sample", "demo", "built", "prototype"], a: "Joe's samples: **HP Prestige Collection** (bilingual store demo), **Research ML Platform** (MLOps with canary deploys and auto-rollback) and **Polish A1** (PWA with an AI tutor). Pick one and I'll open it.", b: ["hp", "mlops", "polish"] },
+    { k: ["mlops", "ml platform", "research platform", "canary", "rollback", "machine learning", "model deploy"], a: "The **Research ML Platform** is Joe's MLOps project: train → register → 5% canary → monitor → promote or automatic rollback. FastAPI, Docker Compose (9 containers), Redis, Prometheus, MLflow, MinIO and a Streamlit dashboard. It supports his Persian ↔ German ↔ Polish poetic-translation research.", b: ["mlops"] },
+    { k: ["simon", "distributed", "receipt", "inference", "verification"], a: "**SIMON** is Joe's Rust/libp2p inference harness with signed answer receipts and research into audit cost and numerical drift. Receipts bind a node to an answer; they do not yet prove model execution, and automatic slashing is not enabled.", b: ["simon"] },
+    { k: ["translator", "translation", "poetry", "poetic", "nllb", "m2m100"], a: "The **Multilingual Poetic Translator** compares NLLB-200 and M2M100 for Persian ↔ German ↔ Polish, with metrics and human evaluation. October validation passed 49 HTTP generations and 47 Python tests for local model-version isolation and rollback. The adapters were untrained fixtures, so this does not establish translation quality.", b: ["translator"] },
+    { k: ["animation", "animating", "storyboard", "ocr", "production workspace"], a: "The **Animation Production Workspace** is a storyboard-scanning MVP: detect panels, extract shot details with OCR, review corrections and merge them into structured shots.", b: ["animation"] },
+    { k: ["polish", "polski", "learning app", "a1", "tutor"], a: "**Polish A1** is Joe's installable app for learning Polish — everyday dialogues, grammar notes, browser pronunciation, quizzes, saved exam scores and personal word lists. Joe is learning Polish himself, so it's built from real experience.", b: ["polish"] },
+    { k: ["work", "project", "portfolio", "sample", "demo", "built", "prototype"], a: "Joe's selected projects are **SIMON**, **Multilingual Poetic Translator**, **Animation Production Workspace**, **Research ML Platform**, and **Polish A1**. Open the Work tab to explore them.", b: ["work"] },
     { k: ["cv", "resume", "résumé", "curriculum", "skills", "experience", "education", "stack", "technolog"], a: "The **CV tab** lists Joe's skills, projects and languages, and you can save it as a PDF. For his full work history and education, LinkedIn is the best place.", b: ["cv", "linkedin"] },
     { k: ["language", "speak", "arabic", "persian", "farsi", "german", "english"], a: "Joe works in **Arabic, Persian, English and German**, and he's currently learning **Polish**.", b: [] },
     { k: ["contact", "reach", "talk to joe", "message", "email", "call", "phone", "whatsapp", "number", "hire", "available", "availability", "freelance", "salary", "rate", "price", "cost", "job", "opportunit"], a: "The quickest way to reach Joe is **WhatsApp or a call on +48 730 504 025**, or LinkedIn. For things like availability, rates or role details I don't have the answer — he does.", b: ["whatsapp", "linkedin"] },
@@ -60,7 +69,7 @@ ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:wo
 
   const CHIPS = [
     { t: "👤 Who is Joe?", q: "who is joe" }, { t: "🛠 Work samples", q: "work samples" },
-    { t: "🧠 MLOps platform", q: "mlops platform" }, { t: "💻 Laptop store", q: "laptop store demo" },
+    { t: "🧠 MLOps platform", q: "mlops platform" }, { t: "🔎 SIMON", q: "simon" },
     { t: "📄 CV", q: "cv skills" }, { t: "💬 Talk to Joe", q: "__talk__" }
   ];
 

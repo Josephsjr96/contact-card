@@ -9,16 +9,22 @@ window.SITE = {
 
   samples: [
     {
-      id: "hp",
-      emoji: "💻",
-      title: "HP Prestige Collection",
-      kind: "Bilingual storefront demo · EN / فارسی",
-      desc: "A polished laptop-store experience with a six-machine catalogue, side-by-side comparisons, FAQ, English/Persian language switching, RTL layout, and a built-in assistant.",
-      note: "Independent demo; not affiliated with HP.",
-      tags: ["HTML", "CSS", "JavaScript", "i18n", "RTL", "Responsive UI"],
-      cta: "Live demo",
-      url: "samples/hp-prestige/index.html",
-      external: false
+      "id": "simon",
+      "emoji": "🔎",
+      "title": "SIMON",
+      "kind": "Distributed AI · Inference-verification research",
+      "desc": "A Rust peer-to-peer inference harness with libp2p transport, Ed25519-signed job receipts, admission control, and agent-to-agent job orchestration. Research measures audit cost and honest numerical drift across hardware.",
+      "note": "Receipts bind a node to its answer; proof of model execution and automatic slashing remain open research.",
+      "tags": [
+        "Rust",
+        "libp2p",
+        "Ed25519",
+        "LLM inference",
+        "Verification"
+      ],
+      "cta": "View research & source",
+      "url": "https://github.com/Josephsjr96/SIMON",
+      "external": true
     },
     {
       id: "mlops",
@@ -38,17 +44,35 @@ window.SITE = {
       kind: "NLP research · Persian ↔ German ↔ Polish",
       desc: "A research desktop app for comparing NLLB-200 and M2M100 on literary translation, with BLEU and semantic-similarity metrics, poetic-feature analysis, structured human evaluation, collaboration tools, analytics, and JSON/CSV export.",
       tags: ["Python", "NLP", "NLLB-200", "M2M100", "Machine Translation", "Poetry", "BLEU", "Human Evaluation"],
+      note: "20 October 2026: 49 successful HTTP generations, 22 evidence checks, 47 Python tests, and five HTTP regression scenarios. Validates local version integrity and rollback with untrained adapter fixtures; translation quality is not established.",
       cta: "View research & source",
       url: "https://github.com/Josephsjr96/NLP-project-Multilanguage-poetic-translator",
       external: true
     },
     {
+      "id": "animation",
+      "emoji": "🎬",
+      "title": "Animation Production Workspace",
+      "kind": "Creative tools · Storyboard scanning",
+      "desc": "A production-workspace MVP that imports scanned storyboards, detects panels with image processing, extracts shot details with OCR, and lets users review corrections before merging them into shots.",
+      "tags": [
+        "Python",
+        "OCR",
+        "Tesseract",
+        "Image processing",
+        "Storyboard"
+      ],
+      "cta": "View source",
+      "url": "https://github.com/Josephsjr96/Animating-platform",
+      "external": true
+    },
+    {
       id: "polish",
       emoji: "🇵🇱",
       title: "Polish A1",
-      kind: "Language-learning PWA · AI tutor",
-      desc: "An installable Polish-learning app with pronunciation practice, a dictionary, story-based Easy Mode, and an AI tutor agent.",
-      tags: ["PWA", "JavaScript", "Language learning", "AI tutor"],
+      kind: "Language-learning PWA · Offline practice",
+      desc: "An installable, offline-capable Polish-learning app with everyday dialogues, grammar notes, browser pronunciation, quizzes, saved exam scores, and personal word lists.",
+      tags: ["PWA", "JavaScript", "Language learning", "Offline"],
       cta: "View source",
       url: "https://github.com/Josephsjr96/PolishA1-app",
       external: true
