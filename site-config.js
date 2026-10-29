@@ -9,6 +9,37 @@ window.SITE = {
 
   samples: [
     {
+      "id": "animation",
+      "emoji": "🎬",
+      "title": "Animation Production Workspace",
+      "kind": "Creative tools · AI-assisted production workflow",
+      "desc": "An animation production workspace with Qwen vision storyboard imports, correction review, grouped shots and drawing galleries. Includes frame-border detection, a thumbnail crop editor with enlarged previews, resizable shot rows, and recovery from incomplete scan output.",
+      "note": "Latest GitHub updates: 28 October 2026. Grouped-shot import and draft restoration are documented as local features.",
+      "tags": [
+        "Python",
+        "OCR",
+        "Qwen vision",
+        "JavaScript",
+        "Image processing",
+        "Storyboard"
+      ],
+      "cta": "View source",
+      "url": "https://github.com/Josephsjr96/Animating-platform",
+      "external": true
+    },
+    {
+      id: "rulebox",
+      emoji: "📦",
+      title: "Rulebox",
+      kind: "Agent tooling · Local instruction manager",
+      desc: "A local-first Python and SQLite app for drafting, reviewing and saving preferences, then previewing and applying them to project AGENTS.md files. Preserves existing instructions, makes backups and rejects stale previews.",
+      note: "Optional LoRA training and inference tooling supports a separate local rule writer. No quality-validated adapter is bundled.",
+      tags: ["Python", "SQLite", "JavaScript", "Agent tooling", "LoRA", "PEFT"],
+      cta: "View source",
+      url: "https://github.com/Josephsjr96/rulebox",
+      external: true
+    },
+    {
       "id": "simon",
       "emoji": "🔎",
       "title": "SIMON",
@@ -49,23 +80,7 @@ window.SITE = {
       url: "https://github.com/Josephsjr96/NLP-project-Multilanguage-poetic-translator",
       external: true
     },
-    {
-      "id": "animation",
-      "emoji": "🎬",
-      "title": "Animation Production Workspace",
-      "kind": "Creative tools · Storyboard scanning",
-      "desc": "A production-workspace MVP that imports scanned storyboards, detects panels with image processing, extracts shot details with OCR, and lets users review corrections before merging them into shots.",
-      "tags": [
-        "Python",
-        "OCR",
-        "Tesseract",
-        "Image processing",
-        "Storyboard"
-      ],
-      "cta": "View source",
-      "url": "https://github.com/Josephsjr96/Animating-platform",
-      "external": true
-    },
+
     {
       id: "polish",
       emoji: "🇵🇱",

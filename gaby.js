@@ -17,22 +17,24 @@
 FACTS (use only these, never invent anything else):
 - Joe is a Software & Systems Engineer working in AI / NLP, MLOps and full-stack development, based in Warsaw. Languages: Arabic, Persian, English, German; he is learning Polish.
 - Contact: WhatsApp and phone +48 730 504 025, LinkedIn (yousef-sanjari), GitHub @Josephsjr96.
-- Selected work (the Work tab): SIMON, Multilingual Poetic Translator, Animation Production Workspace, Research ML Platform, and Polish A1.
+- Selected work (the Work tab): Animation Production Workspace, Rulebox, SIMON, Multilingual Poetic Translator, Research ML Platform, and Polish A1.
 - SIMON: Rust/libp2p peer-to-peer inference harness, Ed25519-signed answer receipts, admission control, job orchestration, and research into audit cost and honest numerical drift. Receipts bind a node to an answer; they do not prove model execution. Automatic slashing is not enabled.
 - Multilingual Poetic Translator: Persian-German-Polish research desktop app comparing NLLB-200 and M2M100, automatic metrics and human evaluation. On 20 October 2026 local version-integrity validation passed 49 HTTP generations, 22 evidence checks, 47 Python tests and five HTTP regression scenarios. Untrained adapter fixtures establish isolation/rollback behavior, not translation quality or Docker/Redis/PromQL readiness.
-- Animation Production Workspace: MVP for storyboard panel detection, OCR extraction, reviewing corrections and merging structured shot data.
+- Animation Production Workspace: updated 28 October 2026 with Qwen vision storyboard imports, correction review, frame-border detection, thumbnail crop editing with enlarged previews, resizable shot rows and recovery from incomplete scan output. Grouped shots, drawing galleries and draft restoration are documented as local features.
+- Rulebox: local-first Python/SQLite instruction manager with a browser UI. Draft, review and save preferences, then preview and apply them to a project AGENTS.md with backups and stale-preview checks. Optional LoRA tooling trains a separate local rule writer, not hosted Codex. No quality-validated adapter is bundled.
 - Research ML Platform: MLOps case study with model registration, 5% canary routing, monitoring and rollback; FastAPI, Docker Compose, Redis, Prometheus, MLflow and MinIO.
 - Polish A1: offline-capable installable PWA with everyday dialogues, grammar, browser pronunciation, quizzes, saved exam scores and personal word lists.
 - The CV tab lists skills, projects and languages; full work history and education are on LinkedIn; a PDF CV may be downloadable there.
 - The card hides a fruit-slicing mini-game behind the watermelon button.
 RULES: Be warm and concise (max 70 words). Reply in the language the visitor writes in. If asked about salary, availability, years of experience, employers, education or anything not in FACTS, say you don't have that and suggest messaging Joe on WhatsApp or LinkedIn. Never promise anything on Joe's behalf. Don't do general tasks (code, essays, homework); politely steer back to Joe and his work.
-ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:work]] [[open:cv]] [[open:simon]] [[open:translator]] [[open:animation]] [[open:mlops]] [[open:polish]] [[open:whatsapp]] [[open:linkedin]].`;
+ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:work]] [[open:cv]] [[open:simon]] [[open:translator]] [[open:animation]] [[open:rulebox]] [[open:mlops]] [[open:polish]] [[open:whatsapp]] [[open:linkedin]].`;
 
   const ACTIONS = {
     work: { label: "🛠 Open Work tab", run: () => { PORTFOLIO.show("work"); } },
     cv: { label: "📄 Open CV tab", run: () => { PORTFOLIO.show("cv"); } },
     simon: { label: "🔎 Open SIMON", run: () => { PORTFOLIO.open("simon"); } },
     translator: { label: "🌐 Open translator research", run: () => { PORTFOLIO.open("translator"); } },
+    rulebox: { label: "📦 Open Rulebox", run: () => { PORTFOLIO.open("rulebox"); } },
     animation: { label: "🎬 Open animation workspace", run: () => { PORTFOLIO.open("animation"); } },
     mlops: { label: "🧠 Open MLOps case study", run: () => { PORTFOLIO.show("work"); PORTFOLIO.open("mlops"); } },
     polish: { label: "🇵🇱 Open Polish app", run: () => { PORTFOLIO.open("polish"); } },
@@ -43,13 +45,15 @@ ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:wo
   /* offline answers: keywords (folded) -> reply + buttons */
   const FAQ = [
     { k: ["hello", "hi ", "hey", "cześć", "czesc", "salam", "سلام", "hallo", "good morning", "good evening"], a: "Hi! I'm Gaby, Joe's assistant. I can tell you about Joe, show his work samples, or connect you with him. What would you like?", b: ["work"] },
-    { k: ["who", "about joe", "tell me about", "introduce", "background"], a: "Joe is a Software & Systems Engineer in Warsaw working across **AI / NLP**, **MLOps** and **full-stack** development. He builds machine-translation research tools, the infrastructure that ships models safely, and polished web apps.", b: ["work", "cv"] },
+    { k: ["who", "about joe", "tell me about", "introduce", "background"], a: "Joe is a Software & Systems Engineer in Warsaw working across **AI / NLP**, **MLOps** and **full-stack** development. His recent work includes AI-assisted storyboard production tools and Rulebox, a local instruction manager, alongside machine-translation research and MLOps.", b: ["work", "cv"] },
     { k: ["mlops", "ml platform", "research platform", "canary", "rollback", "machine learning", "model deploy"], a: "The **Research ML Platform** is Joe's MLOps project: train → register → 5% canary → monitor → promote or automatic rollback. FastAPI, Docker Compose (9 containers), Redis, Prometheus, MLflow, MinIO and a Streamlit dashboard. It supports his Persian ↔ German ↔ Polish poetic-translation research.", b: ["mlops"] },
     { k: ["simon", "distributed", "receipt", "inference", "verification"], a: "**SIMON** is Joe's Rust/libp2p inference harness with signed answer receipts and research into audit cost and numerical drift. Receipts bind a node to an answer; they do not yet prove model execution, and automatic slashing is not enabled.", b: ["simon"] },
     { k: ["translator", "translation", "poetry", "poetic", "nllb", "m2m100"], a: "The **Multilingual Poetic Translator** compares NLLB-200 and M2M100 for Persian ↔ German ↔ Polish, with metrics and human evaluation. October validation passed 49 HTTP generations and 47 Python tests for local model-version isolation and rollback. The adapters were untrained fixtures, so this does not establish translation quality.", b: ["translator"] },
-    { k: ["animation", "animating", "storyboard", "ocr", "production workspace"], a: "The **Animation Production Workspace** is a storyboard-scanning MVP: detect panels, extract shot details with OCR, review corrections and merge them into structured shots.", b: ["animation"] },
+    { k: ["animation", "animating", "storyboard", "ocr", "production workspace", "thumbnail", "crop"], a: "The **Animation Production Workspace** now includes Qwen vision imports, correction review, frame-border detection, thumbnail crop editing, resizable shot rows and scan-output recovery. Local features include grouped shots, drawing galleries and draft restoration. Latest GitHub updates: 28 October 2026.", b: ["animation"] },
+    { k: ["rulebox", "instruction", "agents.md", "rule writer", "lora"], a: "**Rulebox** is Joe’s local Python/SQLite app for drafting, reviewing and saving preferences, then previewing and applying them to project AGENTS.md files with backups and stale-preview checks. Optional LoRA tooling supports a separate local rule writer; no quality-validated adapter is bundled.", b: ["rulebox"] },
+    { k: ["latest", "recent", "new work", "what is new"], a: "Joe’s latest GitHub work is the **Animation Production Workspace**, with storyboard vision imports, correction review and thumbnail editing, and **Rulebox**, a local instruction manager with optional LoRA writer tooling. Both were updated on 28 October 2026.", b: ["animation", "rulebox"] },
     { k: ["polish", "polski", "learning app", "a1", "tutor"], a: "**Polish A1** is Joe's installable app for learning Polish — everyday dialogues, grammar notes, browser pronunciation, quizzes, saved exam scores and personal word lists. Joe is learning Polish himself, so it's built from real experience.", b: ["polish"] },
-    { k: ["work", "project", "portfolio", "sample", "demo", "built", "prototype"], a: "Joe's selected projects are **SIMON**, **Multilingual Poetic Translator**, **Animation Production Workspace**, **Research ML Platform**, and **Polish A1**. Open the Work tab to explore them.", b: ["work"] },
+    { k: ["work", "project", "portfolio", "sample", "demo", "built", "prototype"], a: "Joe's selected projects are **Animation Production Workspace**, **Rulebox**, **SIMON**, **Multilingual Poetic Translator**, **Research ML Platform**, and **Polish A1**. Open the Work tab to explore them.", b: ["work"] },
     { k: ["cv", "resume", "résumé", "curriculum", "skills", "experience", "education", "stack", "technolog"], a: "The **CV tab** lists Joe's skills, projects and languages, and you can save it as a PDF. For his full work history and education, LinkedIn is the best place.", b: ["cv", "linkedin"] },
     { k: ["language", "speak", "arabic", "persian", "farsi", "german", "english"], a: "Joe works in **Arabic, Persian, English and German**, and he's currently learning **Polish**.", b: [] },
     { k: ["contact", "reach", "talk to joe", "message", "email", "call", "phone", "whatsapp", "number", "hire", "available", "availability", "freelance", "salary", "rate", "price", "cost", "job", "opportunit"], a: "The quickest way to reach Joe is **WhatsApp or a call on +48 730 504 025**, or LinkedIn. For things like availability, rates or role details I don't have the answer — he does.", b: ["whatsapp", "linkedin"] },
@@ -69,7 +73,7 @@ ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:wo
 
   const CHIPS = [
     { t: "👤 Who is Joe?", q: "who is joe" }, { t: "🛠 Work samples", q: "work samples" },
-    { t: "🧠 MLOps platform", q: "mlops platform" }, { t: "🔎 SIMON", q: "simon" },
+    { t: "🎬 Animation tools", q: "animation" }, { t: "📦 Rulebox", q: "rulebox" },
     { t: "📄 CV", q: "cv skills" }, { t: "💬 Talk to Joe", q: "__talk__" }
   ];
 
