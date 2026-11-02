@@ -1,6 +1,6 @@
 (() => {
   const links = [...document.querySelectorAll('nav a')];
-  const sections = ['contact', 'work', 'cv'].map(id => document.getElementById(id));
+  const sections = ['contact', 'work', 'films', 'cv'].map(id => document.getElementById(id));
   function activate(id) {
     links.forEach(link => {
       if (link.hash === '#' + id) link.setAttribute('aria-current', 'location');
@@ -23,6 +23,11 @@
       pending = false;
     });
   }, {passive:true});
+  document.querySelectorAll('video').forEach(video => {
+    video.addEventListener('play', () => {
+      document.querySelectorAll('video').forEach(other => { if (other !== video) other.pause(); });
+    });
+  });
   window.PORTFOLIO = {
     samples: window.SITE.samples,
     show(id) {
@@ -34,6 +39,7 @@
     open(id) {
       const sample = window.SITE.samples.find(sample => sample.id === id);
       if (!sample) return;
+      if (sample.url === '#films') { this.show('films'); return; }
       if (sample.external) window.open(sample.url, '_blank', 'noopener,noreferrer');
       else location.assign(sample.url);
     }

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "simon", "title": "SIMON", "kind": "Distributed AI inference", "duration": "4:28", "size": "8.6 MB",
+    "description": "A visual walkthrough of peer-to-peer inference, signed output receipts, hardware comparisons and the limits of verification.",
+    "summary": "Explains how jobs move between clients and nodes, how signed receipts bind outputs, and what performance experiments show. Distinguishes output integrity from proof of model execution.",
+    "note": "Team research project · Video created to explain the system and recorded experiments."
+  },
+  {
+    "id": "mlops", "title": "Canary MLOps", "kind": "Model deployment & monitoring", "duration": "0:54", "size": "9.6 MB",
+    "description": "An animated explanation of model registration, canary traffic, monitoring and promotion or rollback.",
+    "summary": "Follows a model through registration and limited candidate traffic, shows monitoring panels, and explains when a deployment can be promoted or rolled back.",
+    "note": "Architecture explainer · Illustrative metric panels are not production performance evidence."
+  },
+  {
+    "id": "water-tank", "title": "Water Tank", "kind": "Control systems & safety design", "duration": "1:00", "size": "3.3 MB",
+    "description": "A motion-graphics presentation of water-level control, failure scenarios and an independent shutdown proposal.",
+    "summary": "Shows normal pump hysteresis, sensor and pump failure scenarios, an independent high-level trip, and a proposed stopping test with residual overflow risks.",
+    "note": "Classroom design proposal · Thresholds and stopping tests are proposed, not measured results."
+  }
+]

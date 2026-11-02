@@ -7,7 +7,7 @@
     {keys:['data explorer','movie'], text:'Data Explorer cleans a 74-row movie dataset into 72 unique records and presents genre comparisons, summary statistics and rankings. Movie titles are real; ratings and financial figures are simulated practice data.',action:'data-explorer'},
     {keys:['mlops','canary','rollback','monitoring','research ml'],text:'The Research ML Platform combines Python services with a Streamlit dashboard for model versions, evaluation and canary deployment. Local tests cover version integrity and rollback. It is a research prototype, and linguistic quality review is separate.',action:'mlops'},
     {keys:['simon','inference','receipt'],text:'SIMON is a team project on distributed AI inference. Joe contributed to heterogeneous inference workflows, signed output receipts and AMD MI300X experiments. A valid receipt binds a node to its answer; it does not prove which model executed.',action:'simon'},
-    {keys:['video','motion','explain','storytelling'],text:'Joe created motion-graphics explainers for MLOps, SIMON and AI Behavior Lab, using animated diagrams, metric panels and captions. You can email him to request samples.',action:'videos'},
+    {keys:['video','motion','explain','storytelling'],text:'Joe created motion-graphics explainers for MLOps, SIMON and AI Behavior Lab, using animated diagrams, metric panels and captions. Watch SIMON, Canary MLOps and Water Tank in the Project Films section.',action:'films'},
     {keys:['translator','translation','poetry','nllb'],text:'The multilingual research app compares NLLB-200 and M2M-100 across Persian, German and Polish, with model outputs, evaluation metrics and human ratings. Model-version integrity tests do not establish translation quality.',action:'translator'},
     {keys:['animation','storyboard','ocr'],text:'The Animation Production Workspace supports storyboard scanning and correction review, shots and scheduling. Grouped shots and drawing galleries are documented as local features.',action:'animation'},
     {keys:['rulebox','agents.md','lora'],text:'Rulebox is a local Python/SQLite instruction manager with reviewed updates, backups and stale-preview checks. Its optional LoRA tooling supports a separate local rule writer; no quality-validated adapter is bundled.',action:'rulebox'},
@@ -49,7 +49,7 @@
   document.body.append(fab,overlay,panel);
   const body=panel.querySelector('.gb-body'),input=panel.querySelector('input'),send=panel.querySelector('[type=submit]');
   const history=[];let busy=false,returnFocus;
-  const actions={cv:['Read CV',()=>PORTFOLIO.show('cv')],work:['Explore projects',()=>PORTFOLIO.show('work')],contact:['Contact Joe',()=>PORTFOLIO.show('contact')],download:['Download CV (PDF)',null,'cv.pdf']};
+  const actions={films:['Watch project films',()=>PORTFOLIO.show('films')],cv:['Read CV',()=>PORTFOLIO.show('cv')],work:['Explore projects',()=>PORTFOLIO.show('work')],contact:['Contact Joe',()=>PORTFOLIO.show('contact')],download:['Download CV (PDF)',null,'cv.pdf']};
   for(const sample of S.samples) actions[sample.id]=[sample.cta,()=>PORTFOLIO.open(sample.id),sample.url];
   function bubble(text,user=false,action) {
     const el=document.createElement('div');el.className='gb-message'+(user?' user':'');

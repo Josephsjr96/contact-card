@@ -26,3 +26,11 @@ Common questions are answered locally. Other questions may be sent to the existi
 ## Verification
 
 `tests/browser.cjs` checks navigation, CV content, the actual PDF download, project links, no-JavaScript access, assistant keyboard behavior, failure handling and responsive overflow. Set `PLAYWRIGHT_MODULE` to an installed Playwright module and `BASE_URL` to the preview or deployed site. Browser screenshots and reports are kept locally under `qa/`.
+
+## Intro, waves and project films
+
+The root page shows a two-second welcome once per browser session. Skip intro and Escape dismiss it immediately. Hash links such as `#cv` and `#films`, reduced-motion visitors and JavaScript-disabled visits bypass it.
+
+`waves.js` adapts the geometric field from the local Nix app (`codex-ui/codexUI.html`) for slow ambient motion. Pause waves is in the footer; reduced-motion preferences and background-tab suspension are respected. No conversation or application bridge code is included.
+
+`films.json` supplies the Project Films content. Native video players use `preload="none"`, inline playback, original audio and no autoplay. Starting another film pauses the previous one. The MP4 files in `media/` are losslessly remuxed with fast-start metadata for web playback; JPG files are extracted preview frames. All films also have a direct download and a text summary.
