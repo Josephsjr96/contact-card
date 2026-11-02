@@ -3,25 +3,23 @@
   const intro = document.getElementById('boot');
   const skip = document.getElementById('intro-skip');
   if (!intro || !skip) return;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const historyNavigation = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
-  let seen = false;
-  try { seen = sessionStorage.getItem('joe_intro_seen') === '1'; } catch {}
-  if (location.hash || seen || reduced || historyNavigation) return;
+  if (!window.__joeShowIntro) return;
   try { sessionStorage.setItem('joe_intro_seen', '1'); } catch {}
   intro.hidden = false;
   document.documentElement.classList.add('intro-active');
-  const content = [...document.querySelectorAll('.site-header, main, .site-footer')];
-  content.forEach(el => el.inert = true);
   let closed = false;
+  const content = () => document.querySelectorAll('.site-header, main, .site-footer');
+  const lockContent = () => { if (!closed) content().forEach(el => el.inert = true); };
+  lockContent();
+  document.addEventListener('DOMContentLoaded', lockContent, {once:true});
   function dismiss() {
     if (closed) return;
     closed = true;
     const hadFocus = intro.contains(document.activeElement);
     intro.hidden = true;
     document.documentElement.classList.remove('intro-active');
-    content.forEach(el => el.inert = false);
-    if (hadFocus) document.querySelector('.brand').focus({preventScroll:true});
+    content().forEach(el => el.inert = false);
+    if (hadFocus) document.querySelector('.brand')?.focus({preventScroll:true});
     document.removeEventListener('keydown', onKey);
   }
   function onKey(event) { if (event.key === 'Escape') dismiss(); }
