@@ -28,5 +28,5 @@
   skip.onclick = dismiss;
   document.addEventListener('keydown', onKey);
   window.addEventListener('hashchange', dismiss, {once:true});
-  setTimeout(dismiss, 2000);
+  setTimeout(dismiss, 3500);
 })();

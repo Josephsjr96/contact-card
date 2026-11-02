@@ -29,7 +29,7 @@ Common questions are answered locally. Other questions may be sent to the existi
 
 ## Intro, waves and project films
 
-The root page shows a two-second welcome once per browser session. Skip intro and Escape dismiss it immediately. Hash links such as `#cv` and `#films`, reduced-motion visitors and JavaScript-disabled visits bypass it.
+The root page shows a 3.5-second welcome once per browser session. Skip intro and Escape dismiss it immediately. Hash links such as `#cv` and `#films`, reduced-motion visitors and JavaScript-disabled visits bypass it.
 
 `waves.js` adapts the geometric field from the local Nix app (`codex-ui/codexUI.html`) for slow ambient motion. Pause waves is in the footer; reduced-motion preferences and background-tab suspension are respected. No conversation or application bridge code is included.
 
