@@ -1,0 +1,138 @@
+[
+  [
+    "name",
+    "Yousef (Joseph) Sanjari"
+  ],
+  [
+    "role",
+    "BUSINESS INTELLIGENCE & DATA ANALYTICS"
+  ],
+  [
+    "contact",
+    "Warsaw, Poland | +48 730 504 025 | josephsanjari1996@gmail.com"
+  ],
+  [
+    "links",
+    "linkedin.com/in/yousef-sanjari-712947207 | github.com/Josephsjr96"
+  ],
+  [
+    "section",
+    "Professional Summary"
+  ],
+  [
+    "p",
+    "Python and machine learning developer transitioning into business intelligence and analytics. Experience cleaning and analyzing data, building dashboards, evaluating models, and developing player segmentation workflows. Combines technical analysis with clear visual reporting and explanatory videos that make complex systems and results easier to understand."
+  ],
+  [
+    "section",
+    "Core Skills"
+  ],
+  [
+    "skill",
+    "Python, Pandas, NumPy, SQL/SQLite, data cleaning, aggregation, descriptive statistics, segmentation and classification"
+  ],
+  [
+    "skill",
+    "Dashboard development, data visualization, Streamlit, Prometheus, REST APIs, Git, Docker, model evaluation and reproducible validation"
+  ],
+  [
+    "section",
+    "Professional Experience"
+  ],
+  [
+    "job",
+    "Machine Learning Developer | NoyanGames | 2025–2026"
+  ],
+  [
+    "bullet",
+    "Built player segmentation and classification workflows using gameplay, social and transaction signals to support personalization and event-selection use cases."
+  ],
+  [
+    "job",
+    "Freelance Software Developer | June 2024–Present"
+  ],
+  [
+    "bullet",
+    "Developed Python applications, data-driven interfaces and AI-integrated prototypes, including tools for model evaluation and creative production workflows."
+  ],
+  [
+    "job",
+    "IT Support | Iran Rahjoo Co., Ahwaz | September 2020–October 2022"
+  ],
+  [
+    "bullet",
+    "Resolved hardware, software and network issues; coordinated vendors and trained staff on technical systems."
+  ],
+  [
+    "section",
+    "Selected Analytics & Communication Projects"
+  ],
+  [
+    "job",
+    "Data Explorer | Python, Pandas, NumPy, PySide6"
+  ],
+  [
+    "bullet",
+    "Built a movie-data analysis application with data previews, charts and ranked tables. Cleaned 74 input rows into 72 unique records through deduplication and missing-value handling."
+  ],
+  [
+    "bullet",
+    "Calculated genre averages, revenue rankings and summary statistics; clearly identified financial and rating values as simulated practice data."
+  ],
+  [
+    "job",
+    "Multilingual Translation Research & MLOps | Independent Project"
+  ],
+  [
+    "bullet",
+    "Built evaluation and reporting workflows for Persian, German and Polish translation, combining model comparisons, human ratings and SQLite-backed research records."
+  ],
+  [
+    "bullet",
+    "Developed a Streamlit dashboard for deployment monitoring and evaluation. Recorded 24 real NLLB HTTP generations across six translation directions, with linguistic quality review pending."
+  ],
+  [
+    "job",
+    "SIMON — Distributed AI Inference | Team Project"
+  ],
+  [
+    "bullet",
+    "Contributed to heterogeneous inference workflows, signed output receipts and AMD MI300X experiments; communicated performance measurements and verification limitations."
+  ],
+  [
+    "job",
+    "Technical Explainer Videos | MLOps, SIMON & AI Behavior Lab"
+  ],
+  [
+    "bullet",
+    "Created motion-graphics explainers using animated system diagrams, metric panels and captions to communicate model deployment, monitoring, inference verification and evaluation workflows."
+  ],
+  [
+    "section",
+    "Education"
+  ],
+  [
+    "edu",
+    "M.Eng. Computer Engineering — Applied Data Science & AI | Vistula University, Warsaw | 2026–expected 2028"
+  ],
+  [
+    "edu",
+    "B.A. Computer Software Engineering | Jahrom University | 2021–2024"
+  ],
+  [
+    "edu",
+    "Associate Degree, IT | University of Applied Sciences and Technology | 2016–2019"
+  ],
+  [
+    "section",
+    "Languages & Certifications"
+  ],
+  [
+    "p",
+    "English C1 | Persian & Arabic (native) | German A2 | Polish A1"
+  ],
+  [
+    "p",
+    "CompTIA A+ (2023) | TCP/IP, EDSO (2022) | Hardware Repair (2019)"
+  ]
+]

@@ -1,32 +1,28 @@
-# Joe — digital contact card
+# Joe Sanjari — portfolio and CV
 
-Live card with three tabs — **📇 Contact · 🛠 Work · 📄 CV** — an AI assistant called **Gaby**, and a hidden fruit-slicing game (🍉).
+Static GitHub Pages portfolio with Contact, Work and CV sections. No build tools or external fonts are required in the browser. Navigation and PDF downloads work without JavaScript.
 
-## Upload
-Upload **everything in this folder** to the root of your GitHub Pages repo (Settings → Pages → Deploy from branch → `main` / root). Nothing needs editing.
+- `index.html` — profile, projects and full CV
+- `cv.pdf` — current one-page Business Intelligence & Data Analytics CV
+- `cv-data.json` — CV content used to generate the HTML
+- `site-config.js` — public project links and assistant service configuration
+- `styles.css` — responsive dark visual design and print styling
+- `app.js` — navigation highlighting and assistant project actions
+- `gaby.js` — optional assistant with local answers and an external AI fallback
+- `samples/` — project case studies and retained source examples
 
-```
-index.html                      the card (boot screen, tabs, viewer, CV)
-gaby.js                         Gaby, the assistant widget
-site-config.js                  links, Worker URL, work samples list
-samples/hp-prestige/            laptop-store demo (bilingual EN / فارسی)
-samples/research-ml-platform/   MLOps platform: case-study page + full source
-worker/deepseek-proxy-worker.js Cloudflare Worker (adds Gaby's /gaby route)
-.nojekyll                       tells GitHub Pages to serve files as-is
-```
+## Update content
 
-## Gaby
-- Quick-reply buttons and common questions are answered instantly from built-in knowledge, so Gaby works even offline.
-- Free-text questions go to the AI through your Cloudflare Worker at `<WORKER_URL>/gaby`. If the Worker can't be reached she falls back to the built-in answers.
-- She can act: open the Work or CV tab, launch a demo, or open WhatsApp / LinkedIn.
-- **To switch the AI on:** Cloudflare dashboard → your Worker → *Edit code* → paste `worker/deepseek-proxy-worker.js` → *Deploy*. Your existing variables stay as they are. If this card is not on `https://josephsjr96.github.io`, add its address to `ALLOWED_ORIGINS` (comma-separated).
+Edit `cv-data.json` or `site-config.js`, then run `python build.py` (requires Python 3 and Node.js). Replace `cv.pdf` when changing the downloadable CV. Keep the PDF and page content consistent. Publish the generated `index.html` alongside the source files.
 
-## CV
-The CV tab is built from the projects in this repo. To add a downloadable PDF, put a file called **`cv.pdf`** next to `index.html` — the *Download CV* button appears by itself. *Save this page as PDF* prints just the CV.
+## Local preview
 
-## Editing later
-Links, the Worker URL and the three work samples are all in `site-config.js`. To add a sample, put its folder under `samples/` and add one entry to the list.
+Run `python -m http.server 8080 --directory .` and visit http://localhost:8080. GitHub Pages publishes the repository through the existing deployment workflow.
 
-## Notes
-- The HP Prestige page is an independent demo and is not affiliated with HP.
-- The ML platform runs with Docker (`docker compose up`); on the site it is shown as a case study with the full source in the repo.
+## Assistant
+
+Common questions are answered locally. Other questions may be sent to the existing service configured in `WORKER_URL`; this is disclosed inside the assistant. No chat history is saved by this page. Service failures produce a useful local fallback. The assistant does not promise availability or invent qualifications.
+
+## Verification
+
+`tests/browser.cjs` checks navigation, CV content, the actual PDF download, project links, no-JavaScript access, assistant keyboard behavior, failure handling and responsive overflow. Set `PLAYWRIGHT_MODULE` to an installed Playwright module and `BASE_URL` to the preview or deployed site. Browser screenshots and reports are kept locally under `qa/`.

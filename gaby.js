@@ -1,264 +1,97 @@
-/* gaby.js — "Gaby", Joe's assistant. Floating chat like a helpdesk bot, plus an AI agent.
-   • Quick replies and common questions are answered instantly from built-in knowledge (works offline).
-   • Free-text questions go to the AI through your Cloudflare Worker (<WORKER_URL>).
-   • If the AI can't be reached, Gaby falls back to her built-in knowledge — she never just breaks.
-   • She can act: open the Work / CV tabs, launch a demo, or open WhatsApp / LinkedIn.
-   Needs: site-config.js (window.SITE) and the PORTFOLIO helper from index.html. */
-(function () {
-  const S = window.SITE || {};
-  const WORKER = (S.WORKER_URL || "").replace(/\/$/, "");
-  const WA = "https://wa.me/" + (S.whatsapp || "48730504025");
-  const HKEY = "gaby_hist_v1";
-  const esc = s => String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
-  const fold = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ł/g, "l");
-
-  /* ---------- knowledge ---------- */
-  const SYSTEM = `You are Gaby, the friendly digital assistant on Joe's contact card (Joe Sanjari, Warsaw, Poland). You only speak for Joe's website.
-FACTS (use only these, never invent anything else):
-- Joe is a Software & Systems Engineer working in AI / NLP, MLOps and full-stack development, based in Warsaw. Languages: Arabic, Persian, English, German; he is learning Polish.
-- Contact: WhatsApp and phone +48 730 504 025, LinkedIn (yousef-sanjari), GitHub @Josephsjr96.
-- Selected work (the Work tab): Animation Production Workspace, Rulebox, SIMON, Multilingual Poetic Translator, Research ML Platform, and Polish A1.
-- SIMON: Rust/libp2p peer-to-peer inference harness, Ed25519-signed answer receipts, admission control, job orchestration, and research into audit cost and honest numerical drift. Receipts bind a node to an answer; they do not prove model execution. Automatic slashing is not enabled.
-- Multilingual Poetic Translator: Persian-German-Polish research desktop app comparing NLLB-200 and M2M100, automatic metrics and human evaluation. On 20 October 2026 local version-integrity validation passed 49 HTTP generations, 22 evidence checks, 47 Python tests and five HTTP regression scenarios. Untrained adapter fixtures establish isolation/rollback behavior, not translation quality or Docker/Redis/PromQL readiness.
-- Animation Production Workspace: updated 28 October 2026 with Qwen vision storyboard imports, correction review, frame-border detection, thumbnail crop editing with enlarged previews, resizable shot rows and recovery from incomplete scan output. Grouped shots, drawing galleries and draft restoration are documented as local features.
-- Rulebox: local-first Python/SQLite instruction manager with a browser UI. Draft, review and save preferences, then preview and apply them to a project AGENTS.md with backups and stale-preview checks. Optional LoRA tooling trains a separate local rule writer, not hosted Codex. No quality-validated adapter is bundled.
-- Research ML Platform: MLOps case study with model registration, 5% canary routing, monitoring and rollback; FastAPI, Docker Compose, Redis, Prometheus, MLflow and MinIO.
-- Polish A1: offline-capable installable PWA with everyday dialogues, grammar, browser pronunciation, quizzes, saved exam scores and personal word lists.
-- The CV tab lists skills, projects and languages; full work history and education are on LinkedIn; a PDF CV may be downloadable there.
-- The card hides a fruit-slicing mini-game behind the watermelon button.
-RULES: Be warm and concise (max 70 words). Reply in the language the visitor writes in. If asked about salary, availability, years of experience, employers, education or anything not in FACTS, say you don't have that and suggest messaging Joe on WhatsApp or LinkedIn. Never promise anything on Joe's behalf. Don't do general tasks (code, essays, homework); politely steer back to Joe and his work.
-ACTIONS: you may end a reply with at most ONE tag that shows a button: [[open:work]] [[open:cv]] [[open:simon]] [[open:translator]] [[open:animation]] [[open:rulebox]] [[open:mlops]] [[open:polish]] [[open:whatsapp]] [[open:linkedin]].`;
-
-  const ACTIONS = {
-    work: { label: "🛠 Open Work tab", run: () => { PORTFOLIO.show("work"); } },
-    cv: { label: "📄 Open CV tab", run: () => { PORTFOLIO.show("cv"); } },
-    simon: { label: "🔎 Open SIMON", run: () => { PORTFOLIO.open("simon"); } },
-    translator: { label: "🌐 Open translator research", run: () => { PORTFOLIO.open("translator"); } },
-    rulebox: { label: "📦 Open Rulebox", run: () => { PORTFOLIO.open("rulebox"); } },
-    animation: { label: "🎬 Open animation workspace", run: () => { PORTFOLIO.open("animation"); } },
-    mlops: { label: "🧠 Open MLOps case study", run: () => { PORTFOLIO.show("work"); PORTFOLIO.open("mlops"); } },
-    polish: { label: "🇵🇱 Open Polish app", run: () => { PORTFOLIO.open("polish"); } },
-    whatsapp: { label: "💬 WhatsApp Joe", run: () => window.open(WA + "?text=" + encodeURIComponent(S.whatsappText || "Hi Joe!"), "_blank", "noopener") },
-    linkedin: { label: "in LinkedIn", run: () => window.open(S.linkedin, "_blank", "noopener") }
-  };
-
-  /* offline answers: keywords (folded) -> reply + buttons */
-  const FAQ = [
-    { k: ["hello", "hi ", "hey", "cześć", "czesc", "salam", "سلام", "hallo", "good morning", "good evening"], a: "Hi! I'm Gaby, Joe's assistant. I can tell you about Joe, show his work samples, or connect you with him. What would you like?", b: ["work"] },
-    { k: ["who", "about joe", "tell me about", "introduce", "background"], a: "Joe is a Software & Systems Engineer in Warsaw working across **AI / NLP**, **MLOps** and **full-stack** development. His recent work includes AI-assisted storyboard production tools and Rulebox, a local instruction manager, alongside machine-translation research and MLOps.", b: ["work", "cv"] },
-    { k: ["mlops", "ml platform", "research platform", "canary", "rollback", "machine learning", "model deploy"], a: "The **Research ML Platform** is Joe's MLOps project: train → register → 5% canary → monitor → promote or automatic rollback. FastAPI, Docker Compose (9 containers), Redis, Prometheus, MLflow, MinIO and a Streamlit dashboard. It supports his Persian ↔ German ↔ Polish poetic-translation research.", b: ["mlops"] },
-    { k: ["simon", "distributed", "receipt", "inference", "verification"], a: "**SIMON** is Joe's Rust/libp2p inference harness with signed answer receipts and research into audit cost and numerical drift. Receipts bind a node to an answer; they do not yet prove model execution, and automatic slashing is not enabled.", b: ["simon"] },
-    { k: ["translator", "translation", "poetry", "poetic", "nllb", "m2m100"], a: "The **Multilingual Poetic Translator** compares NLLB-200 and M2M100 for Persian ↔ German ↔ Polish, with metrics and human evaluation. October validation passed 49 HTTP generations and 47 Python tests for local model-version isolation and rollback. The adapters were untrained fixtures, so this does not establish translation quality.", b: ["translator"] },
-    { k: ["animation", "animating", "storyboard", "ocr", "production workspace", "thumbnail", "crop"], a: "The **Animation Production Workspace** now includes Qwen vision imports, correction review, frame-border detection, thumbnail crop editing, resizable shot rows and scan-output recovery. Local features include grouped shots, drawing galleries and draft restoration. Latest GitHub updates: 28 October 2026.", b: ["animation"] },
-    { k: ["rulebox", "instruction", "agents.md", "rule writer", "lora"], a: "**Rulebox** is Joe’s local Python/SQLite app for drafting, reviewing and saving preferences, then previewing and applying them to project AGENTS.md files with backups and stale-preview checks. Optional LoRA tooling supports a separate local rule writer; no quality-validated adapter is bundled.", b: ["rulebox"] },
-    { k: ["latest", "recent", "new work", "what is new"], a: "Joe’s latest GitHub work is the **Animation Production Workspace**, with storyboard vision imports, correction review and thumbnail editing, and **Rulebox**, a local instruction manager with optional LoRA writer tooling. Both were updated on 28 October 2026.", b: ["animation", "rulebox"] },
-    { k: ["polish", "polski", "learning app", "a1", "tutor"], a: "**Polish A1** is Joe's installable app for learning Polish — everyday dialogues, grammar notes, browser pronunciation, quizzes, saved exam scores and personal word lists. Joe is learning Polish himself, so it's built from real experience.", b: ["polish"] },
-    { k: ["work", "project", "portfolio", "sample", "demo", "built", "prototype"], a: "Joe's selected projects are **Animation Production Workspace**, **Rulebox**, **SIMON**, **Multilingual Poetic Translator**, **Research ML Platform**, and **Polish A1**. Open the Work tab to explore them.", b: ["work"] },
-    { k: ["cv", "resume", "résumé", "curriculum", "skills", "experience", "education", "stack", "technolog"], a: "The **CV tab** lists Joe's skills, projects and languages, and you can save it as a PDF. For his full work history and education, LinkedIn is the best place.", b: ["cv", "linkedin"] },
-    { k: ["language", "speak", "arabic", "persian", "farsi", "german", "english"], a: "Joe works in **Arabic, Persian, English and German**, and he's currently learning **Polish**.", b: [] },
-    { k: ["contact", "reach", "talk to joe", "message", "email", "call", "phone", "whatsapp", "number", "hire", "available", "availability", "freelance", "salary", "rate", "price", "cost", "job", "opportunit"], a: "The quickest way to reach Joe is **WhatsApp or a call on +48 730 504 025**, or LinkedIn. For things like availability, rates or role details I don't have the answer — he does.", b: ["whatsapp", "linkedin"] },
-    { k: ["where", "location", "warsaw", "poland", "city", "based", "time zone"], a: "Joe is based in **Warsaw, Poland** (CET / CEST).", b: [] },
-    { k: ["game", "egg", "watermelon", "fruit", "secret", "play"], a: "Psst — tap the 🍉 button at the bottom-left of the page. Swipe to slice, and don't miss more than three!", b: [] },
-    { k: ["thank", "thanks", "dzieki", "dziekuje", "merci", "danke", "ممنون", "مرسی"], a: "You're welcome! Anything else you'd like to know about Joe?", b: [] },
-    { k: ["who are you", "your name", "are you ai", "are you a bot", "gaby"], a: "I'm **Gaby**, Joe's digital assistant — part scripted, part AI. I can answer questions about Joe and open his work for you.", b: ["work"] }
+/* Optional portfolio assistant. Common questions are answered locally. */
+(() => {
+  const S = window.SITE;
+  const replies = [
+    {keys:['who is joe','about joe','background','introduce'], text:"Joe is Yousef (Joseph) Sanjari, a Python and machine learning developer in Warsaw moving into business intelligence and analytics. His work includes data analysis, dashboards, model evaluation and technical explainer videos.", action:'cv'},
+    {keys:['business intelligence','analytics','data analys','skills','python','sql','pandas','excel','tableau','power bi'], text:"Joe's documented skills include Python, Pandas, NumPy, SQL/SQLite, data cleaning, descriptive statistics, segmentation, dashboard development, Streamlit and Prometheus. His CV does not list Excel, Power BI or Tableau proficiency.", action:'cv'},
+    {keys:['data explorer','movie'], text:'Data Explorer cleans a 74-row movie dataset into 72 unique records and presents genre comparisons, summary statistics and rankings. Movie titles are real; ratings and financial figures are simulated practice data.',action:'data-explorer'},
+    {keys:['mlops','canary','rollback','monitoring','research ml'],text:'The Research ML Platform combines Python services with a Streamlit dashboard for model versions, evaluation and canary deployment. Local tests cover version integrity and rollback. It is a research prototype, and linguistic quality review is separate.',action:'mlops'},
+    {keys:['simon','inference','receipt'],text:'SIMON is a team project on distributed AI inference. Joe contributed to heterogeneous inference workflows, signed output receipts and AMD MI300X experiments. A valid receipt binds a node to its answer; it does not prove which model executed.',action:'simon'},
+    {keys:['video','motion','explain','storytelling'],text:'Joe created motion-graphics explainers for MLOps, SIMON and AI Behavior Lab, using animated diagrams, metric panels and captions. You can email him to request samples.',action:'videos'},
+    {keys:['translator','translation','poetry','nllb'],text:'The multilingual research app compares NLLB-200 and M2M-100 across Persian, German and Polish, with model outputs, evaluation metrics and human ratings. Model-version integrity tests do not establish translation quality.',action:'translator'},
+    {keys:['animation','storyboard','ocr'],text:'The Animation Production Workspace supports storyboard scanning and correction review, shots and scheduling. Grouped shots and drawing galleries are documented as local features.',action:'animation'},
+    {keys:['rulebox','agents.md','lora'],text:'Rulebox is a local Python/SQLite instruction manager with reviewed updates, backups and stale-preview checks. Its optional LoRA tooling supports a separate local rule writer; no quality-validated adapter is bundled.',action:'rulebox'},
+    {keys:['polish app','polisha1','learning app','tutor'],text:'Polish A1 is an offline-capable learning app with everyday dialogues, grammar, pronunciation, quizzes and saved word lists.',action:'polish'},
+    {keys:['education','university','degree','study','studies'],text:'Joe is pursuing an M.Eng. in Computer Engineering, Applied Data Science & AI, at Vistula University (2026–expected 2028). He holds a B.A. in Computer Software Engineering from Jahrom University and an Associate Degree in IT.',action:'cv'},
+    {keys:['language','speak','german','persian','arabic','english','polish'],text:'English C1; Persian and Arabic native; German A2; Polish A1.',action:'cv'},
+    {keys:['experience','noyan','employer','career'],text:'His CV lists Machine Learning Developer at NoyanGames (2025–2026), Freelance Software Developer (June 2024–present), and IT Support at Iran Rahjoo Co. (September 2020–October 2022).',action:'cv'},
+    {keys:['cv','resume','résumé','download'],text:'The current CV is tailored to Business Intelligence & Data Analytics. Read it on this page or download the one-page PDF.',action:'download'},
+    {keys:['contact','email','phone','hire','availability','available','salary','rate','whatsapp'],text:"Email josephsanjari1996@gmail.com or call +48 730 504 025. For availability, rates or role details, contact Joe directly; I can't confirm those on his behalf.",action:'contact'},
+    {keys:['project','work','portfolio'],text:'Explore Data Explorer, the Research ML Platform, the Multilingual Poetic Translator and SIMON. More projects include technical videos, animation tools, Rulebox and Polish A1.',action:'work'},
+    {keys:['hello','hi','hey','salam','سلام'],text:"Hi, I'm Gaby. I can help you find Joe's projects, skills, CV or contact details.",action:'work'}
   ];
-  const FALLBACK = { a: "I can't reach my AI brain right now, but I can still help with Joe's **work**, **CV**, **languages** or **contact details**. Or message Joe directly on WhatsApp.", b: ["work", "whatsapp"] };
-
+  const fold = text => String(text).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   function localAnswer(text) {
-    const t = " " + fold(text) + " ";
-    let best = null, top = 0;
-    FAQ.forEach(f => { const s = f.k.reduce((n, k) => n + (t.includes(fold(k)) ? 1 : 0), 0); if (s > top) { top = s; best = f; } });
-    return best || null;
+    const t = fold(text);
+    // Longer matches win so a short greeting cannot override a specific topic.
+    let best = null, score = 0;
+    for (const reply of replies) for (const key of reply.keys) {
+      const match = fold(key);
+      const found = match.length <= 3 ? new RegExp('(?:^|\\s)'+match+'(?:$|[\\s!?.])').test(t) : t.includes(match);
+      if (found && match.length > score) {best=reply;score=match.length;}
+    }
+    return best;
   }
-
-  const CHIPS = [
-    { t: "👤 Who is Joe?", q: "who is joe" }, { t: "🛠 Work samples", q: "work samples" },
-    { t: "🎬 Animation tools", q: "animation" }, { t: "📦 Rulebox", q: "rulebox" },
-    { t: "📄 CV", q: "cv skills" }, { t: "💬 Talk to Joe", q: "__talk__" }
-  ];
-
-  /* ---------- UI ---------- */
-  const css = document.createElement("style");
+  const css = document.createElement('style');
   css.textContent = `
-  #gaby-fab{position:fixed;right:18px;bottom:calc(22px + env(safe-area-inset-bottom,0px));width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;z-index:90;
-    background:linear-gradient(135deg,#7c3aed,#00d4ff);color:#fff;font:900 1.5rem Inter,sans-serif;box-shadow:0 8px 28px rgba(124,58,237,.55);transition:transform .2s ease}
-  #gaby-fab:hover{transform:scale(1.07)}#gaby-fab.open{display:none}
-  #gaby-fab::after{content:"";position:absolute;right:3px;top:3px;width:13px;height:13px;border-radius:50%;background:#22c55e;border:2px solid #05050a}
-  #gaby-tip{position:fixed;right:20px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:90;max-width:230px;padding:11px 14px;border-radius:16px 16px 4px 16px;
-    background:#fff;color:#111;font:500 .82rem/1.4 Inter,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);display:none;cursor:pointer;animation:gtip .4s ease}
-  #gaby-tip.show{display:block}#gaby-tip b{color:#7c3aed}
-  @keyframes gtip{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  #gaby-panel{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(390px,calc(100vw - 28px));height:min(74vh,580px);z-index:95;display:flex;flex-direction:column;overflow:hidden;
-    background:#0d0d15;border:1px solid rgba(255,255,255,.12);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.65);
-    opacity:0;visibility:hidden;transform:translateY(18px) scale(.98);transition:all .25s ease;font-family:Inter,sans-serif;color:#f5f5f7}
-  #gaby-panel.open{opacity:1;visibility:visible;transform:none}
-  .gb-h{display:flex;align-items:center;gap:11px;padding:13px 15px;background:linear-gradient(135deg,#4c1d95,#7c3aed)}
-  .gb-av{position:relative;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:900;border:2px solid rgba(255,255,255,.35)}
-  .gb-av::after{content:"";position:absolute;right:-1px;bottom:-1px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #4c1d95}
-  .gb-h .t{flex:1;line-height:1.2}.gb-h b{font-size:.98rem}.gb-h small{display:block;opacity:.85;font-size:.7rem;margin-top:1px}
-  .gb-h button{background:none;border:none;color:#fff;font-size:1.05rem;cursor:pointer;padding:5px 7px;border-radius:8px}.gb-h button:hover{background:rgba(255,255,255,.15)}
-  .gb-b{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;background:#08080e;overscroll-behavior:contain}
-  .gb-m{max-width:86%;padding:10px 14px;border-radius:17px;font-size:.87rem;line-height:1.5;word-wrap:break-word;animation:gbin .22s ease}
-  @keyframes gbin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-  .gb-m.a{background:#1a1a26;border:1px solid rgba(255,255,255,.07);border-top-left-radius:5px;align-self:flex-start}
-  .gb-m.u{background:linear-gradient(135deg,#7c3aed,#5b21b6);border-top-right-radius:5px;align-self:flex-end}
-  .gb-m b{color:#00d4ff}.gb-m.u b{color:#fff}
-  .gb-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-  .gb-acts button,.gb-form button{padding:8px 12px;border-radius:11px;border:none;cursor:pointer;font:700 .78rem Inter,sans-serif;background:#00d4ff;color:#04121a}
-  .gb-acts button.wa,.gb-form button{background:#25d366;color:#04210f}
-  .gb-form textarea{width:100%;margin-top:8px;padding:9px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:#0d0d15;color:#f5f5f7;font:.84rem Inter,sans-serif;resize:none}
-  .gb-form button{margin-top:8px}
-  .gb-typing{display:flex;gap:5px;padding:12px 15px;background:#1a1a26;border:1px solid rgba(255,255,255,.07);border-radius:17px;border-top-left-radius:5px;align-self:flex-start}
-  .gb-typing i{width:7px;height:7px;border-radius:50%;background:#8a8a99;animation:gbdot 1.3s infinite ease-in-out}
-  .gb-typing i:nth-child(2){animation-delay:.2s}.gb-typing i:nth-child(3){animation-delay:.4s}
-  @keyframes gbdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
-  .gb-q{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px 2px;background:#0d0d15}
-  .gb-q button{padding:7px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.14);background:#171723;color:#e8e8f0;font:600 .75rem Inter,sans-serif;cursor:pointer}
-  .gb-q button:hover{border-color:#7c3aed;background:#201a3a}
-  .gb-f{display:flex;gap:8px;padding:10px 12px 12px;background:#0d0d15}
-  .gb-f input{flex:1;min-width:0;padding:11px 15px;border-radius:99px;border:1px solid rgba(255,255,255,.14);background:#171723;color:#f5f5f7;font:.88rem Inter,sans-serif;outline:none}
-  .gb-f input:focus{border-color:#7c3aed}
-  .gb-f button{width:42px;height:42px;border-radius:50%;border:none;background:linear-gradient(135deg,#7c3aed,#00d4ff);color:#fff;font-size:1rem;cursor:pointer;flex-shrink:0}
-  .gb-f button:disabled{opacity:.5}
-  @media(max-width:480px){#gaby-panel{right:0;bottom:0;width:100vw;height:86vh;border-radius:20px 20px 0 0;border-bottom:none}}`;
-  document.head.appendChild(css);
-
-  const fab = document.createElement("button");
-  fab.id = "gaby-fab"; fab.setAttribute("aria-label", "Chat with Gaby, Joe's assistant"); fab.textContent = "G";
-  const tip = document.createElement("div");
-  tip.id = "gaby-tip"; tip.innerHTML = "Hi, I'm <b>Gaby</b> 👋<br>Ask me about Joe's work.";
-  const panel = document.createElement("div");
-  panel.id = "gaby-panel"; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", "Chat with Gaby");
-  panel.innerHTML = `<div class="gb-h"><div class="gb-av">G</div><div class="t"><b>Gaby</b><small>Joe's assistant · online</small></div>
-    <button id="gb-new" title="New chat" aria-label="New chat">🗑</button><button id="gb-x" title="Close" aria-label="Close chat">✕</button></div>
-    <div class="gb-b" id="gb-body" aria-live="polite"></div><div class="gb-q" id="gb-q"></div>
-    <div class="gb-f"><input id="gb-in" maxlength="300" placeholder="Type your message…" autocomplete="off"><button id="gb-send" aria-label="Send">➤</button></div>`;
-  document.body.appendChild(fab); document.body.appendChild(tip); document.body.appendChild(panel);
-
-  const body = panel.querySelector("#gb-body"), input = panel.querySelector("#gb-in"), sendBtn = panel.querySelector("#gb-send");
-  let hist = [], busy = false, last = 0, sent = 0;
-  try { hist = JSON.parse(localStorage.getItem(HKEY) || "[]").slice(-16); } catch (e) {}
-  const save = () => { try { localStorage.setItem(HKEY, JSON.stringify(hist.slice(-16))); } catch (e) {} };
-
-  const fmt = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
-  function bubble(cls, html) { const d = document.createElement("div"); d.className = "gb-m " + cls; d.innerHTML = html; body.appendChild(d); body.scrollTop = body.scrollHeight; return d; }
-  function typing(on) {
-    const o = panel.querySelector("#gb-typing"); if (o) o.remove();
-    if (on) { const d = document.createElement("div"); d.className = "gb-typing"; d.id = "gb-typing"; d.innerHTML = "<i></i><i></i><i></i>"; body.appendChild(d); body.scrollTop = body.scrollHeight; }
-  }
-  function withActions(el, keys) {
-    keys.filter(k => ACTIONS[k]).forEach((k, i) => { if (!i) { const w = document.createElement("div"); w.className = "gb-acts"; el.appendChild(w); } });
-    const w = el.querySelector(".gb-acts"); if (!w) return;
-    keys.filter(k => ACTIONS[k]).forEach(k => {
-      const b = document.createElement("button"); b.textContent = ACTIONS[k].label; if (k === "whatsapp") b.className = "wa";
-      b.onclick = () => { if (k !== "whatsapp" && k !== "linkedin") close(); ACTIONS[k].run(); };
-      w.appendChild(b);
-    });
-  }
-  function botSay(text, keys) {
-    const el = bubble("a", fmt(text)); if (keys && keys.length) withActions(el, keys);
-    body.scrollTop = body.scrollHeight; return el;
-  }
-  function talkForm() {
-    const el = bubble("a", "Happy to connect you with Joe. Tell me what to say (optional) and I'll open WhatsApp with it ready to send.");
-    const f = document.createElement("div"); f.className = "gb-form";
-    const lastUser = [...hist].reverse().find(m => m.role === "user");
-    f.innerHTML = '<textarea rows="3" placeholder="e.g. Hi Joe, I\'d like to talk about a project…"></textarea><button type="button">💬 Open WhatsApp</button>';
-    el.appendChild(f);
-    f.querySelector("button").onclick = () => {
-      const msg = f.querySelector("textarea").value.trim() || (lastUser && lastUser.content !== "__talk__" ? "Hi Joe! " + lastUser.content : S.whatsappText || "Hi Joe!");
-      window.open(WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
-    };
-  }
-
-  function renderChips() {
-    panel.querySelector("#gb-q").innerHTML = CHIPS.map((c, i) => `<button data-i="${i}">${esc(c.t)}</button>`).join("");
-  }
-  function renderAll() {
-    body.innerHTML = "";
-    botSay("Hi, I'm **Gaby**, Joe's assistant! 👋 Ask me anything about Joe, his work samples or how to reach him — or tap a button below.");
-    hist.forEach(m => m.role === "user" ? (m.content === "__talk__" ? 0 : bubble("u", esc(m.content))) : bubble("a", fmt(m.content)));
-    renderChips();
-  }
-
-  /* ---------- AI ---------- */
-  async function askAI() {
-    if (!WORKER) throw new Error("NOWORKER");
-    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 20000);
-    try {
-      const res = await fetch(WORKER, {
-        method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
-        body: JSON.stringify({ messages: [{ role: "system", content: SYSTEM }].concat(hist.filter(m => m.content !== "__talk__").slice(-8)), max_tokens: 300, temperature: 0.5 })
-      });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const j = await res.json(), txt = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
-      if (!txt) throw new Error("EMPTY");
-      return txt.trim();
-    } finally { clearTimeout(t); }
-  }
-  function splitActions(txt) {
-    const keys = []; txt = txt.replace(/\[\[open:(\w+)\]\]/g, (m, k) => { if (ACTIONS[k] && !keys.includes(k)) keys.push(k); return ""; }).trim();
-    return { txt, keys: keys.slice(0, 2) };
-  }
-
-  /* ---------- flow ---------- */
-  function done() { busy = false; sendBtn.disabled = false; typing(false); }
-
-  async function ask(text, opts) {
-    opts = opts || {};
-    text = (text || "").trim(); if (!text || busy) return;
-    if (!opts.chip) {
-      if (Date.now() - last < 1500) return;
-      if (sent >= 40) { botSay("We've chatted a lot! For anything more, message Joe directly 🙂", ["whatsapp"]); return; }
-      last = Date.now(); sent++;
+  #gaby-fab{position:fixed;right:22px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:40;min-height:44px;padding:10px 17px;border-radius:8px;border:1px solid #504861;background:#211d2e;color:#e5dcff;font:600 13px system-ui;box-shadow:0 5px 20px #0003}
+  #gaby-fab:hover{background:#30283f}#gaby-overlay{position:fixed;inset:0;z-index:49;background:#0007}
+  #gaby-panel{position:fixed;right:22px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:50;width:min(390px,calc(100vw - 36px));max-height:calc(100dvh - 40px);height:570px;display:flex;flex-direction:column;background:#17181f;border:1px solid #45404f;border-radius:12px;box-shadow:0 18px 70px #0008;overflow:hidden;color:#f1f0f5}
+  .gb-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #30313b;padding:16px 18px}.gb-header h2{font:600 16px system-ui;margin:0}.gb-header p{font:12px system-ui;margin:5px 0 0;color:#b0afbd}.gb-close{min-width:44px;min-height:44px;border:0;border-radius:6px;background:transparent;color:inherit;font-size:24px}
+  .gb-body{flex:1;overflow:auto;overscroll-behavior:contain;padding:18px;display:flex;flex-direction:column;gap:12px}.gb-message{font-size:14px;line-height:1.6;border-radius:8px;padding:12px 14px;max-width:95%;margin:0;overflow-wrap:anywhere;background:#22232c}.gb-message.user{align-self:flex-end;background:#332b48}.gb-message p{margin:0}.gb-action{display:block;width:fit-content;color:#d1bfff;margin-top:10px;font-size:13px}.gb-chips{display:flex;flex-wrap:wrap;gap:7px;padding:0 18px 12px}.gb-chips button{background:transparent;border:1px solid #484350;border-radius:6px;color:#ddd7e9;font-size:12px;min-height:36px;padding:6px 10px}.gb-input{display:flex;gap:8px;padding:0 18px 14px}.gb-input input{width:100%;min-width:0;border:1px solid #504861;border-radius:6px;background:#101116;color:#f1f0f5;padding:10px 12px;font-size:14px}.gb-input button{padding:8px 13px;background:#c5b5ff;color:#21183b;border:0;border-radius:6px;font-weight:600;font-size:13px}.gb-input button:disabled{opacity:.6}.gb-disclosure{padding:0 18px 15px;color:#b0afbd;font-size:11px;line-height:1.5}.gb-disclosure summary{cursor:pointer}.gb-disclosure p{margin:7px 0 0}
+  @media(max-width:520px){#gaby-panel{right:12px;bottom:12px;width:calc(100vw - 24px);height:min(620px,calc(100dvh - 24px));max-height:calc(100dvh - 24px)}#gaby-fab{right:18px}}
+  `;
+  document.head.append(css);
+  const fab=document.createElement('button');fab.id='gaby-fab';fab.textContent='Ask Gaby';fab.setAttribute('aria-haspopup','dialog');fab.setAttribute('aria-expanded','false');fab.setAttribute('aria-controls','gaby-panel');
+  const overlay=document.createElement('div');overlay.id='gaby-overlay';overlay.hidden=true;
+  const panel=document.createElement('section');panel.id='gaby-panel';panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','gaby-title');
+  panel.innerHTML=`<header class="gb-header"><div><h2 id="gaby-title">Gaby</h2><p>Joe's portfolio assistant</p></div><button class="gb-close" type="button" aria-label="Close assistant">×</button></header><div class="gb-body" role="log" aria-live="polite" aria-label="Conversation"></div><div class="gb-chips"><button type="button" data-question="skills">Skills</button><button type="button" data-question="work">Projects</button><button type="button" data-question="download CV">Download CV</button><button type="button" data-question="contact">Contact</button></div><form class="gb-input"><label class="sr-only" for="gb-in">Ask about Joe's work</label><input id="gb-in" maxlength="300" autocomplete="off" placeholder="Ask about Joe's work…" required><button type="submit">Send</button></form><details class="gb-disclosure"><summary>How this assistant works</summary><p>Common questions are answered on this page. Other questions may be sent to an external AI service. Please avoid sharing sensitive information. This chat is not saved by this page.</p></details>`;
+  document.body.append(fab,overlay,panel);
+  const body=panel.querySelector('.gb-body'),input=panel.querySelector('input'),send=panel.querySelector('[type=submit]');
+  const history=[];let busy=false,returnFocus;
+  const actions={cv:['Read CV',()=>PORTFOLIO.show('cv')],work:['Explore projects',()=>PORTFOLIO.show('work')],contact:['Contact Joe',()=>PORTFOLIO.show('contact')],download:['Download CV (PDF)',null,'cv.pdf']};
+  for(const sample of S.samples) actions[sample.id]=[sample.cta,()=>PORTFOLIO.open(sample.id),sample.url];
+  function bubble(text,user=false,action) {
+    const el=document.createElement('div');el.className='gb-message'+(user?' user':'');
+    const p=document.createElement('p');p.textContent=text;el.append(p);
+    if(action && actions[action]){
+      const [label,run,url]=actions[action];const a=document.createElement('a');a.className='gb-action';a.textContent=label;a.href=url||'#'+action;
+      if(action==='download')a.download='Yousef_Sanjari_CV.pdf';
+      else if(url && /^https:/.test(url)){a.target='_blank';a.rel='noopener noreferrer';}
+      else if(run && !url) a.onclick=event=>{event.preventDefault();close();run();};
+      el.append(a);
     }
-    input.value = ""; bubble("u", esc(opts.label || text));
-    hist.push({ role: "user", content: text }); save();
-    if (text === "__talk__") { hist.pop(); save(); return talkForm(); }
-
-    busy = true; sendBtn.disabled = true;
-    if (opts.chip) {                                   /* quick replies: instant, local */
-      const f = localAnswer(text) || FALLBACK;
-      typing(true);
-      return setTimeout(() => { typing(false); hist.push({ role: "assistant", content: f.a }); save(); botSay(f.a, f.b); busy = false; sendBtn.disabled = false; }, 450);
-    }
-    typing(true);
-    try {
-      const raw = await askAI(), r = splitActions(raw);
-      hist.push({ role: "assistant", content: r.txt }); save(); typing(false); botSay(r.txt, r.keys);
-    } catch (e) {
-      typing(false);
-      const f = localAnswer(text) || FALLBACK;
-      hist.push({ role: "assistant", content: f.a }); save(); botSay(f.a, f.b);
-    }
-    done();
+    body.append(el);body.scrollTop=body.scrollHeight;return el;
   }
-
-  function open() {
-    panel.classList.add("open"); fab.classList.add("open"); tip.classList.remove("show");
-    try { sessionStorage.setItem("gaby_tip", "1"); } catch (e) {}
-    renderAll();
-    if (window.matchMedia && matchMedia("(pointer:fine)").matches) input.focus();
-  }
-  function close() { panel.classList.remove("open"); fab.classList.remove("open"); }
-
-  fab.onclick = open; tip.onclick = open;
-  panel.querySelector("#gb-x").onclick = close;
-  panel.querySelector("#gb-new").onclick = () => { hist = []; save(); renderAll(); };
-  sendBtn.onclick = () => ask(input.value);
-  input.addEventListener("keydown", e => { if (e.key === "Enter") ask(input.value); });
-  document.addEventListener("keydown", e => { if (e.key === "Escape" && panel.classList.contains("open")) close(); });
-  panel.querySelector("#gb-q").addEventListener("click", e => {
-    const b = e.target.closest("button[data-i]"); if (!b) return;
-    const c = CHIPS[+b.dataset.i]; ask(c.q, { chip: true, label: c.t.replace(/^[^\p{L}]+/u, "") });
+  function open(){returnFocus=document.activeElement;panel.hidden=false;overlay.hidden=false;fab.setAttribute('aria-expanded','true');document.querySelectorAll('body > header, body > main, body > footer, body > .skip').forEach(el=>el.inert=true);document.body.style.overflow='hidden';input.focus();}
+  function close(){panel.hidden=true;overlay.hidden=true;fab.setAttribute('aria-expanded','false');document.querySelectorAll('body > header, body > main, body > footer, body > .skip').forEach(el=>el.inert=false);document.body.style.overflow='';(returnFocus||fab).focus();}
+  fab.onclick=open;overlay.onclick=close;panel.querySelector('.gb-close').onclick=close;
+  panel.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();close();}
+    if(event.key==='Tab'){
+      const focusable=[...panel.querySelectorAll('button,input,a,summary')].filter(el=>el.getClientRects().length);
+      const first=focusable[0],last=focusable.at(-1);
+      if(event.shiftKey && document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
+    }
   });
-
-  /* friendly nudge once per visit, after the boot screen */
-  function nudge() {
-    try { if (sessionStorage.getItem("gaby_tip")) return; } catch (e) {}
-    setTimeout(() => { if (!panel.classList.contains("open")) { tip.classList.add("show"); setTimeout(() => tip.classList.remove("show"), 9000); } }, 2500);
+  const SYSTEM=`You are Gaby, the portfolio assistant for Yousef (Joseph) Sanjari in Warsaw. Use only these facts: ${replies.map(r=>r.text).join(' ')} Be concise (under 80 words). Reply in the visitor's language. Do not invent experience, qualifications, availability or results. Do not claim Power BI, Tableau or Excel proficiency. Help with Joe's work only; otherwise suggest contacting him. Do not output action tags or markdown.`;
+  async function ask(text){
+    text=String(text||'').trim().slice(0,300);if(!text||busy)return;
+    bubble(text,true);input.value='';const known=localAnswer(text);
+    if(known){bubble(known.text,false,known.action);return;}
+    busy=true;send.disabled=true;const pending=bubble('Finding an answer…');
+    try{
+      const response=await fetch(S.WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(8000),body:JSON.stringify({messages:[{role:'system',content:SYSTEM},...history.slice(-6),{role:'user',content:text}],max_tokens:250,temperature:0.3})});
+      if(!response.ok)throw Error('Service unavailable');
+      const data=await response.json();const answer=data?.choices?.[0]?.message?.content;
+      if(typeof answer!=='string'||!answer.trim())throw Error('Empty answer');
+      pending.remove();const cleaned=answer.replace(/\[\[open:\w+\]\]/g,'').replace(/\*\*/g,'').trim();bubble(cleaned.slice(0,1800));history.push({role:'user',content:text},{role:'assistant',content:cleaned});
+    }catch{pending.remove();bubble("I couldn't get an answer from the AI service. Try Skills, Projects or Download CV, or contact Joe directly.",false,'contact');}
+    finally{busy=false;send.disabled=false;}
   }
-  if (document.getElementById("boot") && document.getElementById("boot").style.display !== "none") window.addEventListener("boot-done", nudge, { once: true }); else nudge();
-
-  window.GABY = { open, close, ask, localAnswer, SYSTEM };
+  panel.querySelector('form').onsubmit=event=>{event.preventDefault();ask(input.value);};
+  panel.querySelector('.gb-chips').onclick=event=>{const button=event.target.closest('[data-question]');if(button)ask(button.dataset.question);};
+  bubble("Hi, I'm Gaby. I can help you find Joe's projects, skills, CV or contact details.");
+  window.GABY={open,close,ask,localAnswer};
 })();
