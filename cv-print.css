@@ -1,0 +1,16 @@
+@page{size:A4;margin:12mm 15mm}
+*{box-sizing:border-box}
+body{margin:0;color:#243348;font-family:Arial,Helvetica,sans-serif;font-size:10pt;line-height:1.22}
+h1,h2,h3,p{margin:0;font-size:inherit}
+.name{font-size:24pt;font-weight:700;letter-spacing:-.6px;margin-bottom:1mm}
+.role{font-size:10.5pt;font-weight:700;letter-spacing:.9px;color:#435079;margin-bottom:2mm}
+.contact,.links{font-size:8.7pt;color:#435461;margin-bottom:1mm}
+a{color:inherit;text-decoration:none}
+.section{font-size:10pt;letter-spacing:.5px;text-transform:uppercase;font-weight:700;color:#435079;border-bottom:1px solid #ccd4e1;padding-bottom:.8mm;margin:2.5mm 0 1.4mm;break-after:avoid}
+.job{font-weight:700;margin:1.4mm 0 .8mm;break-after:avoid;font-size:9.5pt}
+.bullet{padding-left:3.5mm;position:relative;margin-bottom:1.2mm}
+.bullet:before{content:'•';position:absolute;left:.2mm}
+.p,.skill{margin-bottom:1.4mm}
+.edu{font-size:9pt;margin-bottom:1.3mm}
+p{orphans:2;widows:2}
+@media screen{body{background:#e7ebf1;padding:32px 16px}main{max-width:210mm;margin:auto;padding:12mm 15mm;background:white;box-shadow:0 8px 40px #2433481a}}

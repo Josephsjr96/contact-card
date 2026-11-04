@@ -3,8 +3,9 @@
 Static GitHub Pages portfolio with Contact, Work and CV sections. No build tools or external fonts are required in the browser. Navigation and PDF downloads work without JavaScript.
 
 - `index.html` — profile, projects and full CV
-- `cv.pdf` — current one-page Business Intelligence & Data Analytics CV
-- `cv-data.json` — CV content used to generate the HTML
+- `cv.pdf` — current one-page general CV: Python & AI Software Developer
+- `cv-data.json` — shared CV content for the page, print source and plain-text version
+- `cv.html`, `cv-print.css`, `cv.txt` — generated print source, print styling and plain-text CV
 - `site-config.js` — public project links and assistant service configuration
 - `styles.css` — responsive dark visual design and print styling
 - `app.js` — navigation highlighting and assistant project actions
@@ -13,7 +14,20 @@ Static GitHub Pages portfolio with Contact, Work and CV sections. No build tools
 
 ## Update content
 
-Edit `cv-data.json` or `site-config.js`, then run `python build.py` (requires Python 3 and Node.js). Replace `cv.pdf` when changing the downloadable CV. Keep the PDF and page content consistent. Publish the generated `index.html` alongside the source files.
+Edit `cv-data.json` or `site-config.js`, then run `python build.py` (requires Python 3 and Node.js). This generates `index.html`, `cv.html` and `cv.txt`. Profile introduction and strengths live in `site-config.js`. Keep the assistant's factual replies in `gaby.js` aligned when updating professional positioning.
+
+Regenerate `cv.pdf` from `cv.html` with Chromium, using its print CSS and no browser headers/footers:
+
+```sh
+chromium --headless --disable-gpu --no-pdf-header-footer \
+  --print-to-pdf="$PWD/cv.pdf" "file://$PWD/cv.html"
+```
+
+Check the PDF page count, readable layout and extracted text before publishing. The current general CV fits one A4 page at 10-point body text. Publish generated files alongside their sources; the page and PDF must contain the same CV content.
+
+## General professional profile — November 2026
+
+The card now presents Python development and AI/ML systems alongside practical problem solving and technical communication. The introduction, strengths, selected-project order, CV and assistant share this positioning. Employer-specific application CVs remain separate. Existing employment dates, education, languages and certifications are retained; project claims distinguish independent work, team contributions and research validation.
 
 ## Local preview
 

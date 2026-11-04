@@ -1,0 +1,69 @@
+Yousef (Joseph) Sanjari
+
+PYTHON & AI SOFTWARE DEVELOPER
+
+Warsaw, Poland | +48 730 504 025 | josephsanjari1996@gmail.com
+
+linkedin.com/in/yousef-sanjari-712947207 | github.com/Josephsjr96
+
+Professional Summary
+
+Python and AI developer who turns complex technical problems into usable software. Builds APIs, model evaluation tools and interactive applications, drawing on machine learning experience and hands-on IT support. Combines careful troubleshooting and reproducible testing with clear technical communication, from dashboards to visual explainers.
+
+Core Skills
+
+Software development: Python, FastAPI, Flask, REST APIs, SQL/SQLite, JavaScript, TypeScript, React
+
+AI & data: PyTorch, Transformers, LLM integration, LoRA/PEFT, Pandas, NumPy, model evaluation
+
+Engineering practice: Linux, Git, Docker, pytest, HTTP integration testing, monitoring and technical documentation
+
+Professional Experience
+
+Machine Learning Developer | NoyanGames | 2025–2026
+
+• Built player segmentation and classification workflows using gameplay, social and transaction signals; explored LLM-powered personalization and reinforcement-learning-driven event selection.
+
+Freelance Software Developer | June 2024–Present
+
+• Developed Python APIs, interactive interfaces and AI-integrated prototypes for model evaluation, developer tooling and creative production workflows.
+
+IT Support | Iran Rahjoo Co., Ahwaz | September 2020–October 2022
+
+• Diagnosed hardware, software and network faults; coordinated vendors and trained staff, explaining technical solutions to people with different levels of experience.
+
+Selected Engineering Projects
+
+Research ML Platform & Multilingual Evaluation | Python, FastAPI, SQLite
+
+• Built model registration, canary routing, promotion, rollback and artifact verification, with a Streamlit monitoring dashboard. Recorded real NLLB inference across six translation directions; kept linguistic quality review separate from engineering validation.
+
+Animation Production Platform / NUVREN Studio | Flask, React, TypeScript, PixiJS
+
+• Built shot, storyboard and scheduling workflows and a scene editor with undo/redo, validated JSON import/export and standalone HTML export. Combined backend workflows with interactive visual tools.
+
+Rulebox | Python, SQLite, JavaScript
+
+• Built a local instruction manager with reviewed file updates, backups and stale-preview checks; added automated tests and GitHub Actions. Implemented optional local LoRA training and inference tooling.
+
+SIMON — Distributed AI Inference | Team Project
+
+• Contributed to heterogeneous inference workflows, signed output receipts and AMD MI300X experiments; documented what the verification could and could not establish.
+
+Technical Communication
+
+Created motion-graphics explainers for MLOps, SIMON and AI Behavior Lab using animated system diagrams, metric panels and captions. Built data-analysis dashboards that turn raw records into charts, comparisons and readable summaries.
+
+Education
+
+M.Eng. Computer Engineering — Applied Data Science & AI | Vistula University, Warsaw | 2026–expected 2028
+
+B.A. Computer Software Engineering | Jahrom University | 2021–2024
+
+Associate Degree, IT | University of Applied Sciences and Technology | 2016–2019
+
+Languages & Certifications
+
+English C1 | Persian & Arabic (native) | German A2 | Polish A1
+
+CompTIA A+ (2023) | TCP/IP, EDSO (2022) | Hardware Repair (2019)

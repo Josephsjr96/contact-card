@@ -5,7 +5,7 @@
   ],
   [
     "role",
-    "BUSINESS INTELLIGENCE & DATA ANALYTICS"
+    "PYTHON & AI SOFTWARE DEVELOPER"
   ],
   [
     "contact",
@@ -21,7 +21,7 @@
   ],
   [
     "p",
-    "Python and machine learning developer transitioning into business intelligence and analytics. Experience cleaning and analyzing data, building dashboards, evaluating models, and developing player segmentation workflows. Combines technical analysis with clear visual reporting and explanatory videos that make complex systems and results easier to understand."
+    "Python and AI developer who turns complex technical problems into usable software. Builds APIs, model evaluation tools and interactive applications, drawing on machine learning experience and hands-on IT support. Combines careful troubleshooting and reproducible testing with clear technical communication, from dashboards to visual explainers."
   ],
   [
     "section",
@@ -29,11 +29,15 @@
   ],
   [
     "skill",
-    "Python, Pandas, NumPy, SQL/SQLite, data cleaning, aggregation, descriptive statistics, segmentation and classification"
+    "Software development: Python, FastAPI, Flask, REST APIs, SQL/SQLite, JavaScript, TypeScript, React"
   ],
   [
     "skill",
-    "Dashboard development, data visualization, Streamlit, Prometheus, REST APIs, Git, Docker, model evaluation and reproducible validation"
+    "AI & data: PyTorch, Transformers, LLM integration, LoRA/PEFT, Pandas, NumPy, model evaluation"
+  ],
+  [
+    "skill",
+    "Engineering practice: Linux, Git, Docker, pytest, HTTP integration testing, monitoring and technical documentation"
   ],
   [
     "section",
@@ -45,7 +49,7 @@
   ],
   [
     "bullet",
-    "Built player segmentation and classification workflows using gameplay, social and transaction signals to support personalization and event-selection use cases."
+    "Built player segmentation and classification workflows using gameplay, social and transaction signals; explored LLM-powered personalization and reinforcement-learning-driven event selection."
   ],
   [
     "job",
@@ -53,7 +57,7 @@
   ],
   [
     "bullet",
-    "Developed Python applications, data-driven interfaces and AI-integrated prototypes, including tools for model evaluation and creative production workflows."
+    "Developed Python APIs, interactive interfaces and AI-integrated prototypes for model evaluation, developer tooling and creative production workflows."
   ],
   [
     "job",
@@ -61,35 +65,35 @@
   ],
   [
     "bullet",
-    "Resolved hardware, software and network issues; coordinated vendors and trained staff on technical systems."
+    "Diagnosed hardware, software and network faults; coordinated vendors and trained staff, explaining technical solutions to people with different levels of experience."
   ],
   [
     "section",
-    "Selected Analytics & Communication Projects"
+    "Selected Engineering Projects"
   ],
   [
     "job",
-    "Data Explorer | Python, Pandas, NumPy, PySide6"
+    "Research ML Platform & Multilingual Evaluation | Python, FastAPI, SQLite"
   ],
   [
     "bullet",
-    "Built a movie-data analysis application with data previews, charts and ranked tables. Cleaned 74 input rows into 72 unique records through deduplication and missing-value handling."
-  ],
-  [
-    "bullet",
-    "Calculated genre averages, revenue rankings and summary statistics; clearly identified financial and rating values as simulated practice data."
+    "Built model registration, canary routing, promotion, rollback and artifact verification, with a Streamlit monitoring dashboard. Recorded real NLLB inference across six translation directions; kept linguistic quality review separate from engineering validation."
   ],
   [
     "job",
-    "Multilingual Translation Research & MLOps | Independent Project"
+    "Animation Production Platform / NUVREN Studio | Flask, React, TypeScript, PixiJS"
   ],
   [
     "bullet",
-    "Built evaluation and reporting workflows for Persian, German and Polish translation, combining model comparisons, human ratings and SQLite-backed research records."
+    "Built shot, storyboard and scheduling workflows and a scene editor with undo/redo, validated JSON import/export and standalone HTML export. Combined backend workflows with interactive visual tools."
+  ],
+  [
+    "job",
+    "Rulebox | Python, SQLite, JavaScript"
   ],
   [
     "bullet",
-    "Developed a Streamlit dashboard for deployment monitoring and evaluation. Recorded 24 real NLLB HTTP generations across six translation directions, with linguistic quality review pending."
+    "Built a local instruction manager with reviewed file updates, backups and stale-preview checks; added automated tests and GitHub Actions. Implemented optional local LoRA training and inference tooling."
   ],
   [
     "job",
@@ -97,15 +101,15 @@
   ],
   [
     "bullet",
-    "Contributed to heterogeneous inference workflows, signed output receipts and AMD MI300X experiments; communicated performance measurements and verification limitations."
+    "Contributed to heterogeneous inference workflows, signed output receipts and AMD MI300X experiments; documented what the verification could and could not establish."
   ],
   [
-    "job",
-    "Technical Explainer Videos | MLOps, SIMON & AI Behavior Lab"
+    "section",
+    "Technical Communication"
   ],
   [
-    "bullet",
-    "Created motion-graphics explainers using animated system diagrams, metric panels and captions to communicate model deployment, monitoring, inference verification and evaluation workflows."
+    "p",
+    "Created motion-graphics explainers for MLOps, SIMON and AI Behavior Lab using animated system diagrams, metric panels and captions. Built data-analysis dashboards that turn raw records into charts, comparisons and readable summaries."
   ],
   [
     "section",

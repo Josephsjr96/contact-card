@@ -5,6 +5,15 @@ window.SITE = {
   whatsappText: "Hi Joe, I saw your portfolio and would like to get in touch.",
   linkedin: "https://linkedin.com/in/yousef-sanjari-712947207",
   cvFile: "cv.pdf",
+  profile: {
+    title: "Python & AI Software Developer",
+    introduction: "I'm Yousef (Joseph) Sanjari, a Python and AI developer based in Warsaw. I turn complex technical problems into working tools: APIs, model evaluation systems and interactive applications. My background in IT support keeps the focus on solving the problem and making the result useful to people.",
+    strengths: [
+      {title:"Practical problem solving", text:"I trace problems through hardware, software and workflows. That approach connects my IT support experience with the developer tools and applications I build today."},
+      {title:"Systems thinking", text:"I connect APIs, data, model evaluation and interfaces, with tests and validation that make it clear what works and what still needs review."},
+      {title:"Clear technical communication", text:"I make complex work easier to understand through dashboards, documentation and visual explainers, drawing on experience helping people with different technical backgrounds."}
+    ]
+  },
   samples: [
     {id:"data-explorer", title:"Data Explorer", kind:"Data analysis & reporting",
      desc:"A Python dashboard that cleans movie data and presents genre comparisons, summary statistics and ranked tables.",
@@ -27,8 +36,9 @@ window.SITE = {
      note:"Watch SIMON, Canary MLOps and Water Tank in Project Films.",
      tags:["Data storytelling","Motion graphics","Technical communication"], cta:"Watch project films", url:"#films", external:false},
     {id:"animation", title:"Animation Production Workspace", kind:"Creative production tools",
-     desc:"A workspace for storyboard scanning, correction review, shots and scheduling, with locally documented grouped-shot and drawing-gallery features.",
-     tags:["Python","OCR","JavaScript"], cta:"View on GitHub", url:"https://github.com/Josephsjr96/Animating-platform", external:true},
+     desc:"Flask workflows for storyboards, shots and schedules, alongside a React/TypeScript/PixiJS scene-editor prototype with undo/redo and validated project import/export.",
+     note:"Production workspace and editor prototypes · Features and validation scope are documented separately.",
+     tags:["Python","Flask","React","TypeScript","PixiJS"], cta:"View on GitHub", url:"https://github.com/Josephsjr96/Animating-platform", external:true},
     {id:"rulebox", title:"Rulebox", kind:"Local developer tools",
      desc:"A Python and SQLite instruction manager with a browser interface, reviewed file updates, backups and stale-preview checks.",
      tags:["Python","SQLite","JavaScript"], cta:"View on GitHub", url:"https://github.com/Josephsjr96/rulebox", external:true},

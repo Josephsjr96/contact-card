@@ -37,7 +37,7 @@ const base=(process.env.BASE_URL || 'http://127.0.0.1:8088/').replace(/\/?$/,'/'
  await page.getByRole('navigation').getByRole('link',{name:'CV',exact:true}).click();
  await page.waitForURL('**/#cv');
  assert.ok((await page.locator('#cv').innerText()).includes('NoyanGames'));
- assert.ok((await page.locator('#cv').innerText()).includes('Technical Explainer Videos'));
+ assert.ok((await page.locator('#cv').innerText()).toLowerCase().includes('technical communication'));
  const cvRows=JSON.parse(await fs.readFile(path.resolve(__dirname,'../cv-data.json'),'utf8'));
  const cvText=await page.locator('.cv-body').innerText();
  for(const [kind,text] of cvRows)if(!['name','role','contact','links'].includes(kind))assert.ok(cvText.toLowerCase().includes(text.toLowerCase()),'CV content mismatch: '+text);
