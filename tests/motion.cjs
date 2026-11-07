@@ -25,7 +25,7 @@ const base=(process.env.BASE_URL || 'http://127.0.0.1:8093/').replace(/\/?$/,'/'
    assert.equal(await page.locator('main').evaluate(el=>el.inert),false);
    assert.equal(await page.getByRole('button',{name:'Replay intro',exact:true}).evaluate(el=>el===document.activeElement),true);
    await page.getByRole('button',{name:'Replay intro',exact:true}).click();await page.keyboard.press('Escape');assert.equal(await page.locator('#boot').isVisible(),false);
-   await page.getByRole('button',{name:'Replay intro',exact:true}).click();await page.locator('#boot').waitFor({state:'hidden',timeout:4000});
+   await page.getByRole('button',{name:'Replay intro',exact:true}).click();await page.locator('#boot').waitFor({state:'hidden',timeout:7500});
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
    await page.emulateMedia({reducedMotion:'reduce'});await page.waitForFunction(()=>document.querySelector('#wave-field').dataset.paused==='true');assert.equal(await page.locator('#wave-field').getAttribute('data-paused'),'true');assert.equal(await page.locator('#replay-intro').isVisible(),false);
    const reduced=await page.evaluate(()=>PORTFOLIO_FIELD.stats().frames);await page.waitForTimeout(200);assert.equal(await page.evaluate(()=>PORTFOLIO_FIELD.stats().frames),reduced);

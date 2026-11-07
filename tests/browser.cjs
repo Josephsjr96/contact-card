@@ -21,7 +21,7 @@ const base=(process.env.BASE_URL || 'http://127.0.0.1:8088/').replace(/\/?$/,'/'
  await intro.goto(base+'#cv');assert.equal(await intro.locator('#boot').isVisible(),false);
  await welcome.close();
  const automatic=await browser.newContext({reducedMotion:'no-preference'});const timed=await automatic.newPage();
- await timed.goto(base,{waitUntil:'domcontentloaded'});await timed.locator('#boot').waitFor({state:'hidden',timeout:4000});await automatic.close();
+ await timed.goto(base,{waitUntil:'domcontentloaded'});await timed.locator('#boot').waitFor({state:'hidden',timeout:7500});await automatic.close();
  const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,reducedMotion:'reduce'});
  const page=await context.newPage();const errors=[],badResponses=[];
  page.on('pageerror',e=>errors.push(e.message));

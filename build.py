@@ -35,7 +35,7 @@ for kind,text in rows:
 if in_list:cv+='</ul>'
 intro_runtime=(ROOT/'intro.js').read_text()
 intro_bootstrap="""(() => {
-  let seen=false;try{seen=sessionStorage.getItem('joe_intro_seen_motion_v1')==='1';}catch{}
+  let seen=false;try{seen=sessionStorage.getItem('joe_intro_seen_motion_v2')==='1';}catch{}
   window.__joeShowIntro=!location.hash&&!seen&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&performance.getEntriesByType('navigation')[0]?.type!=='back_forward';
   if(window.__joeShowIntro)document.documentElement.classList.add('intro-active');
 })();"""
@@ -46,7 +46,7 @@ html='''<!doctype html>
 <meta name="description" content="Yousef (Joseph) Sanjari, Warsaw. Python development, AI and ML systems, practical problem solving and technical communication. Projects, experience and a general professional CV.">
 <meta name="theme-color" content="#171e2e"><meta property="og:title" content="Joe Sanjari — Python & AI Software Developer"><meta property="og:description" content="Python development, AI systems and clear technical communication. Explore Joe’s work and general professional CV."><meta property="og:type" content="website"><meta property="og:url" content="https://josephsjr96.github.io/contact-card/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317181f'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial' font-size='38' fill='%23c5b5ff'%3EJ%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="styles.css?v=20261107-motion"><script defer src="waves.js?v=20261107-motion"></script><script defer src="site-config.js?v=20261107-motion"></script><script defer src="app.js?v=20261107-motion"></script><script defer src="gaby.js?v=20261107-motion"></script>
+<link rel="stylesheet" href="styles.css?v=20261107-motion2"><script defer src="waves.js?v=20261107-motion2"></script><script defer src="site-config.js?v=20261107-motion2"></script><script defer src="app.js?v=20261107-motion2"></script><script defer src="gaby.js?v=20261107-motion2"></script>
 </head><body>
 <canvas id="wave-field" aria-hidden="true"></canvas>
 <section id="boot" hidden aria-label="Welcome to Joe’s portfolio">
