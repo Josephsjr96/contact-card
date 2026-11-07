@@ -42,6 +42,11 @@ window.SITE = {
     {id:"rulebox", title:"Rulebox", kind:"Local developer tools",
      desc:"A Python and SQLite instruction manager with a browser interface, reviewed file updates, backups and stale-preview checks.",
      tags:["Python","SQLite","JavaScript"], cta:"View on GitHub", url:"https://github.com/Josephsjr96/rulebox", external:true},
+    {id:"space-duel", group:"games", title:"Space Ship Duel", kind:"Independent game project · Desktop arcade",
+     desc:"A Python/Pygame space shooter that connects responsive combat, weapon progression and a six-world frontier journey. Built around readable action, a cinematic opening and clear objectives between encounters.",
+     note:"Gameplay programming, interface design, visual direction and automated testing. Planet and nebula artwork created with AI-assisted generation and integrated into the game.",
+     tags:["Python","Pygame CE","Game design","Procedural VFX"], cta:"Read the case study", url:"samples/space-duel/", external:false,
+     repo:"https://github.com/Josephsjr96/space-ship-duel", sourceLabel:"GitHub source · access required"},
     {id:"polish", title:"Polish A1", kind:"Language learning",
      desc:"An offline-capable learning app with everyday dialogues, grammar notes, pronunciation and quizzes.",
      tags:["JavaScript","PWA","Education"], cta:"View on GitHub", url:"https://github.com/Josephsjr96/PolishA1-app", external:true}

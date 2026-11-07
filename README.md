@@ -48,3 +48,7 @@ The root page shows a 3.5-second welcome once per browser session. Its startup i
 `waves.js` adapts the geometric field from the local Nix app (`codex-ui/codexUI.html`) for slow ambient motion. Pause waves is in the footer; reduced-motion preferences and background-tab suspension are respected. No conversation or application bridge code is included.
 
 `films.json` supplies the Project Films content. Native video players use `preload="none"`, inline playback, original audio and no autoplay. Starting another film pauses the previous one. The MP4 files in `media/` are losslessly remuxed with fast-start metadata for web playback; JPG files are extracted preview frames. All films also have a direct download and a text summary.
+
+## Game Design portfolio
+
+`site-config.js` includes Space Ship Duel under `group: "games"`. `build.py` places game projects in an always-visible Game Design subsection inside Work, separate from the general project grid. The case study at `samples/space-duel/` explains the gameplay loop, visual direction, implementation and validation. Five optimized WebP screenshots under `media/space-duel/` come from the game's actual Pygame render captures. The source repository is private, and its link is labeled accordingly. Gaby answers questions about the game locally and links to the case study. The professional CV and PDF remain driven by the existing CV data.
