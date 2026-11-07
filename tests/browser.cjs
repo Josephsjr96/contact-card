@@ -12,11 +12,11 @@ const base=(process.env.BASE_URL || 'http://127.0.0.1:8088/').replace(/\/?$/,'/'
  await intro.screenshot({path:path.join(output,'intro.png')});
  await intro.getByRole('button',{name:'Skip intro'}).click();assert.equal(await intro.locator('#boot').isVisible(),false);
  await intro.reload({waitUntil:'networkidle'});assert.equal(await intro.locator('#boot').isVisible(),false);
- const moving=await intro.locator('#wave-field').evaluate(c=>c.toDataURL());await intro.waitForTimeout(500);
- assert.notEqual(await intro.locator('#wave-field').evaluate(c=>c.toDataURL()),moving,'Wave animation is static');
+ const moving=await intro.locator('#wave-field').evaluate(()=>window.PORTFOLIO_FIELD.snapshot());await intro.waitForTimeout(500);
+ assert.notEqual(await intro.locator('#wave-field').evaluate(()=>window.PORTFOLIO_FIELD.snapshot()),moving,'Wave animation is static');
  await intro.getByRole('button',{name:'Pause waves',exact:true}).click();
- const still=await intro.locator('#wave-field').evaluate(c=>c.toDataURL());await intro.waitForTimeout(300);
- assert.equal(await intro.locator('#wave-field').evaluate(c=>c.toDataURL()),still,'Paused waves changed');
+ const still=await intro.locator('#wave-field').evaluate(()=>window.PORTFOLIO_FIELD.snapshot());await intro.waitForTimeout(300);
+ assert.equal(await intro.locator('#wave-field').evaluate(()=>window.PORTFOLIO_FIELD.snapshot()),still,'Paused waves changed');
  await intro.getByRole('button',{name:'Resume waves',exact:true}).click();
  await intro.goto(base+'#cv');assert.equal(await intro.locator('#boot').isVisible(),false);
  await welcome.close();

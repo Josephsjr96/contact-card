@@ -10,8 +10,8 @@ const base=(process.env.BASE_URL||'http://127.0.0.1:8088/').replace(/\/?$/,'/');
  for(const section of ['films','cv']){await page.goto(base+'#'+section);await page.screenshot({path:path.join(out,section+'.png')});}
  for(const width of [320,390,768]){await page.setViewportSize({width,height:900});await page.goto(base+'#contact');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Overflow '+width);if(width===390)await page.screenshot({path:path.join(out,'mobile.png')});}
  await page.getByRole('button',{name:'Ask Gaby',exact:true}).click();await page.screenshot({path:path.join(out,'assistant.png')});await page.keyboard.press('Escape');
- await page.emulateMedia({reducedMotion:'no-preference'});const first=await page.locator('#wave-field').evaluate(el=>el.toDataURL());await page.waitForTimeout(400);assert.notEqual(await page.locator('#wave-field').evaluate(el=>el.toDataURL()),first);await page.getByRole('button',{name:'Pause waves',exact:true}).click();
- const still=await page.locator('#wave-field').evaluate(el=>el.toDataURL());await page.waitForTimeout(200);assert.equal(await page.locator('#wave-field').evaluate(el=>el.toDataURL()),still);
+ await page.emulateMedia({reducedMotion:'no-preference'});const first=await page.locator('#wave-field').evaluate(()=>window.PORTFOLIO_FIELD.snapshot());await page.waitForTimeout(400);assert.notEqual(await page.locator('#wave-field').evaluate(()=>window.PORTFOLIO_FIELD.snapshot()),first);await page.getByRole('button',{name:'Pause waves',exact:true}).click();
+ const still=await page.locator('#wave-field').evaluate(()=>window.PORTFOLIO_FIELD.snapshot());await page.waitForTimeout(200);assert.equal(await page.locator('#wave-field').evaluate(()=>window.PORTFOLIO_FIELD.snapshot()),still);
  // Check text contrast for the solid base, representative card surface and main button.
  const lum=hex=>{const rgb=hex.match(/\w\w/g).map(s=>parseInt(s,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
  const contrast=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};

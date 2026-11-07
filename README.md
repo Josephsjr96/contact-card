@@ -43,12 +43,16 @@ Common questions are answered locally. Other questions may be sent to the existi
 
 ## Intro, waves and project films
 
-The root page shows a 3.5-second welcome once per browser session. Its startup is embedded before the main content, so slow-loading scripts cannot make the page flash before the intro. Skip intro and Escape dismiss it immediately. Hash links such as `#cv` and `#films`, reduced-motion visitors and JavaScript-disabled visits bypass it.
+The root page shows a 3.5-second welcome once per browser session. Its startup is embedded before the main content, so slow-loading scripts cannot make the page flash before the intro. The welcome layers four original discipline cards for AI/ML, game design, software and visual storytelling, using the existing project film posters and Space Duel art. Skip intro and Escape dismiss it immediately; Replay intro is available in the footer. Hash links such as `#cv` and `#films`, reduced-motion visitors and JavaScript-disabled visits bypass it.
 
-`waves.js` adapts the geometric field from the local Nix app (`codex-ui/codexUI.html`) for slow ambient motion. Pause waves is in the footer; reduced-motion preferences and background-tab suspension are respected. No conversation or application bridge code is included.
+`waves.js` extends the local Nix field (`codex-ui/codexUI.html`) into neural-network, orbital, code-bracket and film-frame particles over a flowing mesh. Native WebGL animates up to 6,146 points and a batched line grid at the browser’s refresh rate. It adapts resolution when frame pacing slows and selects a lower-cost Canvas 2D field for large software-rendered viewports or unavailable WebGL. GPU context restoration, reduced-motion changes, pause/resume and background-tab suspension are supported. No framework, additional video playback, audio or external service is needed for this effect. The animation is a short welcome, not a simulated loading requirement; content and navigation remain independent of it.
 
 `films.json` supplies the Project Films content. Native video players use `preload="none"`, inline playback, original audio and no autoplay. Starting another film pauses the previous one. The MP4 files in `media/` are losslessly remuxed with fast-start metadata for web playback; JPG files are extracted preview frames. All films also have a direct download and a text summary.
 
 ## Game Design portfolio
 
 `site-config.js` includes Space Ship Duel under `group: "games"`. `build.py` places game projects in an always-visible Game Design subsection inside Work, separate from the general project grid. The case study at `samples/space-duel/` explains the gameplay loop, visual direction, implementation and validation. Five optimized WebP screenshots under `media/space-duel/` come from the game's actual Pygame render captures. The source repository is private, and its link is labeled accordingly. Gaby answers questions about the game locally and links to the case study. The professional CV and PDF remain driven by the existing CV data.
+
+## Motion verification
+
+`tests/motion.cjs` checks changing field pixels, paused RAF, replay/skip/automatic intro completion, focus restoration, reduced-motion changes, GPU context restoration and the no-WebGL fallback. It records observed browser frame pacing in the ignored `qa/motion-report.json`; this is a local browser measurement, not a guarantee for every device. `tests/intro-first-paint.cjs` covers deferred-script delays and intro-first rendering. Canvas snapshots explicitly draw before readback so WebGL does not need to preserve its drawing buffer every frame.
