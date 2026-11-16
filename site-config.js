@@ -7,11 +7,11 @@ window.SITE = {
   cvFile: "cv.pdf",
   profile: {
     title: "Python & AI Software Developer",
-    introduction: "I'm Yousef (Joseph) Sanjari, a Python and AI developer based in Warsaw. I turn complex technical problems into working tools: APIs, model evaluation systems and interactive applications. My background in IT support keeps the focus on solving the problem and making the result useful to people.",
+    introduction: "I'm Yousef (Joseph) Sanjari, a Python and AI developer in Warsaw. I combine engineering and creativity to build AI tools, interactive simulations and visual applications, including VESPER PCR and NUVREN Studio.",
     strengths: [
-      {title:"Practical problem solving", text:"I trace problems through hardware, software and workflows. That approach connects my IT support experience with the developer tools and applications I build today."},
-      {title:"Systems thinking", text:"I connect APIs, data, model evaluation and interfaces, with tests and validation that make it clear what works and what still needs review."},
-      {title:"Clear technical communication", text:"I make complex work easier to understand through dashboards, documentation and visual explainers, drawing on experience helping people with different technical backgrounds."}
+      {title:"Creative engineering", text:"I turn ideas into working systems, from VESPER’s interactive lab to NUVREN’s visual production tools."},
+      {title:"Systems thinking", text:"I connect APIs, AI models and interfaces, then test how they work together."},
+      {title:"Clear technical communication", text:"I explain complex systems through clear interfaces, dashboards and visual storytelling."}
     ]
   },
   samples: [
