@@ -62,8 +62,8 @@ body{background:radial-gradient(ellipse at 45% 0,#28383a 0,transparent 58%),var(
 .telemetry-head{background:#213033}.view-tabs button{font-size:12px;color:#b5c7bd}.view-tabs button.active{color:#eff5e9}.telemetry-content{background:#162326}.run-monitor{background:#1b2c2d;border-color:#425a54}
 .run-monitor>p{font-size:11px;color:#b5c9bc}.run-monitor>.eyebrow{font-size:9px}.readout,.readout strong{font-size:9px}.readout{color:#adc5b6;border-color:#496052}.readout strong{color:#d2e6cf}
 .legend-idle{color:#adc1b0;font-size:9px}.plot-legend{font-size:10px;color:#b9cdbc}.results-view td{font-size:11px}.results-view th{font-size:9px;color:#c1d3bf}.result-name small,.result-note{color:#b0c3ad}.qc-banner{font-size:12px}.notebook-view{font-size:11px;color:#bed1b8}
-.footer{color:#adc1b2}.footer b{color:#91ac9a}.footer>span:nth-child(2){color:#a9bbaf}.gaby-advisor{background:#1a292b}
-.gaby-advisor p,.gaby-advisor details{color:#b4c6bf}
+.footer{color:#adc1b2}.footer b{color:#91ac9a}.footer>span:nth-child(2){color:#a9bbaf}.cooper-advisor{background:#1a292b}
+.cooper-advisor p,.cooper-advisor details{color:#b4c6bf}
 /* A small glass-covered helix sculpture stands on the dry end of the bench. */
 .dna-lamp{position:absolute;bottom:93px;right:3.5%;width:88px;height:204px;z-index:3}
 .lamp-halo{position:absolute;inset:-38px -48px -6px;pointer-events:none;background:radial-gradient(ellipse,#e4d0a32e,transparent 68%);opacity:0;transition:opacity .5s}

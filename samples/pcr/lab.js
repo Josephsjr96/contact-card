@@ -10,22 +10,22 @@ let advisorySerial=0,advisoryController=null;
 let advisory={enabled:true,requested:false,status:'not_requested'};
 function resetAdvisory(){
  advisorySerial++;advisoryController?.abort();advisoryController=null;
- advisory={enabled:$('#gabyEnabled').checked,requested:false,status:$('#gabyEnabled').checked?'not_requested':'disabled'};
+ advisory={enabled:$('#cooperEnabled').checked,requested:false,status:$('#cooperEnabled').checked?'not_requested':'disabled'};
  renderAdvisory();
 }
 function renderAdvisory(){
  const active=advisory.status==='requesting';
- $('#gabyExplain').disabled=!advisory.enabled||state.status!=='complete'||active;
- const labels={disabled:'Gaby is off. Deterministic results remain available.',not_requested:state.status==='complete'?'Ready to explain this completed run.':'Complete a run to request an explanation.',requesting:'Gaby is reviewing anonymous run metrics…',checked:'Gaby explanation checked against this run. Scientific evaluation is still required.',blocked:'Gaby response rejected. Local explanation shown.',unavailable:'Gaby could not respond. Local explanation shown.'};
- $('#gabyStatus').textContent=labels[advisory.status]||'';
- $('#gabyContent').innerHTML='';
+ $('#cooperExplain').disabled=!advisory.enabled||state.status!=='complete'||active;
+ const labels={disabled:'Cooper is off. Deterministic results remain available.',not_requested:state.status==='complete'?'Ready to explain this completed run.':'Complete a run to request an explanation.',requesting:'Cooper is reviewing anonymous run metrics…',checked:'Cooper explanation checked against this run. Scientific evaluation is still required.',blocked:'Cooper response rejected. Local explanation shown.',unavailable:'Cooper could not respond. Local explanation shown.'};
+ $('#cooperStatus').textContent=labels[advisory.status]||'';
+ $('#cooperContent').innerHTML='';
  if(!advisory.result)return;
- const result=advisory.result,snapshot=PCRGaby.project(state.run);
+ const result=advisory.result,snapshot=PCRCooper.project(state.run);
  const cards=result.output.observations.map(o=>{
   const i=snapshot.samples.findIndex(s=>s.label===o.label),name=state.run.samples[i].name;
-  return `<article class="gaby-observation"><h3>${esc(name)} <small>${esc(o.label)}</small></h3><p class="gaby-call">${esc(o.call)} · Cq ${fmt(o.cq)}</p><p>${esc(PCRGaby.FOCUS[o.focus])}</p></article>`;
+  return `<article class="cooper-observation"><h3>${esc(name)} <small>${esc(o.label)}</small></h3><p class="cooper-call">${esc(o.call)} · Cq ${fmt(o.cq)}</p><p>${esc(PCRCooper.FOCUS[o.focus])}</p></article>`;
  }).join('');
- $('#gabyContent').innerHTML=`<p class="gaby-source">${result.source==='gaby'?'GABY · CHECKED STRUCTURED ADVISORY':'LOCAL DETERMINISTIC EXPLANATION'} · ${esc(state.run.id)}</p><div class="gaby-observations">${cards}</div><h3>What to inspect next</h3><ul>${result.output.tips.map(t=>`<li>${esc(PCRGaby.TIPS[t])}</li>`).join('')}</ul><p class="gaby-footnote">Calls and values remain those of the deterministic engine. This explanation does not approve a run for clinical use.</p>`;
+ $('#cooperContent').innerHTML=`<p class="cooper-source">${result.source==='cooper'?'COOPER · CHECKED STRUCTURED ADVISORY':'LOCAL DETERMINISTIC EXPLANATION'} · ${esc(state.run.id)}</p><div class="cooper-observations">${cards}</div><h3>What to inspect next</h3><ul>${result.output.tips.map(t=>`<li>${esc(PCRCooper.TIPS[t])}</li>`).join('')}</ul><p class="cooper-footnote">Calls and values remain those of the deterministic engine. This explanation does not approve a run for clinical use.</p>`;
 }
 async function explainRun(){
  if(state.status!=='complete'||!advisory.enabled||advisory.status==='requesting')return;
@@ -34,17 +34,17 @@ async function explainRun(){
  let localResult;
  const timeout=setTimeout(()=>controller.abort(),30000);
  try{
-  const snapshot=PCRGaby.project(run),snapshotHash=await PCRGaby.fingerprint(snapshot);
+  const snapshot=PCRCooper.project(run),snapshotHash=await PCRCooper.fingerprint(snapshot);
   if(serial!==advisorySerial)return;
-  localResult={adapterVersion:PCRGaby.VERSION,source:'deterministic',snapshotHash,output:PCRGaby.fallback(snapshot,snapshotHash)};
-  const result=await PCRGaby.request(run,{endpoint:window.SITE.WORKER_URL,signal:controller.signal});
+  localResult={adapterVersion:PCRCooper.VERSION,source:'deterministic',snapshotHash,output:PCRCooper.fallback(snapshot,snapshotHash)};
+  const result=await PCRCooper.request(run,{endpoint:window.SITE.WORKER_URL,signal:controller.signal});
   if(serial!==advisorySerial||state.run!==run||state.status!=='complete')return;
   advisory={...advisory,status:'checked',result};
-  log('GABY CHECKED',`${run.id} · schema, identity, calls, numbers and observation codes checked · ${result.snapshotHash.slice(0,12)}`);
+  log('COOPER CHECKED',`${run.id} · schema, identity, calls, numbers and observation codes checked · ${result.snapshotHash.slice(0,12)}`);
  }catch(error){
   if(serial!==advisorySerial||state.run!==run||state.status!=='complete')return;
   advisory={...advisory,status:error.code==='REJECTED_RESPONSE'?'blocked':'unavailable',result:localResult};
-  log('GABY FALLBACK',`${run.id} · ${advisory.status} · deterministic explanation retained`);
+  log('COOPER FALLBACK',`${run.id} · ${advisory.status} · deterministic explanation retained`);
  }finally{
   clearTimeout(timeout);
   if(serial===advisorySerial){advisoryController=null;renderAdvisory();}
@@ -155,6 +155,7 @@ function startRun(){
  freezeInputs(true);setView('amplification');
  log('RUN START',`${run.id} · seed ${cfg.seed} · ${cfg.cycles} cycles · anneal ${cfg.anneal}°C · extension ${cfg.extension} s · ${run.wells.length} wells`);
  log('CONTROLS',`${cfg.contamination?'NTC contamination injected':'Clean NTC'} · ${cfg.pcFail?'PC failure injected':'Positive control present'}`);
+ window.dispatchEvent(new CustomEvent('vesper:voice',{detail:'start'}));
  enterStage();state.frame=requestAnimationFrame(tick);
 }
 function enterStage(){
@@ -198,6 +199,7 @@ function completeRun(){
  $('#runProgress').style.width='100%';$$('.protocol-stage').forEach(el=>el.classList.remove('current'));
  freezeInputs(false);updateReady();$('#exportButton').disabled=false;
  log('RUN COMPLETE',`${state.run.id} · ${state.run.runQC.invalid?'INVALID: '+state.run.runQC.reasons.join('; '):'Controls valid'} · ${state.run.samples.filter(s=>s.type==='sample').map(s=>s.name+': '+s.call).join(' · ')}`);
+ window.dispatchEvent(new CustomEvent('vesper:voice',{detail:state.run.runQC.invalid?'invalid':'complete'}));
  renderResults();setView('results');toast(state.run.runQC.invalid?'Run invalid. Review the failed controls.':'Amplification complete. Results and QC are ready.');
  resetAdvisory();
 }
@@ -213,6 +215,7 @@ function resetMonitor(){
 }
 function abortRun(){
  if(!busy())return;cancelAnimationFrame(state.frame);log('ABORTED',`${state.run.id} at cycle ${state.cycle}. No completed analysis released.`);
+ window.dispatchEvent(new CustomEvent('vesper:voice',{detail:'stop'}));
  state.status='idle';state.run=null;state.cycle=0;state.meltIndex=0;$('#cycler').classList.remove('running','paused');freezeInputs(false);resetMonitor();updateReady();setView('amplification');toast('Run aborted. The tray is ready for another experiment.');
  resetAdvisory();
 }
@@ -266,11 +269,11 @@ function drawMolecule(kind){
 }
 function exportRun(){
  if(state.status!=='complete')return;
- const payload={...state.run,appVersion:'0.3.0',intendedUse:'Educational simulation only; not for clinical use',sessionNotes:state.events,advisory:{...advisory,provider:'Gaby',verificationScope:'Client-side schema, run hash, calls, Cq and permitted observations. No clinical validation or authenticated release gate.'}};
+ const payload={...state.run,appVersion:'0.4.0',intendedUse:'Educational simulation only; not for clinical use',sessionNotes:state.events,advisory:{...advisory,provider:'Cooper',verificationScope:'Client-side schema, run hash, calls, Cq and permitted observations. No clinical validation or authenticated release gate.'}};
  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=state.run.id+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);log('EXPORTED',state.run.id+' · complete raw curves, config, DNA, analysis and limitations');
 }
 $('#startButton').onclick=startRun;$('#pauseButton').onclick=pauseRun;$('#abortButton').onclick=abortRun;$('#exportButton').onclick=exportRun;
-$('#gabyExplain').onclick=explainRun;$('#gabyEnabled').onchange=resetAdvisory;
+$('#cooperExplain').onclick=explainRun;$('#cooperEnabled').onchange=resetAdvisory;
 $('#clearTray').onclick=()=>{if(busy())return;invalidate();state.slots=[null,null,null,null];log('TRAY CLEARED','All reaction slots emptied.');resetMonitor();renderTray();updateReady();};
 $('#cycler').onclick=()=>{if(!busy())addVial(state.selected);};$('#cycler').onkeydown=e=>{if(e.target===e.currentTarget&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(!busy())addVial(state.selected);}};bindDrop($('#cycler'));
 $$('[data-view]').forEach(el=>el.onclick=()=>setView(el.dataset.view));
@@ -289,7 +292,15 @@ $('#importForm').onsubmit=e=>{
 };
 $$('.protocol input').forEach(el=>el.addEventListener('change',()=>{if(!busy()){invalidate();renderTray();updateReady();}}));
 window.addEventListener('beforeunload',e=>{if(busy()){e.preventDefault();e.returnValue='';}});
-log('LAB READY','Engine 0.2.0 · Gaby advisory available on request · deterministic calls.');
+log('LAB READY','Engine 0.2.0 · Cooper advisory available on request · deterministic calls.');
+// The assistant can only invoke these checked application operations, never generated code.
+window.CooperLab={
+ snapshot:()=>({status:state.status,slots:state.slots.map(d=>d?{specimen:PCR.DATASETS.findIndex(s=>s.id===d.id),copies:d.copies}:null),protocol:readConfig(),selected:PCR.DATASETS.findIndex(d=>d.id===state.selected),runId:state.run?.id||null}),
+ load:i=>{const count=state.slots.filter(Boolean).length;addVial(i===-1?state.selected:PCR.DATASETS[i].id);if(state.slots.filter(Boolean).length!==count+1)throw Error('The specimen could not be loaded. Check the tray and primer compatibility.');},
+ configure:values=>{for(const [key,value] of Object.entries(values))$('#'+key).value=value;invalidate();renderTray();updateReady();},
+ start:()=>{startRun();if(state.status!=='running')throw Error('The simulation could not start. Check the lab inputs.');},pause:pauseRun,resume:pauseRun,explain:explainRun,view:setView,
+ enabled:()=>$('#cooperEnabled').checked
+};
 renderArchive();renderInspector();renderTray();resetMonitor();updateReady();renderChart();
 // Keep chart labels readable when the bench layout changes.
 window.addEventListener('resize',()=>requestAnimationFrame(renderChart));

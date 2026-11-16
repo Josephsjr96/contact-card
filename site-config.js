@@ -16,7 +16,7 @@ window.SITE = {
   },
   samples: [
     {id:"pcr", title:"VESPER PCR Laboratory", kind:"Interactive science & risk analysis",
-     desc:"A working browser laboratory for loading DNA sequences, exploring simulated PCR/qPCR signals and asking Gaby for checked run explanations.",
+     desc:"A working browser laboratory for loading DNA sequences, exploring simulated PCR/qPCR signals and asking Cooper to operate the lab and explain checked results.",
      note:"Imports single-record FASTA or DNA text · Educational simulation; specialist evaluation pending.",
      tags:["JavaScript","DNA / FASTA","Simulation","Risk analysis"], cta:"Open live laboratory", url:"samples/pcr/", external:false},
     {id:"data-explorer", title:"Data Explorer", kind:"Data analysis & reporting",

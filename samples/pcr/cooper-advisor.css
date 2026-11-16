@@ -1,0 +1,35 @@
+.cooper-advisor{grid-column:1/-1;padding:22px 24px;color:#aabd9f;font:12px/1.6 var(--sans,Arial,sans-serif)}
+.cooper-advisor-head{display:flex;justify-content:space-between;align-items:flex-start;gap:25px}
+.cooper-advisor h2{margin:0;color:#dde7d2;font-size:17px;font-weight:500}
+.cooper-advisor h3{color:#cedcbd;font-size:12px;font-weight:500;margin:12px 0 6px}
+.cooper-advisor-head p{margin:5px 0 12px;max-width:720px}
+.cooper-toggle{display:flex;align-items:center;gap:8px;white-space:nowrap;font:10px var(--mono)}
+.cooper-toggle input{width:15px;height:15px;accent-color:#c7dea7}
+.cooper-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.cooper-actions button{padding:10px 16px;border:1px solid #647954;border-radius:4px;background:#263320;color:#d2e5be;font:11px var(--mono)}
+.cooper-actions button:disabled{opacity:.45;cursor:default}
+.cooper-actions p{margin:0;flex:1;min-width:200px;color:#c4d2b7;font-size:11px}
+.cooper-advisor details{margin-top:14px;max-width:850px;font-size:10px;color:#93a486}
+.cooper-advisor summary{cursor:pointer;width:fit-content}
+.cooper-observations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.cooper-observation{border:1px solid #35472d;border-radius:4px;background:#111a0f;padding:12px 14px}
+.cooper-observation h3{margin:0 0 6px}.cooper-observation small{font:9px var(--mono);color:#829575}
+.cooper-observation p{font-size:11px;margin:6px 0}.cooper-call{font:10px var(--mono);color:#c5d6b4}
+.cooper-source{border-top:1px solid #304126;padding-top:16px;margin-top:18px;font:9px/1.7 var(--mono);color:#8ea97c;overflow-wrap:anywhere}
+.cooper-advisor ul{padding-left:18px;font-size:11px}.cooper-advisor li{margin:7px 0}
+.cooper-footnote{font-size:10px;color:#7e9271}
+@media(max-width:1000px){.cooper-observations{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.cooper-advisor{padding:18px}.cooper-advisor-head{display:block}.cooper-toggle{margin:8px 0 16px}.cooper-observations{grid-template-columns:1fr}.cooper-actions p{min-width:0;width:100%;flex-basis:100%}}
+@media print{.cooper-advisor{display:none}}
+.cooper-chat{margin-top:20px;border-top:1px solid #35472d;padding-top:16px}
+.cooper-chat label{display:block;color:#dde7d2;margin-bottom:8px}
+.cooper-input-row{display:flex;gap:10px}
+.cooper-input-row input{min-width:0;flex:1;padding:12px;background:#111a0f;border:1px solid #647954;border-radius:4px;color:#e2edd8;font:12px var(--sans,Arial,sans-serif)}
+.cooper-input-row button{padding:10px 16px;background:#263320;border:1px solid #647954;border-radius:4px;color:#d2e5be;cursor:pointer}
+.cooper-input-row button:disabled{opacity:.45;cursor:default}
+.cooper-chat p{font-size:10px;color:#93a486;margin:8px 0}
+#cooperTaskStatus{color:#d2e5be;overflow-wrap:anywhere}
+@media(max-width:650px){.cooper-input-row{flex-direction:column}}
+.lab-announcement{margin:0;padding:10px 32px;border-bottom:1px solid #35472d;background:#172216;color:#bfcfb3;font:11px/1.5 var(--mono);min-height:37px;overflow-wrap:anywhere}
+#labVoiceToggle{white-space:nowrap;font-size:10px}
+@media(max-width:650px){.lab-announcement{padding:10px 18px}.top-actions{gap:8px}#labVoiceToggle{font-size:9px}}

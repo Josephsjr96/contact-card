@@ -1,0 +1,6 @@
+{
+  "welcome": "Welcome to Vesper. Laboratory systems online. Ready when you are.",
+  "start": "Amplification sequence initiated. Thermal cycling in progress.",
+  "complete": "Amplification complete. Analysis finished. Results are ready for review.",
+  "invalid": "Run complete. Control failure detected. Results are invalid. Please review the controls."
+}
