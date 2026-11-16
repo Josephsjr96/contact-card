@@ -3,6 +3,15 @@
 'use strict';
 const ranges={cycles:[20,60],anneal:[45,75],extension:[1,90],reps:[1,8],seed:[0,4294967295]};
 const exact=(o,keys)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).sort().join('|')===keys.sort().join('|');
+function questionFocus(prompt){
+ const text=String(prompt).trim();
+ if(/^(please\s+)?(load|add|set|change|start|pause|resume)\b/i.test(text))return null;
+ if(/\b(risks?|risky|danger|safe|safety|false.?positive|false.?negative|uncertain|reliab\w*)\b/i.test(text))return 'risks';
+ if(/\b(control|controls|contaminat\w*)\b/i.test(text))return 'controls';
+ if(/\b(limitations?|validat\w*)\b/i.test(text))return 'limitations';
+ if(/^(what|why|how|is|are|can|could|does|did|explain|interpret|summari\w*|analy[sz]\w*)\b/i.test(text))return /\b(temperature|anneal\w*|settings?|cycles?|extension|protocol)\b/i.test(text)?'protocol':'results';
+ return null;
+}
 function validate(plan,state){
  if(!exact(plan,['actions'])||!Array.isArray(plan.actions)||!plan.actions.length||plan.actions.length>8)throw Error('Cooper did not return a supported lab plan. Please rephrase.');
  let status=state.status,slots=state.slots.filter(Boolean).length;
@@ -43,7 +52,7 @@ async function request(prompt,state,{endpoint,fetchImpl=fetch,signal}={}){
  let plan;try{plan=JSON.parse(content);}catch{throw Error('Cooper returned an unreadable plan. Please try again.');}
  return validate(plan,state);
 }
-if(typeof module!=='undefined'&&module.exports)module.exports={validate,request};
+if(typeof module!=='undefined'&&module.exports)module.exports={validate,request,questionFocus};
 if(!root.document)return;
 const $=s=>document.querySelector(s),lab=root.CooperLab;
 let controller=null,serial=0;
@@ -52,9 +61,16 @@ $('#cooperForm').addEventListener('submit',async event=>{
  event.preventDefault();if(!lab.enabled()||controller)return;
  const prompt=$('#cooperPrompt').value.trim();if(!prompt)return;
  const id=++serial;controller=new AbortController();const active=controller;
- $('#cooperSend').disabled=true;$('#cooperTaskStatus').textContent='Cooper is planning your lab task…';
+ const focus=questionFocus(prompt);
+ $('#cooperSend').disabled=true;$('#cooperTaskStatus').textContent=focus?'Cooper is reviewing your question against this experiment…':'Cooper is planning your lab task…';
  const timeout=setTimeout(()=>active.abort(),30000);
  try{
+  if(focus){
+   if(lab.snapshot().status!=='complete')throw Error('There is no completed experiment to review. Complete a run, then ask about its risks or results.');
+   await lab.answer({question:prompt,focus});
+   if(id===serial&&lab.enabled())$('#cooperTaskStatus').textContent=document.querySelector('.cooper-answer')?'Your '+(focus==='risks'?'risk review':'answer')+' is shown below for this completed experiment.':'The experiment changed or the review was cancelled. Ask again when a run is complete.';
+   return;
+  }
   const before=lab.snapshot(),stamp=JSON.stringify(before);
   const actions=await request(prompt,before,{endpoint:root.SITE.WORKER_URL,signal:active.signal});
   if(id!==serial||!lab.enabled())return;

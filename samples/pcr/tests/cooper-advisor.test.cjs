@@ -54,3 +54,29 @@ test('service failures, malformed text and changed numeric claims fail closed',a
   return {ok:true,json:async()=>({choices:[{message:{content:JSON.stringify(o)}}]})};
  }}),e=>e.code==='REJECTED_RESPONSE');
 });
+test('risk review distinguishes observed contamination and failed controls from model limitations',()=>{
+ const s=a.project(completed(undefined,{contamination:true})),review=a.review(s,'risks');
+ assert.equal(review.title,'Risks in this experiment');
+ assert.match(review.items.join(' '),/every sample result is INVALID/);
+ assert.match(review.items.join(' '),/no-template control replicates amplified/);
+ assert.match(review.items.join(' '),/Model limitation/);
+ const good=a.review(a.project(completed()),'risks');
+ assert.match(good.items[0],/both run controls passed/);
+ assert.ok(!good.items.join(' ').includes('run controls failed'));
+});
+test('risk review includes actual specimen QC flags and does not invent them',()=>{
+ const s=a.project(completed());s.samples[0].flags=['REPLICATE_DROPOUT','MELT_MISMATCH'];
+ const text=a.review(s,'risks').items.join(' ');
+ assert.match(text,/S1: Some replicates/);assert.match(text,/S1: The melt peak/);
+ assert.ok(!text.includes('Replicate Cq values disagreed'));
+});
+test('question and focus reach the advisor with the completed run and are retained for export',async()=>{
+ const question='What are the risks based on my recent experiment?';
+ const result=await a.request(completed(),{question,focus:'risks',endpoint:'test',fetchImpl:async(_,init)=>{
+  const body=JSON.parse(init.body),input=JSON.parse(body.messages[1].content);
+  assert.equal(input.question,question);assert.equal(input.focus,'risks');assert.ok(input.samples.length>0);
+  assert.ok(body.messages.every(m=>m.content.length<=2500));
+  return {ok:true,json:async()=>({choices:[{message:{content:JSON.stringify(a.fallback(input,input.snapshotHash))}}]})};
+ }});
+ assert.equal(result.question,question);assert.equal(result.focus,'risks');
+});

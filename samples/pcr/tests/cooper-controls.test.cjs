@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict');
-const {validate,request}=require('../cooper-controls.js');
+const {validate,request,questionFocus}=require('../cooper-controls.js');
 const idle={status:'idle',slots:[null,null,null,null],selected:0};
 test('load, configure and start plan is accepted for an idle tray',()=>{
  const plan={actions:[{type:'load',specimen:0},{type:'configure',values:{cycles:30,reps:2}},{type:'start'}]};
@@ -18,4 +18,13 @@ test('only known result views and valid pause/resume/explain transitions work',(
 });
 test('AI adapter validates malformed and unsupported responses before execution',async()=>{
  for(const content of ['not JSON','{"actions":[{"type":"execute"}]}'])await assert.rejects(request('start',idle,{endpoint:'test',fetchImpl:async()=>({ok:true,json:async()=>({choices:[{message:{content}}]})})}));
+});
+test('experiment questions are routed to relevant reviews instead of operation plans',()=>{
+ assert.equal(questionFocus('what are the risks based on recent expierment (PCR)?'),'risks');
+ assert.equal(questionFocus('Why did my controls fail?'),'controls');
+ assert.equal(questionFocus('What do my cycle settings mean?'),'protocol');
+ assert.equal(questionFocus('Explain my completed results.'),'results');
+ assert.equal(questionFocus('What are the limitations?'),'limitations');
+ assert.equal(questionFocus('Load Aster and start so I can assess risks'),null);
+ assert.equal(questionFocus('Pause the simulation.'),null);
 });

@@ -21,23 +21,25 @@ function renderAdvisory(){
  $('#cooperContent').innerHTML='';
  if(!advisory.result)return;
  const result=advisory.result,snapshot=PCRCooper.project(state.run);
+ const review=advisory.question?PCRCooper.review(snapshot,advisory.focus):null;
+ const answer=review?`<section class="cooper-answer"><p class="cooper-question">Your question: ${esc(advisory.question)}</p><h3>${esc(review.title)}</h3><p>${esc(review.summary)}</p><ul>${review.items.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></section>`:'';
  const cards=result.output.observations.map(o=>{
   const i=snapshot.samples.findIndex(s=>s.label===o.label),name=state.run.samples[i].name;
   return `<article class="cooper-observation"><h3>${esc(name)} <small>${esc(o.label)}</small></h3><p class="cooper-call">${esc(o.call)} · Cq ${fmt(o.cq)}</p><p>${esc(PCRCooper.FOCUS[o.focus])}</p></article>`;
  }).join('');
- $('#cooperContent').innerHTML=`<p class="cooper-source">${result.source==='cooper'?'COOPER · CHECKED STRUCTURED ADVISORY':'LOCAL DETERMINISTIC EXPLANATION'} · ${esc(state.run.id)}</p><div class="cooper-observations">${cards}</div><h3>What to inspect next</h3><ul>${result.output.tips.map(t=>`<li>${esc(PCRCooper.TIPS[t])}</li>`).join('')}</ul><p class="cooper-footnote">Calls and values remain those of the deterministic engine. This explanation does not approve a run for clinical use.</p>`;
+ $('#cooperContent').innerHTML=`<p class="cooper-source">${result.source==='cooper'?'COOPER · CHECKED STRUCTURED ADVISORY':'LOCAL DETERMINISTIC EXPLANATION'} · ${esc(state.run.id)}</p>${answer}<div class="cooper-observations">${cards}</div><h3>What to inspect next</h3><ul>${result.output.tips.map(t=>`<li>${esc(PCRCooper.TIPS[t])}</li>`).join('')}</ul><p class="cooper-footnote">Calls and values remain those of the deterministic engine. This explanation does not approve a run for clinical use.</p>`;
 }
-async function explainRun(){
+async function explainRun({question='',focus='results'}={}){
  if(state.status!=='complete'||!advisory.enabled||advisory.status==='requesting')return;
  const serial=++advisorySerial,run=state.run,controller=new AbortController();advisoryController=controller;
- advisory={enabled:true,requested:true,status:'requesting',requestedAt:new Date().toISOString()};renderAdvisory();
+ advisory={enabled:true,requested:true,status:'requesting',question,focus,requestedAt:new Date().toISOString()};renderAdvisory();
  let localResult;
  const timeout=setTimeout(()=>controller.abort(),30000);
  try{
   const snapshot=PCRCooper.project(run),snapshotHash=await PCRCooper.fingerprint(snapshot);
   if(serial!==advisorySerial)return;
-  localResult={adapterVersion:PCRCooper.VERSION,source:'deterministic',snapshotHash,output:PCRCooper.fallback(snapshot,snapshotHash)};
-  const result=await PCRCooper.request(run,{endpoint:window.SITE.WORKER_URL,signal:controller.signal});
+  localResult={adapterVersion:PCRCooper.VERSION,source:'deterministic',snapshotHash,output:PCRCooper.fallback(snapshot,snapshotHash),question,focus};
+  const result=await PCRCooper.request(run,{endpoint:window.SITE.WORKER_URL,signal:controller.signal,question,focus});
   if(serial!==advisorySerial||state.run!==run||state.status!=='complete')return;
   advisory={...advisory,status:'checked',result};
   log('COOPER CHECKED',`${run.id} · schema, identity, calls, numbers and observation codes checked · ${result.snapshotHash.slice(0,12)}`);
@@ -286,7 +288,7 @@ function drawMolecule(kind){
 }
 function exportRun(){
  if(state.status!=='complete')return;
- const payload={...state.run,appVersion:'0.4.0',intendedUse:'Educational simulation only; not for clinical use',sessionNotes:state.events,advisory:{...advisory,provider:'Cooper',verificationScope:'Client-side schema, run hash, calls, Cq and permitted observations. No clinical validation or authenticated release gate.'}};
+ const payload={...state.run,appVersion:'0.5.0',intendedUse:'Educational simulation only; not for clinical use',sessionNotes:state.events,advisory:{...advisory,provider:'Cooper',verificationScope:'Client-side schema, run hash, calls, Cq and permitted observations. No clinical validation or authenticated release gate.'}};
  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=state.run.id+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);log('EXPORTED',state.run.id+' · complete raw curves, config, DNA, analysis and limitations');
 }
 $('#startButton').onclick=startRun;$('#pauseButton').onclick=pauseRun;$('#abortButton').onclick=abortRun;$('#exportButton').onclick=exportRun;
@@ -315,7 +317,7 @@ window.CooperLab={
  snapshot:()=>({status:state.status,slots:state.slots.map(d=>d?{specimen:PCR.DATASETS.findIndex(s=>s.id===d.id),copies:d.copies}:null),protocol:readConfig(),selected:PCR.DATASETS.findIndex(d=>d.id===state.selected),runId:state.run?.id||null}),
  load:i=>{const count=state.slots.filter(Boolean).length;addVial(i===-1?state.selected:PCR.DATASETS[i].id);if(state.slots.filter(Boolean).length!==count+1)throw Error('The specimen could not be loaded. Check the tray and primer compatibility.');},
  configure:values=>{for(const [key,value] of Object.entries(values))$('#'+key).value=value;invalidate();renderTray();updateReady();},
- start:()=>{startRun();if(state.status!=='running')throw Error('The simulation could not start. Check the lab inputs.');},pause:pauseRun,resume:pauseRun,explain:explainRun,view:setView,
+ start:()=>{startRun();if(state.status!=='running')throw Error('The simulation could not start. Check the lab inputs.');},pause:pauseRun,resume:pauseRun,explain:explainRun,answer:explainRun,view:setView,
  enabled:()=>$('#cooperEnabled').checked
 };
 renderArchive();renderInspector();renderTray();resetMonitor();updateReady();renderChart();

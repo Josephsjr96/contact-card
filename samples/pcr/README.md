@@ -70,3 +70,10 @@ The controls browser check calls the real service and verifies load/configure/st
 `lab-voice.js` plays four bundled female neural-voice MP3 announcements: welcome, amplification start, successful completion and completion with failed controls. The voice is generated locally using Piper's `en_US-ljspeech-high` model, with light filtering/reverb for a restrained lab-computer delivery. Model attribution and exact transcripts live in `audio/`. No speech API or model download is needed by visitors.
 
 The greeting plays on the first pointer/keyboard interaction, respecting browser autoplay restrictions. The header voice button previews the welcome and then toggles mute. Muting is stored locally, immediately stops playback and still shows announcement captions. New announcements replace old ones; aborting or hiding the page stops audio. `node tests/pcr-voice.cjs` checks decoding, run lifecycle triggers, invalid-control wording, mute persistence and responsive layout.
+
+
+### Questions about the completed experiment
+
+Cooper's task input distinguishes experiment questions from instrument commands. Questions about risks, controls, settings, limitations or results go directly to the completed-run advisor, including the actual question and its focus in the request. No action plan is executed for these questions. Before a completed run, the UI explains that there is no experiment to review.
+
+The response shows the user's question, the exact current run ID and status, observed control failures and specimen QC flags, and separately labeled model limitations. All risk wording is generated locally from deterministic evidence; model-selected observations and tips still pass the existing schema, hash and value checks. Service failures show the same grounded review with an explicit local-source label. Editing run inputs or disabling Cooper cancels and removes the review. Exports retain the question and focus with the advisory.

@@ -35,3 +35,5 @@
 @media(max-width:650px){.lab-announcement{padding:10px 18px}.top-actions{gap:8px}#labVoiceToggle{font-size:9px}}
 
 #specimenChoices{display:grid;gap:10px}.specimen-choice{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;text-align:left;padding:14px 16px;border:1px solid #536a48;border-radius:4px;background:#1c2c20;color:#deead4}.specimen-choice strong{font-size:14px;font-weight:500}.specimen-choice span,.specimen-choice small{font-size:11px;line-height:1.5;color:#b0c2a5}.specimen-choice:disabled{opacity:.5;cursor:not-allowed}.specimen-choice:focus-visible{outline:2px solid #d2e5be;outline-offset:3px}
+
+.cooper-answer{margin:18px 0;padding:16px 18px;background:#16251c;border-left:3px solid #b2c894;border-radius:3px}.cooper-answer h3{font-size:15px;margin-top:6px}.cooper-question{overflow-wrap:anywhere;font-style:italic}.cooper-answer ul{padding-left:18px}.cooper-answer li{margin:10px 0;line-height:1.7}
