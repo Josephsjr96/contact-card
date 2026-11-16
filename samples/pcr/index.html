@@ -4,8 +4,9 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="A working educational PCR/qPCR laboratory. Import DNA FASTA, simulate amplification and melt signals, and explore control failures.">
 <title>VESPER · Molecular Containment Lab</title>
-<link rel="stylesheet" href="lab.css"><link rel="stylesheet" href="gaby-advisor.css?v=1">
-<script src="../../site-config.js?v=20261116-pcr-gaby" defer></script><script src="engine.js" defer></script><script src="gaby-advisor.js?v=1" defer></script><script src="lab.js?v=20261116-gaby" defer></script>
+<link rel="stylesheet" href="lab.css"><link rel="stylesheet" href="bench.css?v=20261116"><link rel="stylesheet" href="gaby-advisor.css?v=1">
+<script src="../../site-config.js?v=20261116-pcr-gaby" defer></script><script src="engine.js" defer></script><script src="gaby-advisor.js?v=1" defer></script><script src="lab.js?v=20261116-bench" defer></script>
+<script src="bench.js?v=20261116" defer></script>
 </head>
 <body>
 <svg class="svg-defs" aria-hidden="true"><defs>
@@ -20,7 +21,7 @@
 <div class="facility"><span class="status-dot"></span> RESEARCH ANNEX <span class="slash">/</span> LAB 04 <span class="facility-tag">LOCAL SIMULATION</span></div>
 <div class="top-actions"><span class="research-label">RESEARCH &amp; EDUCATION</span><button id="helpButton" class="icon-button" aria-label="Open lab guide">?</button></div>
 </header>
-<div class="workspace-bar"><div><span class="eyebrow">INTERACTIVE LABORATORY</span><h1>The amplification room<span>.</span></h1></div><div class="run-label"><span class="live-light"></span><span id="systemStatus">SYSTEM READY</span><small id="runNumber">SESSION 001</small></div></div>
+<div class="workspace-bar"><div><span class="eyebrow">PCR / qPCR WORKSPACE</span><h1>The amplification bench<span>.</span></h1></div><div class="run-label"><span class="live-light"></span><span id="systemStatus">SYSTEM READY</span><small id="runNumber">SESSION 001</small></div></div>
 <main class="lab-layout">
 <aside class="inventory panel">
 <div class="panel-heading"><h2>Specimen archive</h2><span class="counter" id="specimenCount">04</span></div>
@@ -32,18 +33,24 @@
 <div class="specimen-inspector" id="inspector"></div>
 </aside>
 <section class="room panel" aria-label="PCR laboratory">
-<div class="room-top"><span class="eyebrow">THERMAL CYCLER / VC–40</span><span class="room-mode" id="roomMode">STANDBY</span></div>
+<div class="room-top"><span class="eyebrow">THERMAL CYCLER / VC–40</span><span class="room-mode" id="roomMode">STANDBY</span><button id="taskLight" class="task-light" type="button" aria-label="Bench task light" aria-pressed="true"><i aria-hidden="true"></i><span>Task light · on</span></button></div>
 <div class="room-art">
-<div class="room-light"></div><div class="wall-line one"></div><div class="wall-line two"></div><div class="wall-label">V / 04<span>MOLECULAR CONTAINMENT</span></div>
+<div class="room-light"></div><div class="wall-line one"></div><div class="wall-line two"></div><div class="wall-label">04 / PCR<span>AMPLIFICATION &amp; OPTICAL READOUT</span></div>
 <div class="wall-vent"><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <div class="bench-back"></div><div class="bench-front"></div><div class="bench-leg left"></div><div class="bench-leg right"></div>
 <div class="ambient-vials"><span></span><span></span><span></span><span></span><div>REAGENTS</div></div>
+<div class="utility-rail" aria-hidden="true"></div>
+<div class="bench-spill" aria-hidden="true"></div>
+<div id="dnaLamp" class="dna-lamp is-on">
+<div class="lamp-halo" aria-hidden="true"></div><div class="lamp-glass" aria-hidden="true"><svg id="lampHelix" viewBox="0 0 76 150"></svg></div><div class="lamp-stem" aria-hidden="true"></div>
+<button id="lampPower" class="lamp-base" type="button" aria-label="DNA nightlight power" aria-pressed="true"><span class="power-symbol" aria-hidden="true">⏻</span> DNA <strong id="lampState">ON</strong></button><span class="lamp-plaque">HELIX / NIGHTLIGHT</span>
+</div>
 <div id="cycler" class="cycler" tabindex="0" role="group" aria-label="Thermal cycler drop zone. Select a vial, then click here to load it.">
 <div class="cycler-back"><div class="hinge"></div><div class="lid-top"><span>VESPER</span><i></i><b>OPTICAL THERMAL CYCLER</b></div></div>
 <div class="cycler-body"><div class="machine-top"><div class="well-plate" id="wellPlate"></div></div><div class="machine-face"><span class="machine-id">VC–40 <small>REAL-TIME PCR</small></span><div class="machine-screen"><span id="machineScreen">AWAITING SPECIMENS</span><strong id="machineTemp">22.0<small>°C</small></strong><span id="machineCycle">BLOCK AT AMBIENT</span><div class="screen-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="machine-led"></div><div class="machine-vents"></div></div><div class="machine-bottom"></div></div>
 <div class="drop-prompt" id="dropPrompt"><span>＋</span>DROP DNA INTO CYCLER<small>or select a vial and click here</small></div>
 </div>
-<div class="room-caption"><span class="small-light"></span> CLOSED ENVIRONMENT <span>SIMULATED INSTRUMENT</span></div>
+<div class="room-caption"><span class="small-light"></span> AMPLIFICATION WORKSPACE <span>SIMULATED INSTRUMENT</span></div>
 </div>
 <div class="tray-header"><span>REACTION TRAY <small id="trayCount">0 / 4 LOADED</small></span><button class="text-button" id="clearTray">Clear tray ↺</button></div>
 <div class="tray" id="tray" aria-label="DNA loading tray"></div>

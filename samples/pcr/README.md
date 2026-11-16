@@ -2,7 +2,7 @@
 
 Live browser-only PCR/qPCR simulation, served by the contact card's GitHub Pages deployment at `samples/pcr/`. The Work card uses the portfolio's existing project-card renderer and launches the functioning app directly. `guide.html` documents import support and scientific scope.
 
-Based on the VESPER laboratory source commit `6e3b43b`. `engine.js` retains that snapshot’s numerical model (engine version 0.2.0); its limitations text now describes the optional advisory layer. `index.html` is the laboratory's original `prototype.html`, with portfolio navigation and more accurate import labels. `lab.js` integrates the optional Gaby advisory UI while preserving engine ownership of results. `lab.css` retains the original laboratory appearance. The private Sites publication is a separate deployment with unchanged access settings.
+Based on the VESPER laboratory source commit `6e3b43b`. `engine.js` retains that snapshot’s numerical model (engine version 0.2.0); its limitations text now describes the optional advisory layer. `index.html` is the laboratory's original `prototype.html`, with portfolio navigation and more accurate import labels. `lab.js` integrates the optional Gaby advisory UI while preserving engine ownership of results. `lab.css` supplies the core layout; `bench.css` and `bench.js` add refined laboratory materials, task lighting and an independently powered, rotating DNA nightlight. The private Sites publication is a separate deployment with unchanged access settings.
 
 ## Real-sequence support
 
@@ -43,3 +43,7 @@ GABY_LIVE=1 BASE_URL=https://josephsjr96.github.io/contact-card/ node tests/pcr-
 ```
 
 The normal browser suite mocks good, malicious, unavailable and delayed service responses. The explicit live mode calls the real Gaby service once. Current application behavior differs from the separate, earlier specialist-review PDF; specialist evaluation of the LLM advisory has not been performed.
+
+## Bench visual update
+
+The neutral-lit bench uses a light instrument enclosure, clearer typography and responsive chart axes. The tabletop DNA nightlight rotates only while powered (18-second revolution), stops under reduced-motion preferences, and pauses animation in hidden tabs. The task-light switch independently dims the room. These decorative controls do not change protocol time, sequences, run output or Gaby behavior. The same bench assets are mirrored in the standalone PCR repository.

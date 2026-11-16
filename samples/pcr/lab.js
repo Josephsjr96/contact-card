@@ -223,19 +223,19 @@ function setView(view){
  renderChart();renderNotebook();
 }
 function renderChart(){
- const run=state.run,isMelt=state.view==='melt',W=940,H=234,p={l:52,r:18,t:15,b:35},iw=W-p.l-p.r,ih=H-p.t-p.b;
+ const run=state.run,isMelt=state.view==='melt',W=Math.max(280,$('#chart').clientWidth||940),H=Math.max(220,$('#chart').clientHeight||234),p={l:58,r:18,t:20,b:40},iw=W-p.l-p.r,ih=H-p.t-p.b;
  const cycles=run?run.cfg.cycles:Number($('#cycles').value)||40,xmin=isMelt?60:0,xmax=isMelt?95:cycles,ymax=isMelt?1.15:1100,ymin=isMelt?0:-30;
  const X=v=>p.l+(v-xmin)/(xmax-xmin)*iw,Y=v=>p.t+ih-(v-ymin)/(ymax-ymin)*ih;
  let svg='';
  for(let i=0;i<=4;i++){
-  const val=ymin+(ymax-ymin)*i/4,y=Y(val);svg+=`<line x1="${p.l}" y1="${y}" x2="${W-p.r}" y2="${y}" stroke="#2a392733"/><text x="${p.l-9}" y="${y+3}" text-anchor="end" fill="#76876c" font-size="8" font-family="monospace">${isMelt?val.toFixed(1):Math.round(val)}</text>`;
+  const val=ymin+(ymax-ymin)*i/4,y=Y(val);svg+=`<line x1="${p.l}" y1="${y}" x2="${W-p.r}" y2="${y}" stroke="#2a392733"/><text x="${p.l-9}" y="${y+3}" text-anchor="end" fill="#76876c" font-size="10" font-family="monospace">${isMelt?val.toFixed(1):Math.round(val)}</text>`;
  }
  for(let i=0;i<=8;i++){
-  const val=xmin+(xmax-xmin)*i/8,x=X(val);svg+=`<line x1="${x}" y1="${p.t}" x2="${x}" y2="${H-p.b}" stroke="#2a392733"/><text x="${x}" y="${H-p.b+15}" text-anchor="middle" fill="#76876c" font-size="8" font-family="monospace">${fmt(val,isMelt?1:0)}</text>`;
+  const val=xmin+(xmax-xmin)*i/8,x=X(val);svg+=`<line x1="${x}" y1="${p.t}" x2="${x}" y2="${H-p.b}" stroke="#2a392733"/><text x="${x}" y="${H-p.b+15}" text-anchor="middle" fill="#76876c" font-size="10" font-family="monospace">${fmt(val,isMelt?1:0)}</text>`;
  }
- svg+=`<text x="${W/2}" y="${H-2}" fill="#90a080" text-anchor="middle" font-size="8" font-family="monospace">${isMelt?'TEMPERATURE (°C)':'CYCLE'}</text><text x="10" y="${H/2}" transform="rotate(-90 10 ${H/2})" fill="#90a080" text-anchor="middle" font-size="8" font-family="monospace">${isMelt?'−dF / dT (NORMALIZED)':'BASELINE-CORRECTED RFU'}</text>`;
+ svg+=`<text x="${W/2}" y="${H-2}" fill="#90a080" text-anchor="middle" font-size="10" font-family="monospace">${isMelt?'TEMPERATURE (°C)':'CYCLE'}</text><text x="10" y="${H/2}" transform="rotate(-90 10 ${H/2})" fill="#90a080" text-anchor="middle" font-size="10" font-family="monospace">${isMelt?'−dF / dT (NORMALIZED)':'BASELINE-CORRECTED RFU'}</text>`;
  if(run){
-  if(!isMelt){const y=Y(run.threshold);svg+=`<line x1="${p.l}" y1="${y}" x2="${W-p.r}" y2="${y}" stroke="#c5d8a6" stroke-width=".8" stroke-dasharray="4 5" opacity=".55"/><text x="${W-p.r-4}" y="${y-6}" text-anchor="end" fill="#a0b18a" font-size="7" font-family="monospace">THRESHOLD ${fmt(run.threshold,1)} RFU</text>`;}
+  if(!isMelt){const y=Y(run.threshold);svg+=`<line x1="${p.l}" y1="${y}" x2="${W-p.r}" y2="${y}" stroke="#c5d8a6" stroke-width=".8" stroke-dasharray="4 5" opacity=".55"/><text x="${W-p.r-4}" y="${y-6}" text-anchor="end" fill="#a0b18a" font-size="9" font-family="monospace">THRESHOLD ${fmt(run.threshold,1)} RFU</text>`;}
   for(const well of run.wells){
    const length=isMelt?(state.status==='complete'?141:state.meltIndex+1):state.cycle;
    const ys=(isMelt?well.melt.values:well.corrected).slice(0,length);
@@ -244,7 +244,7 @@ function renderChart(){
    svg+=`<path d="${path}" stroke="${well.color}" stroke-width="${well.type==='sample'?1.5:1.1}" fill="none" opacity="${well.replicate===1?0.9:0.32}" ${well.type==='sample'?'':'stroke-dasharray="4 4"'}/>`;
   }
   if(!isMelt&&state.cycle>0&&state.cycle<cycles){const x=X(state.cycle);svg+=`<line x1="${x}" y1="${p.t}" x2="${x}" y2="${H-p.b}" stroke="#c7dea7" opacity=".3" stroke-dasharray="2 4"/>`;}
- }else svg+=`<text x="${W/2}" y="${H/2-5}" fill="#63785c" text-anchor="middle" font-size="10" font-family="monospace">${isMelt?'MELT SCAN FOLLOWS AMPLIFICATION':'AWAITING OPTICAL ACQUISITION'}</text><text x="${W/2}" y="${H/2+16}" fill="#4b6145" text-anchor="middle" font-size="8" font-family="monospace">${isMelt?'Product accumulation determines whether a peak appears.':'Each specimen and control is measured in separate replicate wells.'}</text>`;
+ }else svg+=`<text x="${W/2}" y="${H/2-5}" fill="#63785c" text-anchor="middle" font-size="10" font-family="monospace">${isMelt?'MELT SCAN FOLLOWS AMPLIFICATION':'AWAITING OPTICAL ACQUISITION'}</text><text x="${W/2}" y="${H/2+16}" fill="#4b6145" text-anchor="middle" font-size="10" font-family="monospace">${isMelt?'Product accumulation determines whether a peak appears.':(W<550?'Each replicate is measured separately.':'Each specimen and control is measured in separate replicate wells.')}</text>`;
  $('#chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${svg}</svg>`;
  $('#chart').setAttribute('aria-label',isMelt?'Melt derivative versus temperature':'Baseline corrected fluorescence versus PCR cycle');
  $('#legend').innerHTML=run?run.samples.map(s=>`<span class="legend-item" style="--sample:${s.color}"><i></i>${esc(s.type==='sample'?s.name:s.type==='pc'?'PC':'NTC')}${s.type==='sample'?' · '+s.replicates+'×':''}</span>`).join(''):'<span class="legend-idle">FLUORESCENCE WILL APPEAR DURING THE RUN</span>';
@@ -291,5 +291,7 @@ $$('.protocol input').forEach(el=>el.addEventListener('change',()=>{if(!busy()){
 window.addEventListener('beforeunload',e=>{if(busy()){e.preventDefault();e.returnValue='';}});
 log('LAB READY','Engine 0.2.0 · Gaby advisory available on request · deterministic calls.');
 renderArchive();renderInspector();renderTray();resetMonitor();updateReady();renderChart();
+// Keep chart labels readable when the bench layout changes.
+window.addEventListener('resize',()=>requestAnimationFrame(renderChart));
 resetAdvisory();
 })();

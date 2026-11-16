@@ -1,0 +1,97 @@
+/* VESPER / bench edition. Physical materials, neutral task light, quiet accents. */
+:root{--bg:#101719;--panel:#192225;--line:#344246;--ink:#e5eae6;--muted:#a6b4b4;--green:#b4d4c9;--amber:#e5c48d;--red:#edaa97}
+body{background:radial-gradient(ellipse at 45% 0,#28383a 0,transparent 58%),var(--bg);font-size:14px}
+.topbar{height:78px;background:#111a1c;border-bottom-color:#3a494c}
+.brand{font-size:20px;letter-spacing:4px}.brand-mark{color:#c5dfd3}.brand-sub{color:#9aadaf}
+.facility,.eyebrow{color:#a5b8ba}.facility-tag{border-color:#425155;color:#b2c4c4}
+.workspace-bar{padding-top:27px;padding-bottom:25px}h1{font-weight:500;letter-spacing:-.8px}
+.panel{border-radius:7px;box-shadow:0 10px 24px #00000016;border-color:#3a494c}
+.panel-heading h2,.telemetry-title h2{font-size:14px;font-weight:550}
+.counter,.tag{color:#d1e2db;background:#293b3a;border-color:#536963}
+.inventory,.protocol{background:linear-gradient(150deg,#1d292b,#192225)}
+.panel-intro{color:#afbebd;font-size:12px}.shelf-label{font-size:8px;color:#a0b3b1}.shelf-label span:last-child{color:#9cacab}
+.specimen{background:linear-gradient(110deg,#263336,#1b2729);border-color:#455456;min-height:80px}
+.specimen:hover,.specimen.selected{background:linear-gradient(110deg,#344340,#202e2f)}
+.specimen-name{font-size:14px}.specimen-code{font-size:9px}.specimen-sub{font-size:10px;color:#b0bfbb}
+.vial{background:linear-gradient(90deg,#d2e9e322,#f1fffa18 40%,#abc9bd35);border-color:#9db0ab}
+.vial:after{box-shadow:none}.archive-footer{font-size:8px;color:#a0b3ad}.specimen-inspector{color:#c1ceca}
+.inspector-kv{font-size:9px}.specimen-inspector .sequence{color:#a6bcb5;font-size:9px}
+.import-button,.text-button{color:#c6dbd3;font-size:11px}.room{background:#192427}
+.room-top{height:54px;padding:0 17px;background:#202d30;border-bottom-color:#4d5e60;gap:10px}
+.room-top .eyebrow{font-size:9px;letter-spacing:1px}.room-mode{font-size:9px;margin-left:auto;color:#beded2}
+.task-light{display:flex;align-items:center;gap:6px;border:1px solid #627473;border-radius:4px;min-height:32px;background:#2b3d3e;padding:5px 9px;font:9px var(--mono);color:#e1ece6;white-space:nowrap}
+.task-light i{width:5px;height:5px;border-radius:50%;background:#f0e8ce;box-shadow:0 0 5px #f1e8d34d}.task-light[aria-pressed=false] i{background:#82938e;box-shadow:none}
+.room-art{height:430px;min-height:430px;background:radial-gradient(ellipse at 50% -15%,#e8eee48c,transparent 70%),linear-gradient(180deg,#6b8080,#4d6364 65%,#233638);isolation:isolate;transition:background .6s}
+.room-art:after{background:linear-gradient(90deg,#07171925,transparent 30%,transparent 75%,#0c1f2520);opacity:1;z-index:6}
+.room-light{top:22px;left:12%;right:12%;height:7px;border-radius:3px;background:#fff9e6;border:1px solid #dce2d8;box-shadow:0 1px 12px #fff8dd86,0 50px 65px 35px #e2f2e92b;transition:opacity .5s}
+.wall-line{background:#c0d3cf22;bottom:70px}.wall-label{top:61px;left:5%;font-size:24px;color:#d6e4df8c;letter-spacing:-1px}
+.wall-label span{font-size:7px;letter-spacing:1px;color:#d2dfd6ab;max-width:130px}
+.wall-vent{width:49px;right:5%;top:61px;background:#32484a;border-color:#9fb5b445;border-radius:3px;box-shadow:inset 0 1px 4px #0005}
+.wall-vent i{background:#a0b6b46b}
+.utility-rail{position:absolute;top:133px;left:0;right:0;height:20px;border-top:1px solid #c9d8d638;border-bottom:1px solid #182f3566;background:linear-gradient(#889b9766,#30464b66)}
+.utility-rail:before,.utility-rail:after{content:'';position:absolute;top:4px;width:16px;height:10px;border:1px solid #14282e;background:radial-gradient(circle,#192e31 1px,transparent 2px) 1px 0/5px 5px,#acb9b0;border-radius:2px}
+.utility-rail:before{left:9%}.utility-rail:after{right:9%}
+.bench-back{bottom:65px;height:65px;background:linear-gradient(180deg,#bbc7c1,#8eaaa2);border-color:#cfdbd2;box-shadow:0 -2px 3px #d6e7df4d,0 -15px 50px #1b2b2b22}
+.bench-front{bottom:61px;height:18px;background:linear-gradient(#8fa8a1,#536d68);border-top:1px solid #dde4d8;border-bottom-color:#223c3b;box-shadow:0 15px 18px #0006}
+.bench-leg{background:linear-gradient(90deg,#294241,#6a817b,#314b47);width:13px}
+.ambient-vials{left:5%;bottom:107px;border-color:#a6b7b0;transform:none;background:#69898055;border-radius:2px;box-shadow:0 6px 7px #15332f4d}
+.ambient-vials>span{background:linear-gradient(90deg,#e9fff533,#c8e4dc77,#f6ffec1a);border-color:#d2e5dc7a;border-top-color:#d2d4b6;box-shadow:inset 1px 0 1px #fff5}
+.ambient-vials>div{color:#d2e0da;font-size:6px;top:43px}
+.cycler{width:320px;height:283px;left:48%;bottom:91px;z-index:2;transform:translateX(-50%);--heat:#b4d4c9}
+.lid-top{background:linear-gradient(120deg,#9caeaa,#dde2d5 43%,#8ea39d);border-top-color:#f4f3e1;box-shadow:inset 0 8px 25px #43575355}
+.lid-top:before{background:repeating-linear-gradient(90deg,transparent 0 9px,#1c363622 9px 10px);border-color:#627f7766;box-shadow:inset 0 0 25px #304b3b45}
+.lid-top>span{color:#2b4745;letter-spacing:4px;font-weight:bold}.lid-top>i{background:#5d7871;box-shadow:0 6px 0 #5d787155}.lid-top>b{color:#3d5956}
+.machine-top{background:linear-gradient(130deg,#e4e8dc,#aabcb1 50%,#d1d9cb);border-color:#f1f6e7}
+.well-plate{background:#1a3234;border-color:#536f68;box-shadow:0 0 0 1px #e3ebe09c}
+.plate-well{background:radial-gradient(ellipse,#0b1719 30%,#466a62 65%,#9ab5aa);border-color:#c9d7bb55}
+.machine-face{background:linear-gradient(105deg,#aabdb5,#d6ddce 35%,#b6c6b9 80%,#8ca49a);border-top-color:#e8eddc;border-bottom-color:#6c8981;box-shadow:inset 0 -3px 6px #49635d66}
+.machine-id{color:#2d4945;font-weight:600}.machine-id small{color:#476259}.machine-bottom{background:#34544d}
+.machine-screen{background:#102b2b;border-color:#4c6960;color:#dbf0cf;box-shadow:inset 0 0 10px #0005,0 1px 0 #f4f5d2a0}
+.machine-screen>span{color:#b1cebd}.machine-screen>strong{text-shadow:none}.machine-vents{background:repeating-linear-gradient(90deg,#4b6860 0 2px,transparent 2px 6px)}
+.drop-prompt{background:#173436ef;border-color:#b8d6c7;color:#eff7e9}.drop-prompt small{color:#b9d1c4}
+.room-caption{z-index:7;font-size:7px;color:#bdd0c9;bottom:19px}.room-caption>span:last-child{color:#a9c0b9}
+.tray-header{border-top-color:#516963;background:#203234}.tray-header>span{font-size:9px}.tray-header small{color:#b9cec3;font-size:8px}
+.tray{padding-top:12px;background:#1e2d2f}.tray-slot{background:#182729;border-color:#627b73;color:#b4c8bc;min-height:86px}.slot-plus{color:#a8bfb0}.slot-empty{font-size:7px;color:#a8bdb1}
+.tray-slot .slot-index{color:#bdd1c3;font-size:8px}.tray-slot.filled{background:linear-gradient(140deg,#31413c,#223330);border-color:#6c8676}
+.controls-strip{background:#1b2a2c;border-color:#435956;color:#bbcdc3;font-size:7px}.controls-strip .auto-tag{color:#a6beb2;font-size:6px}
+.protocol-stage strong{font-size:12px}.protocol-stage small{font-size:10px;color:#a5b8b5}.stage-number{background:#2f4240;border-color:#607b70;color:#d1e1d3}.stage-value{font-size:14px;color:#dfebd8}
+.protocol-grid label{font-size:11px;color:#b5c6bf}.protocol-grid input,.protocol-grid select{font-size:12px;padding:10px 8px;background:#132426;border-color:#536963}
+.inline-input{background:#263d37;border-color:#739482}.inline-input input{width:32px}.stage-value input{width:27px}
+.run-estimate{font-size:8px;color:#b0c2b8}.run-estimate strong{color:#d0e0d0}.fault-controls{font-size:11px;color:#c5d3c7}.fault-controls label,.fault-controls p{font-size:10px}.fault-controls p{color:#acbfb3}
+.start-button{background:#bed7c6;border-color:#dbe9d5;color:#1c3630;font-size:10px;min-height:46px}.protocol-bottom>p{font-size:10px;color:#aebfb1}
+.telemetry-head{background:#213033}.view-tabs button{font-size:12px;color:#b5c7bd}.view-tabs button.active{color:#eff5e9}.telemetry-content{background:#162326}.run-monitor{background:#1b2c2d;border-color:#425a54}
+.run-monitor>p{font-size:11px;color:#b5c9bc}.run-monitor>.eyebrow{font-size:9px}.readout,.readout strong{font-size:9px}.readout{color:#adc5b6;border-color:#496052}.readout strong{color:#d2e6cf}
+.legend-idle{color:#adc1b0;font-size:9px}.plot-legend{font-size:10px;color:#b9cdbc}.results-view td{font-size:11px}.results-view th{font-size:9px;color:#c1d3bf}.result-name small,.result-note{color:#b0c3ad}.qc-banner{font-size:12px}.notebook-view{font-size:11px;color:#bed1b8}
+.footer{color:#adc1b2}.footer b{color:#91ac9a}.footer>span:nth-child(2){color:#a9bbaf}.gaby-advisor{background:#1a292b}
+.gaby-advisor p,.gaby-advisor details{color:#b4c6bf}
+/* A small glass-covered helix sculpture stands on the dry end of the bench. */
+.dna-lamp{position:absolute;bottom:93px;right:3.5%;width:88px;height:204px;z-index:3}
+.lamp-halo{position:absolute;inset:-38px -48px -6px;pointer-events:none;background:radial-gradient(ellipse,#e4d0a32e,transparent 68%);opacity:0;transition:opacity .5s}
+.lamp-glass{position:absolute;left:11px;right:11px;bottom:29px;height:167px;border-radius:30px 30px 5px 5px;border:1px solid #d3e0d657;background:linear-gradient(90deg,#f4ffe419,transparent 24%,transparent 70%,#f5ffe714);box-shadow:inset 3px 0 3px #f1ffe710,2px 0 2px #11272833;overflow:hidden}
+.lamp-glass:after{content:'';position:absolute;left:7px;top:19px;bottom:12px;width:3px;border-radius:50%;background:linear-gradient(transparent,#f6ffe644,transparent)}
+#lampHelix{position:absolute;inset:9px 0 4px;width:100%;height:148px;filter:brightness(.56) saturate(.45);transition:filter .5s}
+.lamp-stem{position:absolute;left:42px;bottom:25px;width:4px;height:10px;background:#9baca2}
+.lamp-base{position:absolute;left:0;right:0;bottom:0;border:1px solid #afc2b18c;border-radius:50% / 22%;height:34px;background:linear-gradient(#a6b9a9,#536e63 30%,#29463f);box-shadow:0 7px 8px #102c2c55;display:flex;align-items:center;justify-content:center;gap:5px;color:#e2e7d4;font:7px var(--mono);padding:0;min-height:44px;bottom:-10px}
+.lamp-base:focus-visible{outline-offset:3px}.lamp-base .power-symbol{font-size:15px;color:#b6c4b5}.lamp-base strong{font-size:7px;font-weight:400}
+.lamp-plaque{position:absolute;bottom:-26px;width:120px;left:-16px;text-align:center;font:6px var(--mono);letter-spacing:1px;color:#d9e2d1;pointer-events:none}
+.dna-lamp.is-on .lamp-halo{opacity:1}.dna-lamp.is-on #lampHelix{filter:brightness(1.2) drop-shadow(0 0 3px #e0d9ad80)}
+.dna-lamp.is-on .power-symbol{color:#e4dfb5;text-shadow:0 0 5px #efe9ad77}
+.bench-spill{position:absolute;right:-1%;bottom:72px;width:175px;height:47px;border-radius:50%;background:radial-gradient(ellipse,#ebcf9045,transparent 70%);opacity:0;pointer-events:none;z-index:1;transition:opacity .5s}
+.lamp-on .bench-spill{opacity:1}
+.room-art.night-mode{background:radial-gradient(ellipse at 50% 0,#55757233,transparent 65%),linear-gradient(#263b40,#172c32 65%,#122329)}
+.night-mode .room-light{opacity:.18;box-shadow:0 0 6px #cce3d022}.night-mode .utility-rail{opacity:.5}.night-mode .wall-label{color:#a9c3bb6b}
+.night-mode .bench-back{background:linear-gradient(#5c7973,#395852)}.night-mode .bench-front{background:linear-gradient(#527369,#314d47);border-top-color:#82998b}
+.night-mode .cycler{filter:brightness(.76)}.night-mode .lamp-halo{background:radial-gradient(ellipse,#e8d19b3b,transparent 70%)}
+.night-mode .bench-spill{background:radial-gradient(ellipse,#f3d69765,transparent 70%)}
+@media(min-width:1600px){.room-art{min-height:470px}.cycler{transform:translateX(-50%) scale(1.1)}.dna-lamp{right:7%}}
+@media(max-width:1200px){.lab-layout{grid-template-columns:224px minmax(340px,1fr) 254px}.room-top{flex-wrap:wrap;height:auto;min-height:68px;padding:10px 12px}.room-top .eyebrow{flex:1;white-space:nowrap}.room-mode{margin-left:0}.task-light{font-size:8px;min-height:30px}.room-art{min-height:400px}.cycler{left:41%;transform:translateX(-50%) scale(.78)}.dna-lamp{right:1%;transform:scale(.8);transform-origin:bottom right}.ambient-vials{left:3%;bottom:113px;opacity:.8;transform:scale(.8);transform-origin:bottom left}.wall-label{font-size:22px}.wall-label span{font-size:6px}.controls-strip{font-size:6px}.protocol-grid label{font-size:10px}.protocol-grid input,.protocol-grid select{font-size:11px}.telemetry-head{gap:12px}.view-tabs{gap:15px}}
+@media(max-width:950px){.lab-layout{grid-template-columns:224px minmax(0,1fr)}.room-art{min-height:410px}.cycler{left:43%;transform:translateX(-50%) scale(.86)}.dna-lamp{right:2%}.protocol-stage{padding:16px 0}.room-caption{font-size:6px}.room-caption>span:last-child{font-size:5px}}
+@media(max-width:650px){.topbar{height:70px}.workspace-bar{padding:23px 17px}.lab-layout{display:flex;margin:0 13px}.panel-intro{font-size:11px}.specimen{min-height:80px}.specimen-name{font-size:13px}.specimen-sub{font-size:9px}.specimen-code{font-size:8px}.room-top{min-height:54px;gap:8px}.room-top .eyebrow{font-size:8px}.room-mode{font-size:8px}.task-light{font-size:8px;padding:4px 6px}.room-art{height:385px;min-height:385px}.cycler{left:40%;transform:translateX(-50%) scale(.76)}.dna-lamp{right:1%;transform:scale(.76)}.wall-label{top:65px;font-size:21px}.wall-vent{top:66px}.ambient-vials{left:4%;bottom:111px;transform:scale(.65)}.room-caption{left:12px;right:12px;font-size:6px}.tray-header>span{font-size:8px}.tray-header small{font-size:7px}.tray-slot .slot-index{font-size:7px}.slot-name{font-size:10px}.protocol-grid label{font-size:9px}.protocol-grid input,.protocol-grid select{font-size:11px;padding:9px 5px}.view-tabs button{font-size:11px}.view-tabs{gap:17px}.readout,.readout strong{font-size:8px}.results-view td{font-size:9px}.results-view th{font-size:7px}.footer{font-size:8px}.footer>span:nth-child(2){font-size:8px}}
+@media(max-width:370px){.cycler{left:39%;transform:translateX(-50%) scale(.66)}.dna-lamp{transform:scale(.66)}.room-top .eyebrow{font-size:7px}.room-mode{display:none}.view-tabs{gap:12px}.slot-name{font-size:9px}}
+.chart svg text{fill:#a9c0b4}.chart svg line{stroke:#7f9e9130}.chart svg line[stroke-dasharray]{stroke:#c5d8a6}
+.chart svg text[font-size="7"],.chart svg text[font-size="8"]{font-size:9px}
+/* Keep the physical plinth small while giving touch input a full-size target. */
+@media(max-width:1200px){.lamp-base{min-height:56px;background:transparent;border:0;box-shadow:none;isolation:isolate}.lamp-base:before{content:'';position:absolute;left:0;right:0;bottom:4px;height:40px;border:1px solid #afc2b18c;border-radius:50% / 22%;background:linear-gradient(#a6b9a9,#536e63 30%,#29463f);box-shadow:0 7px 8px #102c2c55;z-index:-1}}
+@media(max-width:650px){.lamp-base{min-height:60px}}
+@media(max-width:370px){.lamp-base{min-height:68px}}
+@media(prefers-reduced-motion:reduce){.room-art,.lamp-halo,#lampHelix,.bench-spill{transition:none}}
