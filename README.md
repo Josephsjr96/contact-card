@@ -41,6 +41,14 @@ Common questions are answered locally. Other questions may be sent to the existi
 
 `tests/browser.cjs` checks navigation, CV content, the actual PDF download, project links, no-JavaScript access, assistant keyboard behavior, failure handling and responsive overflow. Set `PLAYWRIGHT_MODULE` to an installed Playwright module and `BASE_URL` to the preview or deployed site. Browser screenshots and reports are kept locally under `qa/`.
 
+## VESPER PCR laboratory
+
+The first selected Work card opens the functioning laboratory at `samples/pcr/`, using the same project-card style as the other selected work. The app is served directly by GitHub Pages and needs no login, backend or API key. Its DNA import guide explains supported formats and the limits of simulated results. The existing private PCR Site retains its original access configuration.
+
+The importer accepts real reference or sample-derived DNA that has already been sequenced: one FASTA record or raw A/C/G/T/N sequence, 20–20,000 bases, with user-supplied primers. It does not sequence physical DNA, process raw reads or provide clinically validated analysis. `samples/pcr/README.md` records the public NCBI reference fixture and provenance.
+
+`node samples/pcr/tests/engine.test.cjs` runs the 13 engine regressions; `node samples/pcr/tests/reference-import.test.cjs` checks the real-reference fixture. `node tests/pcr.cjs` verifies the Work link, assistant answer, actual FASTA file upload, completed JSON export, contaminated control and responsive layout. The same browser test can target the public deployment through `BASE_URL`.
+
 ## Intro, waves and project films
 
 The root page shows a 6.5-second welcome once per browser session. Its startup is embedded before the main content, so slow-loading scripts cannot make the page flash before the intro. The four discipline cards cover AI/ML, game design, software and visual storytelling. They appear one by one, 850 ms apart, using the existing project film posters and Space Duel art. Skip intro and Escape dismiss it immediately; Replay intro is available in the footer. Hash links such as `#cv` and `#films`, reduced-motion visitors and JavaScript-disabled visits bypass it.

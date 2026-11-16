@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A working educational PCR/qPCR laboratory. Import DNA FASTA, simulate amplification and melt signals, and explore control failures.">
+<title>VESPER · Molecular Containment Lab</title>
+<link rel="stylesheet" href="lab.css">
+<script src="engine.js" defer></script><script src="lab.js" defer></script>
+</head>
+<body>
+<svg class="svg-defs" aria-hidden="true"><defs>
+<symbol id="i-helix" viewBox="0 0 32 32"><path d="M9 3c0 10 14 16 14 26M23 3C23 13 9 19 9 29M10 7h12M12 12h8M12 20h8M10 25h12"/></symbol>
+<symbol id="i-orbit" viewBox="0 0 32 32"><ellipse cx="16" cy="16" rx="7" ry="13" transform="rotate(35 16 16)"/><ellipse cx="16" cy="16" rx="7" ry="13" transform="rotate(-35 16 16)"/><circle cx="16" cy="16" r="2"/></symbol>
+<symbol id="i-diamond" viewBox="0 0 32 32"><path d="m16 3 12 13-12 13L4 16Z M16 3v26M4 16h24"/></symbol>
+<symbol id="i-split" viewBox="0 0 32 32"><path d="M9 3v8l14 10v8M23 3v8l-5 4M9 29v-8l5-4M9 7h14M9 25h14"/></symbol>
+<symbol id="i-plus" viewBox="0 0 32 32"><path d="M16 7v18M7 16h18"/></symbol>
+</defs></svg>
+<header class="topbar">
+<a href="./" class="brand" aria-label="Vesper laboratory home"><span class="brand-mark">V<span>◆</span></span><div>VESPER<span class="brand-sub">MOLECULAR SYSTEMS</span></div></a>
+<div class="facility"><span class="status-dot"></span> RESEARCH ANNEX <span class="slash">/</span> LAB 04 <span class="facility-tag">LOCAL SIMULATION</span></div>
+<div class="top-actions"><span class="research-label">RESEARCH &amp; EDUCATION</span><button id="helpButton" class="icon-button" aria-label="Open lab guide">?</button></div>
+</header>
+<div class="workspace-bar"><div><span class="eyebrow">INTERACTIVE LABORATORY</span><h1>The amplification room<span>.</span></h1></div><div class="run-label"><span class="live-light"></span><span id="systemStatus">SYSTEM READY</span><small id="runNumber">SESSION 001</small></div></div>
+<main class="lab-layout">
+<aside class="inventory panel">
+<div class="panel-heading"><h2>Specimen archive</h2><span class="counter" id="specimenCount">04</span></div>
+<p class="panel-intro">Select a DNA vial to inspect it.<br>Drag it into the thermal cycler.</p>
+<div class="shelf-label"><span>01 — SYNTHETIC DNA</span><span>50 mM Na⁺</span></div>
+<div id="specimens" class="specimens"></div>
+<button id="importButton" class="import-button"><svg><use href="#i-plus"/></svg> Import DNA FASTA <span>↗</span></button>
+<div class="archive-footer"><span class="small-light"></span> VIRTUAL COLD STORAGE <span>−20°C</span></div>
+<div class="specimen-inspector" id="inspector"></div>
+</aside>
+<section class="room panel" aria-label="PCR laboratory">
+<div class="room-top"><span class="eyebrow">THERMAL CYCLER / VC–40</span><span class="room-mode" id="roomMode">STANDBY</span></div>
+<div class="room-art">
+<div class="room-light"></div><div class="wall-line one"></div><div class="wall-line two"></div><div class="wall-label">V / 04<span>MOLECULAR CONTAINMENT</span></div>
+<div class="wall-vent"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="bench-back"></div><div class="bench-front"></div><div class="bench-leg left"></div><div class="bench-leg right"></div>
+<div class="ambient-vials"><span></span><span></span><span></span><span></span><div>REAGENTS</div></div>
+<div id="cycler" class="cycler" tabindex="0" role="group" aria-label="Thermal cycler drop zone. Select a vial, then click here to load it.">
+<div class="cycler-back"><div class="hinge"></div><div class="lid-top"><span>VESPER</span><i></i><b>OPTICAL THERMAL CYCLER</b></div></div>
+<div class="cycler-body"><div class="machine-top"><div class="well-plate" id="wellPlate"></div></div><div class="machine-face"><span class="machine-id">VC–40 <small>REAL-TIME PCR</small></span><div class="machine-screen"><span id="machineScreen">AWAITING SPECIMENS</span><strong id="machineTemp">22.0<small>°C</small></strong><span id="machineCycle">BLOCK AT AMBIENT</span><div class="screen-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="machine-led"></div><div class="machine-vents"></div></div><div class="machine-bottom"></div></div>
+<div class="drop-prompt" id="dropPrompt"><span>＋</span>DROP DNA INTO CYCLER<small>or select a vial and click here</small></div>
+</div>
+<div class="room-caption"><span class="small-light"></span> CLOSED ENVIRONMENT <span>SIMULATED INSTRUMENT</span></div>
+</div>
+<div class="tray-header"><span>REACTION TRAY <small id="trayCount">0 / 4 LOADED</small></span><button class="text-button" id="clearTray">Clear tray ↺</button></div>
+<div class="tray" id="tray" aria-label="DNA loading tray"></div>
+<div class="controls-strip"><span><i class="control-dot pc"></i> POSITIVE CONTROL</span><span><i class="control-dot ntc"></i> NO-TEMPLATE CONTROL</span><span class="auto-tag">AUTO-INCLUDED · EACH REPLICATE</span></div>
+</section>
+<aside class="protocol panel">
+<div class="panel-heading"><h2>Run protocol</h2><span class="tag">SINGLE-PLEX</span></div>
+<div class="protocol-stage"><span class="stage-number">01</span><div><strong>Denature</strong><small>Separate DNA strands</small></div><span class="stage-value">95°C <small>15 s</small></span></div>
+<div class="protocol-stage"><span class="stage-number">02</span><div><strong>Anneal</strong><small>Primers bind to template</small></div><label class="inline-input"><input id="anneal" type="number" min="45" max="75" step="0.5" value="58" aria-label="Annealing temperature">°C</label></div>
+<div class="protocol-stage"><span class="stage-number">03</span><div><strong>Extend &amp; read</strong><small>Polymerase copies DNA</small></div><span class="stage-value">72°C <small><input id="extension" type="number" min="1" max="90" value="20" aria-label="Extension duration"> s</small></span></div>
+<div class="protocol-grid"><label>Cycles<input id="cycles" type="number" min="20" max="60" value="40"></label><label>Replicates<input id="reps" type="number" min="1" max="8" value="3"></label><label>Random seed<input id="seed" type="number" min="0" max="4294967295" value="1337"></label><label>Playback<select id="speed"><option value="1">1× · inspect</option><option value="4" selected>4× · standard</option><option value="16">16× · fast</option></select></label></div>
+<div class="run-estimate"><span>VIRTUAL RUN TIME</span><strong id="duration">~58 min</strong></div>
+<details class="fault-controls"><summary>Experiment conditions <span>＋</span></summary><label><input type="checkbox" id="contamination"> Contaminate no-template control</label><label><input type="checkbox" id="pcFail"> Positive control failure</label><label class="noise-label">Detector noise σ <input id="noise" type="number" value="1.5" min="0" max="20" step="0.5"></label><p>Faults change the simulated data and control validity.</p></details>
+<div class="protocol-bottom"><button class="start-button" id="startButton" disabled><span>▶</span> START AMPLIFICATION <span>↗</span></button><div class="run-secondary" id="runSecondary" hidden><button id="pauseButton">Ⅱ Pause</button><button id="abortButton">■ Abort</button></div><p id="startHint">Load at least one specimen to begin.</p></div>
+</aside>
+<section class="telemetry panel">
+<div class="telemetry-head"><div class="telemetry-title"><span class="small-light"></span><h2>Instrument telemetry</h2></div><div class="view-tabs" role="tablist" aria-label="Telemetry view"><button class="active" data-view="amplification" role="tab" aria-selected="true">Amplification</button><button data-view="melt" role="tab" aria-selected="false">Melt curve</button><button data-view="results" role="tab" aria-selected="false">Results &amp; QC</button><button data-view="notebook" role="tab" aria-selected="false">Lab notebook</button></div><button class="text-button" id="exportButton" disabled>Export run ↓</button></div>
+<div class="telemetry-content"><div class="plot-area"><div id="chart" class="chart" role="img" aria-label="Fluorescence chart"></div><div class="plot-legend" id="legend"><span class="legend-idle">FLUORESCENCE WILL APPEAR DURING THE RUN</span></div><div id="results" class="results-view" hidden></div><div id="notebook" class="notebook-view" hidden></div></div><div class="run-monitor"><span class="eyebrow" id="phaseLabel">AWAITING RUN</span><div class="cycle-display"><strong id="cycleCounter">00</strong><span>/ <span id="cycleTotal">40</span><small>CYCLES</small></span></div><div class="phase-track"><i id="runProgress"></i></div><p id="phaseExplanation">Load a DNA specimen and start the thermal protocol to see amplification in real time.</p><div class="molecular-window"><svg id="molecule" viewBox="0 0 230 65" aria-label="DNA strand visualization"></svg></div><div class="readout"><span>DETECTOR</span><strong id="detector">STANDBY</strong></div><div class="readout"><span>CONTROL QC</span><strong id="qcReadout">PENDING</strong></div></div></div>
+</section>
+</main>
+<footer class="footer"><span>VESPER <b>RESEARCH SYSTEMS</b> <span class="footer-divider">/</span> SIM ENGINE 0.2</span><span>Educational model · Simulated data · Not for clinical use</span><a class="text-button" href="guide.html">DNA import guide ↗</a><a class="text-button" href="../../#work">← Back to projects</a><button id="modelButton">Model &amp; limitations ↗</button></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog id="helpDialog"><button class="close-dialog" aria-label="Close guide">×</button><span class="eyebrow">LAB FIELD GUIDE</span><h2>Your first amplification.</h2><ol><li><b>Inspect a vial.</b> Each icon represents a different synthetic dataset. Aster is the reference; Echo has fewer copies; Null has no matching target; Veil is inhibited.</li><li><b>Load the instrument.</b> Drag vials onto the cycler or a tray slot. You can also select a vial, then click an empty slot. Adjust starting copies in the tray.</li><li><b>Program the run.</b> Annealing temperature, extension duration, cycles and replicates affect the generated data. Playback only changes animation speed.</li><li><b>Run and investigate.</b> Watch denaturation, annealing and extension. After the melt scan, inspect Cq, replicate agreement and control validity.</li></ol><p>Try Aster and Echo together. Then repeat with a contaminated control or a higher annealing temperature. Controls determine whether sample calls are valid.</p><button class="start-button close-dialog-button">ENTER THE LAB →</button></dialog>
+<dialog id="modelDialog"><button class="close-dialog" aria-label="Close model notes">×</button><span class="eyebrow">DETERMINISTIC ENGINE / 0.2</span><h2>What this lab models.</h2><p>DNA and primers determine binding sites and product length. SantaLucia nearest-neighbour parameters estimate primer Tm; an empirical long-product formula estimates melt Tm. Salt is fixed at 50 mM and total primer strand concentration at 0.5 µM.</p><p>Copy number follows N(n) = N(n−1) × [1 + E(n)], with reagent saturation. Efficiency responds to primer mismatches, annealing temperature, extension time and inhibition. Poisson sampling adds low-copy variability; seeded Gaussian detector noise makes runs reproducible.</p><p>Analysis uses a linear baseline over cycles 3–12, a shared threshold of 10 × NTC baseline SD (minimum 10 RFU), interpolated sustained crossings, replicate QC and a melt check. Curve shape uses a signal/monotonicity heuristic. Cq values beyond the demo cutoff of 35 are inconclusive. Failed controls invalidate the run.</p><p><b>Limits:</b> this is an educational single-plex model, not a validated instrument or chemical kinetics solver. Low-temperature off-target chemistry, dimers, hairpins, magnesium effects and internal controls are not modeled. Efficiency is not measured without a dilution series. Custom FASTA is unverified. There is no LLM or production safety/release gate.</p><p class="source-links">References: <a href="https://biopython.org/docs/1.80/api/Bio.SeqUtils.MeltingTemp.html" target="_blank" rel="noreferrer">Biopython thermodynamics</a> · <a href="https://doi.org/10.1093/clinchem/hvaf043" target="_blank" rel="noreferrer">MIQE 2.0</a></p></dialog>
+<dialog id="importDialog"><button class="close-dialog" aria-label="Close import">×</button><span class="eyebrow">NEW SPECIMEN</span><h2>Import a DNA sequence.</h2><p>Single-record FASTA or DNA text, 20–20,000 bp (A/C/G/T/N). Supply both primers in 5′→3′ orientation. Reference or real sample-derived sequences can be simulated; no laboratory measurement is performed. Data stays in this browser. Imported sequences remain unverified.</p><form id="importForm"><label>Specimen name<input id="customName" maxlength="28" value="Custom construct" required></label><label>Template FASTA<textarea id="customFasta" rows="5" required placeholder=">SYNTHETIC-DEMO&#10;ACGT…"></textarea></label><label>Or choose a .fasta / .fa / .fna / .txt file<input id="fastaFile" type="file" accept=".fasta,.fa,.fna,.txt"></label><div class="protocol-grid"><label>Forward primer · 5′→3′<input id="customFwd" required></label><label>Reverse primer · 5′→3′<input id="customRev" required></label></div><label>Starting copies per reaction<input id="customCopies" type="number" min="0" max="10000000" value="5000" required></label><p id="importError" class="error-message" role="alert"></p><button class="start-button" type="submit">ADD TO ARCHIVE →</button></form></dialog>
+</body></html>

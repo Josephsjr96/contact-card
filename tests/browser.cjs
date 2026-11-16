@@ -96,7 +96,7 @@ const base=(process.env.BASE_URL || 'http://127.0.0.1:8088/').replace(/\/?$/,'/'
   if(width===375)await page.screenshot({path:path.join(output,'mobile-chat.png')});
   await page.keyboard.press('Escape');
  }
- const plain=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});const nojs=await plain.newPage();await nojs.goto(base+'#cv');assert.ok(await nojs.locator('#cv-download').isVisible());assert.equal(await nojs.locator('.project').count(),8);
+ const plain=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});const nojs=await plain.newPage();await nojs.goto(base+'#cv');assert.ok(await nojs.locator('#cv-download').isVisible());assert.equal(await nojs.locator('.project').count(),9);
  const pdf=await plain.request.get(base+'cv.pdf');assert.equal(pdf.status(),200);assert.ok((pdf.headers()['content-type']||'').includes('application/pdf'));
  assert.deepEqual(errors,[]);assert.deepEqual(badResponses,[]);
  const report={base,passed:true,pdfBytes:bytes.length,checks:['Short intro: skip, automatic dismissal, once per session and direct-link bypass','Nix wave animation, pause and reduced-motion behavior','Three video playbacks, durations and seeking','Only one video plays at a time','Matching CV content','Exact PDF download','Anchor navigation and browser history','All local project links','Case-study return links','Assistant quick answers and download','AI service failure fallback','Dialog keyboard trap and focus restoration','Responsive widths 320–1440','No JavaScript navigation and CV','No page errors or missing assets']};
