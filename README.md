@@ -43,7 +43,7 @@ Common questions are answered locally. Other questions may be sent to the existi
 
 ## VESPER PCR laboratory
 
-The first selected Work card opens the functioning laboratory at `samples/pcr/`, using the same project-card style as the other selected work. The app is served directly by GitHub Pages and needs no login, backend or API key. Its DNA import guide explains supported formats and the limits of simulated results. The existing private PCR Site retains its original access configuration.
+The first selected Work card opens the functioning laboratory at `samples/pcr/`, using the same project-card style as the other selected work. The app is served directly by GitHub Pages and needs no login, backend or API key. Its DNA import guide explains supported formats and the limits of simulated results. Completed runs can request constrained explanations from Gaby through the existing model service; anonymous run metrics are shared only when Explain is chosen. The existing private PCR Site retains its original access configuration.
 
 The importer accepts real reference or sample-derived DNA that has already been sequenced: one FASTA record or raw A/C/G/T/N sequence, 20–20,000 bases, with user-supplied primers. It does not sequence physical DNA, process raw reads or provide clinically validated analysis. `samples/pcr/README.md` records the public NCBI reference fixture and provenance.
 

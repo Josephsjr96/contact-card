@@ -2,7 +2,7 @@
 
 Live browser-only PCR/qPCR simulation, served by the contact card's GitHub Pages deployment at `samples/pcr/`. The Work card uses the portfolio's existing project-card renderer and launches the functioning app directly. `guide.html` documents import support and scientific scope.
 
-Based on the VESPER laboratory source commit `6e3b43b`. `engine.js` is copied unchanged from that snapshot (engine version 0.2.0). `index.html` is the laboratory's original `prototype.html`, with portfolio navigation and more accurate import labels. `lab.js` differs only in the imported-DNA notification and notebook text. `lab.css` retains the original laboratory appearance. The private Sites publication is a separate deployment with unchanged access settings.
+Based on the VESPER laboratory source commit `6e3b43b`. `engine.js` retains that snapshot’s numerical model (engine version 0.2.0); its limitations text now describes the optional advisory layer. `index.html` is the laboratory's original `prototype.html`, with portfolio navigation and more accurate import labels. `lab.js` integrates the optional Gaby advisory UI while preserving engine ownership of results. `lab.css` retains the original laboratory appearance. The private Sites publication is a separate deployment with unchanged access settings.
 
 ## Real-sequence support
 
@@ -25,3 +25,21 @@ BASE_URL=http://127.0.0.1:8088/ node tests/pcr.cjs
 ```
 
 The browser test follows the actual Work link, imports the reference through the file input, supplies the fixture primers, checks sequence/product preservation in the downloaded run, tests contamination, visits the guide and checks responsive widths. It also checks the PCR assistant answer. Screenshots and observed results are written under ignored `qa/`.
+
+## Gaby advisory (application 0.3.0)
+
+`gaby-advisor.js` reuses `SITE.WORKER_URL`, the portfolio Gaby model service. Requests occur only after a completed run and a click on Explain. The projection includes generated labels (S1–S4, NTC, PC), rounded Cq/replicate metrics, protocol settings and allowlisted flags. It omits specimen names, DNA, primers, source IDs and session notes. There is no free-text prompt field.
+
+The model returns structured observation/tip codes, never displayed raw prose. A strict field check, exact calls/Cq comparisons, per-run SHA-256 fingerprint and permitted-code checks reject unsupported claims. Wording comes from local templates. A failed control must remain INVALID and must prompt control-failure investigation. This is a constrained teaching advisor, not an unrestricted chat or scientific validation.
+
+Requests time out after 30 seconds. Disabling Gaby or changing the run cancels pending work and discards its advice. Errors and rejected responses use explicitly local deterministic explanations. Export includes advisory status, verified structured output, the input fingerprint and the model name reported by the service. Checks run in the browser and do not establish a trusted backend or authenticated release flow.
+
+Additional verification:
+
+```sh
+node samples/pcr/tests/gaby-advisor.test.cjs
+node tests/pcr-gaby.cjs
+GABY_LIVE=1 BASE_URL=https://josephsjr96.github.io/contact-card/ node tests/pcr-gaby.cjs
+```
+
+The normal browser suite mocks good, malicious, unavailable and delayed service responses. The explicit live mode calls the real Gaby service once. Current application behavior differs from the separate, earlier specialist-review PDF; specialist evaluation of the LLM advisory has not been performed.

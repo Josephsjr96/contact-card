@@ -1,0 +1,23 @@
+.gaby-advisor{grid-column:1/-1;padding:22px 24px;color:#aabd9f;font:12px/1.6 var(--sans,Arial,sans-serif)}
+.gaby-advisor-head{display:flex;justify-content:space-between;align-items:flex-start;gap:25px}
+.gaby-advisor h2{margin:0;color:#dde7d2;font-size:17px;font-weight:500}
+.gaby-advisor h3{color:#cedcbd;font-size:12px;font-weight:500;margin:12px 0 6px}
+.gaby-advisor-head p{margin:5px 0 12px;max-width:720px}
+.gaby-toggle{display:flex;align-items:center;gap:8px;white-space:nowrap;font:10px var(--mono)}
+.gaby-toggle input{width:15px;height:15px;accent-color:#c7dea7}
+.gaby-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.gaby-actions button{padding:10px 16px;border:1px solid #647954;border-radius:4px;background:#263320;color:#d2e5be;font:11px var(--mono)}
+.gaby-actions button:disabled{opacity:.45;cursor:default}
+.gaby-actions p{margin:0;flex:1;min-width:200px;color:#c4d2b7;font-size:11px}
+.gaby-advisor details{margin-top:14px;max-width:850px;font-size:10px;color:#93a486}
+.gaby-advisor summary{cursor:pointer;width:fit-content}
+.gaby-observations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.gaby-observation{border:1px solid #35472d;border-radius:4px;background:#111a0f;padding:12px 14px}
+.gaby-observation h3{margin:0 0 6px}.gaby-observation small{font:9px var(--mono);color:#829575}
+.gaby-observation p{font-size:11px;margin:6px 0}.gaby-call{font:10px var(--mono);color:#c5d6b4}
+.gaby-source{border-top:1px solid #304126;padding-top:16px;margin-top:18px;font:9px/1.7 var(--mono);color:#8ea97c;overflow-wrap:anywhere}
+.gaby-advisor ul{padding-left:18px;font-size:11px}.gaby-advisor li{margin:7px 0}
+.gaby-footnote{font-size:10px;color:#7e9271}
+@media(max-width:1000px){.gaby-observations{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.gaby-advisor{padding:18px}.gaby-advisor-head{display:block}.gaby-toggle{margin:8px 0 16px}.gaby-observations{grid-template-columns:1fr}.gaby-actions p{min-width:0;width:100%;flex-basis:100%}}
+@media print{.gaby-advisor{display:none}}
