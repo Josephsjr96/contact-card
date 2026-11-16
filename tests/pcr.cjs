@@ -35,7 +35,7 @@ const base=(process.env.BASE_URL||'http://127.0.0.1:8088/').replace(/\/?$/,'/');
   await page.locator('#importDialog').waitFor({state:'hidden'});
   assert.equal(await page.locator('.specimen').count(),5);
   assert.match(await page.locator('#inspector').innerText(),/400 bp/);
-  await page.locator('[data-slot="0"]').click();await page.selectOption('#speed','16');await page.click('#startButton');
+  await page.locator('[data-slot="0"]').click();await page.click('[data-load-id="CUSTOM-1"]');await page.selectOption('#speed','16');await page.click('#startButton');
   await page.waitForFunction(()=>document.querySelector('#phaseLabel').textContent==='PROTOCOL COMPLETE',null,{timeout:30000});
   assert.match(await page.locator('#results').innerText(),/CONTROLS VALID/);
   const done=page.waitForEvent('download');await page.click('#exportButton');

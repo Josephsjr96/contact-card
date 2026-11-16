@@ -16,7 +16,7 @@ const base=process.env.BASE_URL||'http://127.0.0.1:8089/';
   });
   assert.ok(durations.every(([,seconds])=>seconds>1&&seconds<20));
   await page.click('#labVoiceToggle');await page.waitForFunction(()=>voicePlays.some(s=>s.endsWith('/welcome.mp3')));
-  await page.click('[data-slot="0"]');await page.selectOption('#speed','16');await page.click('#startButton');
+  await page.click('[data-slot="0"]');await page.click('[data-load-id="SYN-01"]');await page.selectOption('#speed','16');await page.click('#startButton');
   await page.waitForFunction(()=>voicePlays.some(s=>s.endsWith('/start.mp3')));
   await page.waitForFunction(()=>document.querySelector('#phaseLabel').textContent==='PROTOCOL COMPLETE',null,{timeout:30000});
   assert.match(await page.locator('#labAnnouncement').innerText(),/Amplification complete/);

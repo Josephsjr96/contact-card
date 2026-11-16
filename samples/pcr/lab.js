@@ -83,14 +83,31 @@ function addVial(id,index){
  if(loaded&&(loaded.fwd!==d.fwd||loaded.rev!==d.rev)){toast('Single-plex runs need one primer pair. Clear the tray before loading this assay.');return;}
  invalidate();state.slots[index]={...d};log('LOADED',`${d.name} in slot ${index+1} · ${d.copies} copies/reaction`);renderTray();updateReady();toast(`${d.name} loaded into reaction slot ${index+1}.`);
 }
+function chooseVial(index){
+ if(busy()){toast('The instrument is locked during a run.');return;}
+ if(index===undefined)index=state.slots.indexOf(null);
+ if(index<0){toast('The reaction tray is full. Remove a vial first.');return;}
+ const loaded=state.slots.find(Boolean);
+ $('#specimenPickerTitle').textContent=`Choose DNA for slot ${index+1}`;
+ $('#specimenChoices').innerHTML=state.library.map(d=>{
+  const compatible=!loaded||(loaded.fwd===d.fwd&&loaded.rev===d.rev);
+  return `<button type="button" class="specimen-choice" data-load-id="${esc(d.id)}" ${compatible?'':'disabled'}><strong>${esc(d.name)}</strong><span>${esc(d.subtitle)} · ${d.copies.toLocaleString()} copies/reaction</span>${compatible?'':'<small>Different primer pair — clear the tray to use this assay.</small>'}</button>`;
+ }).join('');
+ $$('[data-load-id]').forEach(button=>button.onclick=()=>{
+  if(busy())return;
+  state.selected=button.dataset.loadId;
+  addVial(state.selected,index);renderArchive();renderInspector();$('#specimenPicker').close();
+ });
+ $('#specimenPicker').showModal();
+}
 function bindDrop(el,index){
  el.ondragover=e=>{if(busy())return;e.preventDefault();e.dataTransfer.dropEffect='copy';el.classList.add('drag-over');};
  el.ondragleave=e=>{if(!el.contains(e.relatedTarget))el.classList.remove('drag-over');};
  el.ondrop=e=>{e.preventDefault();e.stopPropagation();el.classList.remove('drag-over');addVial(e.dataTransfer.getData('text/plain'),index);};
 }
 function renderTray(){
- $('#tray').innerHTML=state.slots.map((d,i)=>d?`<div class="tray-slot filled" style="--sample:${d.color}" data-slot="${i}"><button class="slot-remove" data-remove="${i}" aria-label="Remove ${esc(d.name)}" ${busy()?'disabled':''}>×</button><div class="slot-name">${specimenIcon(d)}${esc(d.name)}</div><label class="slot-copies"><input type="number" min="0" max="10000000" step="1" value="${d.copies}" data-copies="${i}" aria-label="${esc(d.name)} starting copies in slot ${i+1}" ${busy()?'disabled':''}>COPIES / RXN</label></div>`:`<button class="tray-slot" data-slot="${i}" aria-label="Load selected specimen into slot ${i+1}" ${busy()?'disabled':''}><span class="slot-index">0${i+1}</span><span class="slot-plus">＋</span><span class="slot-empty">EMPTY SLOT</span></button>`).join('');
- $$('[data-slot]').forEach(el=>{bindDrop(el,Number(el.dataset.slot));if(!state.slots[el.dataset.slot])el.onclick=()=>addVial(state.selected,Number(el.dataset.slot));});
+ $('#tray').innerHTML=state.slots.map((d,i)=>d?`<div class="tray-slot filled" style="--sample:${d.color}" data-slot="${i}"><button class="slot-remove" data-remove="${i}" aria-label="Remove ${esc(d.name)}" ${busy()?'disabled':''}>×</button><div class="slot-name">${specimenIcon(d)}${esc(d.name)}</div><label class="slot-copies"><input type="number" min="0" max="10000000" step="1" value="${d.copies}" data-copies="${i}" aria-label="${esc(d.name)} starting copies in slot ${i+1}" ${busy()?'disabled':''}>COPIES / RXN</label></div>`:`<button class="tray-slot" data-slot="${i}" aria-label="Choose DNA specimen for slot ${i+1}" ${busy()?'disabled':''}><span class="slot-index">0${i+1}</span><span class="slot-plus">＋</span><span class="slot-empty">EMPTY SLOT</span></button>`).join('');
+ $$('[data-slot]').forEach(el=>{bindDrop(el,Number(el.dataset.slot));if(!state.slots[el.dataset.slot])el.onclick=()=>chooseVial(Number(el.dataset.slot));});
  $$('[data-remove]').forEach(el=>el.onclick=()=>{if(busy())return;const i=Number(el.dataset.remove);invalidate();log('REMOVED',`${state.slots[i].name} from slot ${i+1}`);state.slots[i]=null;renderTray();updateReady();});
  $$('[data-copies]').forEach(el=>el.onchange=()=>{
   if(busy())return;const n=Number(el.value),slot=state.slots[Number(el.dataset.copies)];
@@ -275,7 +292,7 @@ function exportRun(){
 $('#startButton').onclick=startRun;$('#pauseButton').onclick=pauseRun;$('#abortButton').onclick=abortRun;$('#exportButton').onclick=exportRun;
 $('#cooperExplain').onclick=explainRun;$('#cooperEnabled').onchange=resetAdvisory;
 $('#clearTray').onclick=()=>{if(busy())return;invalidate();state.slots=[null,null,null,null];log('TRAY CLEARED','All reaction slots emptied.');resetMonitor();renderTray();updateReady();};
-$('#cycler').onclick=()=>{if(!busy())addVial(state.selected);};$('#cycler').onkeydown=e=>{if(e.target===e.currentTarget&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(!busy())addVial(state.selected);}};bindDrop($('#cycler'));
+$('#cycler').onclick=()=>chooseVial();$('#cycler').onkeydown=e=>{if(e.target===e.currentTarget&&(e.key==='Enter'||e.key===' ')){e.preventDefault();chooseVial();}};bindDrop($('#cycler'));
 $$('[data-view]').forEach(el=>el.onclick=()=>setView(el.dataset.view));
 $('#helpButton').onclick=()=>$('#helpDialog').showModal();$('#modelButton').onclick=()=>$('#modelDialog').showModal();
 $$('.close-dialog').forEach(el=>el.onclick=()=>el.closest('dialog').close());$('.close-dialog-button').onclick=()=>$('#helpDialog').close();

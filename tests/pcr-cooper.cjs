@@ -29,7 +29,7 @@ const base=(process.env.BASE_URL||'http://127.0.0.1:8088/').replace(/\/?$/,'/'),
   await page.fill('#customName',secretName);
   const dna=await page.evaluate(()=>PCR.DATASETS[0].seq);await page.fill('#customFasta',dna);
   await page.locator('#importForm [type=submit]').click();await page.locator('#importDialog').waitFor({state:'hidden'});
-  await page.locator('[data-slot="0"]').click();await page.selectOption('#speed','16');await page.click('#startButton');
+  await page.locator('[data-slot="0"]').click();await page.click('[data-load-id="CUSTOM-1"]');await page.selectOption('#speed','16');await page.click('#startButton');
   await page.waitForFunction(()=>document.querySelector('#phaseLabel').textContent==='PROTOCOL COMPLETE',null,{timeout:30000});
   const downloadRun=async()=>{const pending=page.waitForEvent('download');await page.click('#exportButton');const d=await pending;const file=path.join(out,'pcr-cooper-export.json');await d.saveAs(file);return JSON.parse(await fs.readFile(file,'utf8'));};
   const initial=await downloadRun();
