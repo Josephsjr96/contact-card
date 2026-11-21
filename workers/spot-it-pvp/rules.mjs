@@ -1,16 +1,15 @@
 export const SYMBOLS=['rocket','bolt','target','gem','flame','planet','ufo','dice','star','shield','flower','signal','ghost','moon','leaf','heart','key','anchor','mushroom','crown','eye','butterfly','fish','cat','apple','icecream','music','umbrella','coffee','sun','camera','hourglass'];
-export const PER_CARD=10,WIN=20,ROOM_TTL=2*60*60*1000;
+export const MAX_PLAYERS=6,PER_CARD=10,WIN=20,ROOM_TTL=2*60*60*1000;
 export function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+export function cardForTable(state){const outside=SYMBOLS.filter(s=>!state.table.includes(s));return shuffle([state.match,...shuffle(outside).slice(0,PER_CARD-1)])}
 export function deal(state){
  const match=SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
  const rest=shuffle(SYMBOLS.filter(s=>s!==match));
  const table=shuffle([match,...rest.slice(0,PER_CARD-1)]);
- const outside=SYMBOLS.filter(s=>!table.includes(s));
- state.table=table;state.cards=[0,1].map(()=>shuffle([match,...shuffle([...outside]).slice(0,PER_CARD-1)]));
- state.match=match;state.lastPoint=null;
+ state.table=table;state.match=match;state.cards=Array.from({length:MAX_PLAYERS},()=>cardForTable(state));state.lastPoint=null;
 }
 export function newRoom(name,tokenHash,now=Date.now()){
- const state={expiresAt:now+ROOM_TTL,phase:'waiting',round:0,game:0,nextAt:0,players:[{name,tokenHash,score:0,ready:false,connectionId:null},null]};
+ const state={expiresAt:now+ROOM_TTL,phase:'waiting',round:0,game:0,nextAt:0,players:[{name,tokenHash,score:0,ready:false,connectionId:null}]};
  deal(state);return state;
 }
 export function startMatch(state,now=Date.now()){

@@ -47,7 +47,7 @@ window.SITE = {
      desc:"A Python and SQLite instruction manager with a browser interface, reviewed file updates, backups and stale-preview checks.",
      tags:["Python","SQLite","JavaScript"], cta:"View on GitHub", url:"https://github.com/Josephsjr96/rulebox", external:true},
     {id:"spot-it", group:"games", title:"Spot It!", kind:"Browser game · Visual matching",
-     desc:"Find the one shared object before the AI or a friend does. Ten objects per card, 32 illustrated symbols and a race to 20 matches. Create a named two-player room and share its invite link.",
+     desc:"Find the one shared object before the AI or a friend does. Ten objects per card, 32 illustrated symbols and a race to 20 matches. Create a named PvP room for 2–6 players, or paste an invite link to join.",
      tags:["JavaScript","SVG","Canvas particles","Realtime PvP"], cta:"Play Spot It", url:"samples/spot-it/", external:false},
     {id:"space-duel", group:"games", title:"Space Ship Duel", kind:"Independent game project · Desktop arcade",
      desc:"A Python/Pygame space shooter that connects responsive combat, weapon progression and a six-world frontier journey. Built around readable action, a cinematic opening and clear objectives between encounters.",

@@ -1,5 +1,5 @@
 import {DurableObject} from 'cloudflare:workers';
-import {newRoom,startMatch,claim,deal} from './rules.mjs';
+import {newRoom,startMatch,claim,deal,cardForTable,MAX_PLAYERS} from './rules.mjs';
 const ROOM_PATTERN=/^[a-f0-9]{24}$/;
 function allowed(origin){if(origin==='https://josephsjr96.github.io')return true;try{const u=new URL(origin);return u.protocol==='http:'&&['127.0.0.1','localhost'].includes(u.hostname)}catch{return false}}
 function json(data,status=200,origin=''){return Response.json(data,{status,headers:{'Access-Control-Allow-Origin':allowed(origin)?origin:'https://josephsjr96.github.io','Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type','Cache-Control':'no-store','Vary':'Origin'}})}
@@ -14,7 +14,7 @@ function equal(a,b){if(typeof a!=='string'||typeof b!=='string'||a.length!==64||
 export default {
  async fetch(request,env){
   const url=new URL(request.url),origin=request.headers.get('Origin')||'';
-  if(url.pathname==='/health'&&request.method==='GET')return json({ok:true,service:'spot-it-pvp',version:1},200,origin);
+  if(url.pathname==='/health'&&request.method==='GET')return json({ok:true,service:'spot-it-pvp',version:2},200,origin);
   if(!allowed(origin))return json({error:'Open this game from Joseph’s portfolio.'},403,origin);
   if(request.method==='OPTIONS')return json({},200,origin);
   try{
@@ -37,7 +37,7 @@ export default {
 };
 export class SpotRoom extends DurableObject {
  constructor(ctx,env){super(ctx,env);ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS room (id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL)')}
- load(){const row=this.ctx.storage.sql.exec('SELECT data FROM room WHERE id=1').toArray()[0];return row?JSON.parse(row.data):null}
+ load(){const row=this.ctx.storage.sql.exec('SELECT data FROM room WHERE id=1').toArray()[0];if(!row)return null;const state=JSON.parse(row.data);state.players=state.players.filter(Boolean);while(state.cards.length<MAX_PLAYERS)state.cards.push(cardForTable(state));return state}
  save(state){this.ctx.storage.sql.exec('INSERT INTO room(id,data) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data',JSON.stringify(state))}
  valid(state){return state&&state.expiresAt>Date.now()}
  async schedule(state){const next=['countdown','reveal'].includes(state.phase)?state.nextAt:state.expiresAt;await this.ctx.storage.setAlarm(Math.min(next,state.expiresAt))}
@@ -50,12 +50,13 @@ export class SpotRoom extends DurableObject {
  async join(name){
   const token=crypto.randomUUID()+crypto.randomUUID(),tokenHash=await hash(token),state=this.load();
   if(!this.valid(state))return {status:404,data:{error:'This room has expired. Ask your friend for a new link.'}};
-  if(state.players[1])return {status:409,data:{error:'This room already has two players.'}};
-  state.players[1]={name,tokenHash,score:0,ready:false,connectionId:null};this.save(state);this.broadcast(state);
-  return {status:200,data:{token,seat:1,expiresAt:state.expiresAt}};
+  if(state.players.length>=MAX_PLAYERS)return {status:409,data:{error:'This room already has six players.'}};
+  if(state.phase!=='waiting')return {status:409,data:{error:'This match has already started. Ask your friend for a new room.'}};
+  const seat=state.players.length;state.players.push({name,tokenHash,score:0,ready:false,connectionId:null});this.save(state);this.broadcast(state);
+  return {status:200,data:{token,seat,expiresAt:state.expiresAt}};
  }
  online(state,seat){const id=state.players[seat]?.connectionId;return !!id&&this.ctx.getWebSockets().some(ws=>{const a=ws.deserializeAttachment();return ws.readyState===1&&a?.seat===seat&&a.connectionId===id})}
- view(state,seat){return {type:'state',you:seat,phase:state.phase,round:state.round,game:state.game,nextAt:state.nextAt,serverNow:Date.now(),expiresAt:state.expiresAt,players:state.players.map((p,i)=>p?{name:p.name,score:p.score,ready:p.ready,online:this.online(state,i)}:null),table:state.table,card:state.cards[seat],opponent:state.cards[1-seat],lastPoint:state.lastPoint}}
+ view(state,seat){return {type:'state',you:seat,host:0,maxPlayers:MAX_PLAYERS,phase:state.phase,round:state.round,game:state.game,nextAt:state.nextAt,serverNow:Date.now(),expiresAt:state.expiresAt,players:state.players.map((p,i)=>p?{name:p.name,score:p.score,ready:p.ready,online:this.online(state,i)}:null),table:state.table,card:state.cards[seat],opponent:state.cards[seat===0?1:0],cards:state.cards.slice(0,state.players.length),lastPoint:state.lastPoint}}
  broadcast(state=this.load()){if(!this.valid(state))return;for(const ws of this.ctx.getWebSockets()){const a=ws.deserializeAttachment();if(a&&ws.readyState===1&&state.players[a.seat]?.connectionId===a.connectionId){try{ws.send(JSON.stringify(this.view(state,a.seat)))}catch{}}}}
  async fetch(request){
   if(request.headers.get('Upgrade')?.toLowerCase()!=='websocket')return json({error:'WebSocket required.'},426);
@@ -67,7 +68,7 @@ export class SpotRoom extends DurableObject {
   const old=this.ctx.getWebSockets().filter(ws=>ws.deserializeAttachment()?.seat===seat);
   this.ctx.acceptWebSocket(server);server.serializeAttachment({seat,connectionId,lastAttempt:0,windowStart:0,count:0});
   state.players[seat].connectionId=connectionId;
-  if(state.phase==='paused'&&[0,1].every(i=>this.online(state,i))){if(state.needsNextRound){state.round++;deal(state)}state.needsNextRound=false;state.phase='countdown';state.nextAt=Date.now()+2000}
+  if(state.phase==='paused'&&state.players.every((p,i)=>this.online(state,i))){if(state.needsNextRound){state.round++;deal(state)}state.needsNextRound=false;state.phase='countdown';state.nextAt=Date.now()+2000}
   this.save(state);for(const ws of old){try{ws.close(4001,'Connected in another tab')}catch{}}
   await this.schedule(state);this.broadcast();
   return new Response(null,{status:101,webSocket:client,headers:{'Sec-WebSocket-Protocol':'spot-it'}});
@@ -82,12 +83,15 @@ export class SpotRoom extends DurableObject {
   if(data.type==='sync'){ws.send(JSON.stringify(this.view(state,a.seat)));return}
   if(data.type==='ready'&&['waiting','finished'].includes(state.phase)){
    state.players[a.seat].ready=true;
-   if(state.players.every(p=>p?.ready)&&[0,1].every(i=>this.online(state,i)))startMatch(state);
    this.save(state);await this.schedule(state);this.broadcast();return;
+  }
+  if(data.type==='start'){
+   if(a.seat!==0||!['waiting','finished'].includes(state.phase)||state.players.length<2||!state.players.every(p=>p.ready)||!state.players.every((p,i)=>this.online(state,i))){ws.send(JSON.stringify({type:'error',message:'The host can start when at least two players are connected and everyone is ready.'}));return}
+   startMatch(state);this.save(state);await this.schedule(state);this.broadcast();return;
   }
   if(data.type==='claim'){
    if(now-a.lastAttempt<150)return;a.lastAttempt=now;ws.serializeAttachment(a);
-   if(![0,1].every(i=>this.online(state,i))){ws.send(JSON.stringify({type:'error',message:'Waiting for the other player to reconnect.'}));return}
+   if(!state.players.every((p,i)=>this.online(state,i))){ws.send(JSON.stringify({type:'error',message:'Waiting for all players to reconnect.'}));return}
    const result=claim(state,a.seat,data.symbol,data.round,now);
    if(result.error){ws.send(JSON.stringify(this.view(state,a.seat)));ws.send(JSON.stringify({type:'error',message:result.error}));return}
    this.save(state);await this.schedule(state);this.broadcast();
@@ -106,7 +110,7 @@ export class SpotRoom extends DurableObject {
   const state=this.load();if(!state)return;
   if(!this.valid(state)){for(const ws of this.ctx.getWebSockets()){try{ws.close(4004,'Room expired')}catch{}}this.ctx.storage.sql.exec('DELETE FROM room WHERE id=1');await this.ctx.storage.deleteAlarm();return}
   if(Date.now()>=state.nextAt&&['countdown','reveal'].includes(state.phase)){
-   if(![0,1].every(i=>this.online(state,i))){state.needsNextRound=state.phase==='reveal';state.phase='paused'}
+   if(!state.players.every((p,i)=>this.online(state,i))){state.needsNextRound=state.phase==='reveal';state.phase='paused'}
    else if(state.phase==='countdown')state.phase='playing';
    else{state.round++;deal(state);state.phase='playing'}
    this.save(state);this.broadcast(state);
