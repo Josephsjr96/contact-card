@@ -64,3 +64,7 @@ The root page shows a 6.5-second welcome once per browser session. Its startup i
 ## Motion verification
 
 `tests/motion.cjs` checks changing field pixels, paused RAF, replay/skip/automatic intro completion, focus restoration, reduced-motion changes, GPU context restoration and the no-WebGL fallback. It records observed browser frame pacing in the ignored `qa/motion-report.json`; this is a local browser measurement, not a guarantee for every device. `tests/intro-first-paint.cjs` covers deferred-script delays and intro-first rendering. Canvas snapshots explicitly draw before readback so WebGL does not need to preserve its drawing buffer every frame.
+
+## Spot It browser game
+
+Game Design includes a direct Play Spot It link to `samples/spot-it/` and an actual gameplay preview. The standalone game has 32 illustrated objects, ten objects per card, exactly one shared match, three AI speeds, touch/drag/keyboard controls and object-shaped particles. It opens directly to the board with a small Start button. `site-config.js` and `build.py` generate the portfolio feature; Gaby answers Spot It and game-design questions locally. Run `node tests/spot-it.cjs` to check the portfolio integration and game behavior.

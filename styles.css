@@ -31,3 +31,5 @@
 @media(min-width:701px){.discipline-ai{--x:-155%}.discipline-game{--x:-85%}.discipline-code{--x:12%}.discipline-motion{--x:90%}}
 @media(min-width:1800px){.discipline-ai{--x:-170%}.discipline-game{--x:-90%}.discipline-code{--x:8%}.discipline-motion{--x:95%}}
 .discipline-stage{transform-style:flat}.discipline-ai{z-index:1}.discipline-game{z-index:2}.discipline-code{z-index:3}.discipline-motion{z-index:4}
+
+.game-project+.game-project{margin-top:24px}
