@@ -1,0 +1,42 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'/home/joe/Work/nuvren-studio/node_modules/playwright');
+const assert=require('node:assert/strict');const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),out=path.join(root,'qa','spot-it-pvp');fs.mkdirSync(out,{recursive:true});let server,browser;
+async function preview(){if(process.env.BASE_URL)return process.env.BASE_URL.replace(/\/?$/,'/');const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp'};server=require('node:http').createServer((req,res)=>{let name=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(name.endsWith('/'))name+='index.html';const file=path.resolve(root,'.'+name);if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}fs.readFile(file,(error,data)=>{if(error){res.writeHead(404).end();return}res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');res.end(data)})});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));return 'http://127.0.0.1:'+server.address().port+'/'}
+async function waitPhase(page,phase){await page.waitForFunction(phase=>pvp?.state?.phase===phase&&pvp.socket.readyState===WebSocket.OPEN,phase,{timeout:18000})}
+async function point(page){const s=await page.evaluate(()=>pvp.state);const key=s.card.find(x=>s.table.includes(x));await page.locator('#p1-card [data-s="'+key+'"]').click();await page.locator('#table-card [data-s="'+key+'"]').click()}
+(async()=>{
+ const base=await preview();browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+ const hostContext=await browser.newContext({viewport:{width:1280,height:900},reducedMotion:'reduce'}),guestContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ const host=await hostContext.newPage(),guest=await guestContext.newPage(),errors=[];for(const page of [host,guest])page.on('pageerror',e=>errors.push(e.message));
+ await host.goto(base+'samples/spot-it/');await host.locator('#pvp-button').click();await host.locator('#player-name').fill('Nix <host>');await host.locator('#room-submit').click();await waitPhase(host,'waiting');
+ const link=await host.locator('#room-link').inputValue();assert.match(link,/\?room=[a-f0-9]{24}$/);assert.equal(link.includes('token'),false);assert.equal(await host.evaluate(()=>roundActive),false);
+ await guest.goto(link);await guest.locator('#room-modal').waitFor({state:'visible'});await guest.locator('#player-name').fill('Friend');await guest.locator('#room-submit').click();await waitPhase(guest,'waiting');await host.waitForFunction(()=>pvp.state.players.every(p=>p?.online));
+ assert.equal(await guest.locator('#opponent-name').innerText(),'Nix <host>');assert.equal(await host.locator('#opponent-name').innerText(),'Friend');
+ assert.equal(await host.evaluate(()=>document.querySelectorAll('#self-name host').length),0,'Player name must be text');
+ const third=await host.evaluate(async()=>{const r=await fetch('https://spot-it-pvp.josephsanjari1996.workers.dev/rooms/'+pvp.room+'/join',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'Third'})});return {status:r.status,data:await r.json()}});assert.equal(third.status,409);
+ // A room ID is not a credential; an unknown session cannot connect.
+ assert.equal(await host.evaluate(()=>new Promise(resolve=>{const ws=new WebSocket('wss://spot-it-pvp.josephsanjari1996.workers.dev/rooms/'+pvp.room+'/socket',['spot-it','invalid']);let opened=false;ws.onopen=()=>{opened=true;ws.close()};ws.onerror=()=>{};ws.onclose=()=>resolve(opened)})),false);
+ await host.locator('#start-button').click();assert.equal(await host.evaluate(()=>pvp.state.phase),'waiting');await guest.locator('#start-button').click();await waitPhase(host,'playing');await waitPhase(guest,'playing');
+ const state=await host.evaluate(()=>pvp.state);assert.deepEqual([...state.table].sort(),(await guest.evaluate(()=>pvp.state.table)).sort());assert.equal(state.card.filter(s=>state.table.includes(s)).length,1);assert.equal(state.card.length,10);
+ // Server rejects wrong guesses even when a client bypasses the UI.
+ await host.evaluate(()=>pvp.socket.send(JSON.stringify({type:'claim',round:pvp.state.round,symbol:'not-an-object'})));await host.waitForFunction(()=>document.getElementById('status').textContent==='Try another symbol.');assert.equal(await host.evaluate(()=>pvp.state.players.reduce((n,p)=>n+p.score,0)),0);await host.waitForTimeout(180);
+ // Two simultaneous clients can win only one point in a round.
+ await Promise.all([host,guest].map(page=>page.evaluate(()=>pvp.socket.send(JSON.stringify({type:'claim',round:pvp.state.round,symbol:pvp.state.card.find(x=>pvp.state.table.includes(x))})))));
+ await waitPhase(host,'reveal');await waitPhase(guest,'reveal');assert.equal(await host.evaluate(()=>pvp.state.players.reduce((n,p)=>n+p.score,0)),1);
+ const oldRound=await host.evaluate(()=>pvp.state.round);await host.waitForFunction(r=>pvp.state.round>r&&pvp.state.phase==='playing',oldRound);
+ await guest.evaluate(r=>pvp.socket.send(JSON.stringify({type:'claim',round:r,symbol:pvp.state.card.find(x=>pvp.state.table.includes(x))})),oldRound);await guest.waitForTimeout(200);assert.equal(await guest.evaluate(()=>pvp.state.players.reduce((n,p)=>n+p.score,0)),1);
+ const scores=await host.evaluate(()=>pvp.state.players.map(p=>p.score));
+ // A new page recovers its original seat and score using its private local session.
+ await guest.reload();await waitPhase(guest,'playing');await waitPhase(host,'playing');assert.equal(await guest.locator('#room-modal').isVisible(),false);assert.deepEqual(await host.evaluate(()=>pvp.state.players.map(p=>p.score)),scores);
+ assert.equal(await host.evaluate(()=>pvp.state.players.every(p=>p.online)),true);
+ for(const width of [320,390,768,1280]){await host.setViewportSize({width,height:900});assert.equal(await host.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'PvP overflow at '+width)}await host.setViewportSize({width:1280,height:900});
+ await host.screenshot({path:path.join(out,'host.png'),fullPage:true});await guest.screenshot({path:path.join(out,'guest-mobile.png'),fullPage:true});
+ // Play through a real match against the deployed room service.
+ while(await host.evaluate(()=>pvp.state.phase!=='finished')){await waitPhase(host,'playing');await point(host);await host.waitForFunction(()=>['reveal','finished'].includes(pvp.state.phase));}
+ await waitPhase(guest,'finished');assert.equal(await host.locator('#result-modal').isVisible(),true);assert.equal(await guest.locator('#result-modal').isVisible(),true);assert.equal(await host.locator('#p1-score').innerText(),'20');
+ await host.locator('#play-again').click();await guest.locator('#play-again').click();await waitPhase(host,'playing');await waitPhase(guest,'playing');assert.deepEqual(await host.evaluate(()=>pvp.state.players.map(p=>p.score)),[0,0]);
+ // Leaving pauses the other player and returns the leaver to working solo controls.
+ await guest.locator('#leave-room').click();await waitPhase(host,'paused');assert.equal(await guest.evaluate(()=>pvp),null);assert.equal(await guest.locator('#start-button').innerText(),'Start ↗');await guest.locator('#start-button').click();assert.equal(await guest.evaluate(()=>roundActive),true);
+ await host.locator('#leave-room').click();assert.deepEqual(errors,[]);
+ console.log('PASS: live two-player create/join link, escaped names, room capacity, session authentication, ready/countdown, server scoring, simultaneous/stale guesses, reconnect, mobile layout, full 20-point match, rematch, leave and solo fallback.');
+})().catch(error=>{console.error(error);process.exitCode=1}).finally(async()=>{if(browser)await browser.close();if(server)await new Promise(resolve=>server.close(resolve))});
