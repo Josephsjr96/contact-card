@@ -42,8 +42,19 @@
   socket.onclose=event=>{clearTimeout(timeout);if(pvp!==current)return;connectionLost(event.code===4001?'This player is connected in another tab.':event.code===4004?'This room expired. Leave and create a new link.':'Connection lost. Reconnecting…');if([4001,4004].includes(event.code))return;if(current.attempts++<5)connectTimer=setTimeout(connect,Math.min(5000,500*2**current.attempts));else setStatus('Connection lost. Press Reconnect to try again.')};
  }
  function paintState(state){
-  if(!pvp)return;pvp.state=state;pvp.clockOffset=state.serverNow-Date.now();
+  if(!pvp)return;const previous=pvp.state;pvp.state=state;pvp.clockOffset=state.serverNow-Date.now();
   const me=state.players[state.you];
+  // State broadcasts can repeat on reconnect or when previewing a different player.
+  // Sound follows authoritative transitions, never a local claim or a card repaint.
+  if(!previous&&state.lastPoint)pvp.soundPoint=state.game+':'+state.round;
+  if(previous){
+   if(state.phase==='countdown'&&previous.phase!=='countdown')window.SPOT_SOUND?.play('start');
+   if(state.phase==='playing'&&(previous.round!==state.round||previous.phase==='countdown'))window.SPOT_SOUND?.play('deal');
+   const pointKey=state.game+':'+state.round;
+   if(state.phase==='reveal'&&state.lastPoint&&pvp.soundPoint!==pointKey){pvp.soundPoint=pointKey;window.SPOT_SOUND?.play(state.lastPoint.seat===state.you?'match':'opponent')}
+   if(state.phase==='finished'&&pvp.resultGame!==state.game)window.SPOT_SOUND?.play(me.score>=WIN?'win':'finish');
+  }
+
   if(pvp.previewSeat===undefined||pvp.previewSeat===state.you||!state.players[pvp.previewSeat])pvp.previewSeat=state.players.findIndex((p,i)=>i!==state.you);
   const other=state.players[pvp.previewSeat];
   const roster=$('room-players');roster.replaceChildren();state.players.forEach((player,seat)=>{const chip=document.createElement('button');chip.type='button';chip.className='player-chip'+(seat===state.you?' self':'');chip.setAttribute('aria-pressed',String(seat===pvp.previewSeat));chip.textContent=player.name+(seat===state.you?' (you)':'')+' · '+player.score+(player.ready?' ✓':'');chip.title=(seat===state.host?'Host · ':'')+(player.online?(player.ready?'Ready':'Connected'):'Offline');chip.disabled=seat===state.you;chip.addEventListener('click',()=>{pvp.previewSeat=seat;paintState(pvp.state)});roster.appendChild(chip)});
