@@ -22,7 +22,7 @@ let server,browser;
  await page.goto(url);
  assert.equal(await page.evaluate(()=>audioContexts.length),0,'No audio context or autoplay before a gesture');
  await page.evaluate(()=>{const play=SPOT_SOUND.play;window.cues=[];SPOT_SOUND.play=name=>{cues.push(name);play(name)}});
- await page.locator('#start-button').click();
+ await page.locator('#menu-solo').click();
  await page.waitForFunction(()=>audioContexts[0]?.state==='running');
  assert.deepEqual(await page.evaluate(()=>cues),['start']);
  const shared=await page.evaluate(()=>match),wrong=await page.evaluate(()=>[...tableEl.querySelectorAll('.symbol')].find(el=>el.dataset.s!==match).dataset.s);
@@ -35,7 +35,7 @@ let server,browser;
  const sound=page.getByRole('button',{name:'Sound effects',exact:true});
  await sound.click();assert.equal(await sound.getAttribute('aria-pressed'),'false');
  await page.reload();assert.equal(await sound.getAttribute('aria-pressed'),'false');
- await page.locator('#start-button').click();
+ await page.locator('#menu-solo').click();
  assert.equal(await page.evaluate(()=>audioContexts.length),0,'Muted games do not create audio');
  await sound.focus();await page.keyboard.press('Enter');
  await page.waitForFunction(()=>audioContexts[0]?.state==='running');
@@ -93,6 +93,6 @@ let server,browser;
  }
  fs.writeFileSync(path.join(out,'levels.json'),JSON.stringify(report,null,2));
  // Missing audio support must leave gameplay functional.
- const silent=await browser.newPage();await silent.addInitScript(()=>{window.AudioContext=window.webkitAudioContext=undefined});await silent.goto(url);await silent.locator('#start-button').click();assert.equal(await silent.evaluate(()=>roundActive),true);assert.ok(await silent.locator('#sound-toggle').isDisabled());
+ const silent=await browser.newPage();await silent.addInitScript(()=>{window.AudioContext=window.webkitAudioContext=undefined});await silent.goto(url);await silent.locator('#menu-solo').click();assert.equal(await silent.evaluate(()=>roundActive),true);assert.ok(await silent.locator('#sound-toggle').isDisabled());
  console.log('PASS: gesture-only audio, solo cues, persisted mute, keyboard unmute, mobile layout, PvP transition deduplication, ten rendered cues without clipping or abrupt tails, and no-audio fallback. Room traffic mocked.');
 })().catch(error=>{console.error(error);process.exitCode=1}).finally(async()=>{if(browser)await browser.close();if(server)await new Promise(resolve=>server.close(resolve))});

@@ -2,7 +2,7 @@
 
 A browser matching game in the portfolio’s Game Design section at `../../#game-design`.
 
-Each card has ten distinct objects from 32 inline SVG illustrations, with exactly one object shared with the table card. Drag the match onto its twin or select both using touch, mouse or keyboard. The first player to 20 points wins. The board appears immediately with a small Start button and no intro.
+Each card has ten distinct objects from 32 inline SVG illustrations, with exactly one object shared with the table card. Drag the match onto its twin or select both using touch, mouse or keyboard. The first player to 20 points wins. A 1.7-second card-matching intro leads to a simple start menu with solo play, 2–6-player rooms, pace selection and help. Skip or Escape dismisses the intro; reduced-motion visitors and room invites bypass it. The intro runs once per tab session. Returning to the menu pauses a solo match and offers Resume game; leaving an online room returns to the menu.
 
 Solo play has three AI speeds and works locally. Pause and Escape suspend the solo match. The Canvas background samples the actual SVG object outlines into floating particles and refreshes its objects on each deal. Motion can be paused and respects reduced-motion preferences. The optional best-win record stays in browser local storage.
 
@@ -12,8 +12,10 @@ Sound effects use rounded mallet and glass tones, brushed-air card movements and
 
 ## PvP test mode · 2–6 players
 
-On the hosted site, choose **PvP**, enter a name and select **Create link**. Copy the room link and send it to up to five friends. They can open the link directly, or choose **PvP**, enter a name, paste the invite link and select **Join**. Everyone selects **Ready**, then the host selects **Start match**. The host can begin with any group of 2–6 players. The roster shows everyone’s scores and ready status; select a player to preview their card. The server coordinates rounds and awards one point to the first correct guess it receives. Everyone can request a rematch, then the host starts again. Leaving returns to solo play; disconnecting pauses the online match until the player reconnects.
+On the hosted site, choose **PvP**, enter a name and select **Create link**. Copy the room link and send it to up to five friends. They can open the link directly, or choose **PvP**, enter a name, paste the invite link and select **Join**. Everyone selects **Ready**, then the host selects **Start match**. The host can begin with any group of 2–6 players. The roster shows everyone’s scores and ready status; select a player to preview their card. The server coordinates rounds and awards one point to the first correct guess it receives. Everyone can request a rematch, then the host starts again. Leaving returns to the start menu; disconnecting pauses the online match until the player reconnects.
 
 The frontend connects to `https://spot-it-pvp.josephsanjari1996.workers.dev`; implementation and deployment notes are in `../../workers/spot-it-pvp/`. Names and game state are sent to that service. Rooms expire after two hours. Private session tokens stay in browser local storage so a refresh can recover the original seat, and are never put in invite links. Separate players need separate browser profiles or devices; another tab in the same profile recovers the same saved seat.
 
 Run `node tests/spot-it.cjs` from the repository root for the portfolio entry and solo rules/controls. Run `node tests/spot-it-pvp.cjs` for six-player browser checks against the actual room service. Set `BASE_URL` to test the published portfolio; default checks start a temporary HTTP preview server.
+
+`node tests/spot-it-menu.cjs` checks intro completion/skipping, reduced motion, menu/keyboard navigation, pause/resume, pace, mobile layouts, and direct room invitations without production room writes.

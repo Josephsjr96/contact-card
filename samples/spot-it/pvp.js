@@ -83,6 +83,7 @@
  function tickCountdown(){if(pvp?.state?.phase==='countdown'){const left=Math.max(1,Math.ceil((pvp.state.nextAt-(Date.now()+pvp.clockOffset))/1000));setStatus('Starting in '+left+'…')}}
  setInterval(tickCountdown,200);
  function enter(room,session){
+  window.SPOT_MENU?.showGame();
   stopTimers();roundActive=false;if(drag?.g)cancelDrag();else drag=null;clearSelection();if($('result-modal').open)$('result-modal').close();
   pvp={room,session,socket:null,state:null,attempts:0,pending:false,claim:claimRemote,ready:readyRemote};
   document.body.classList.add('pvp-mode');$('pvp-button').hidden=true;$('room-strip').hidden=false;$('room-link').value=linkFor(room);$('difficulty').hidden=true;$('pause-button').hidden=true;$('ai-timer-wrap').hidden=true;
@@ -92,7 +93,7 @@
   clearTimeout(connectTimer);const old=pvp;pvp=null;old?.socket?.close(1000,'Left room');
   document.body.classList.remove('pvp-mode');$('pvp-button').hidden=false;$('room-strip').hidden=true;$('difficulty').hidden=false;$('pause-button').hidden=false;$('ai-timer-wrap').hidden=false;
   $('start-button').disabled=false;$('start-button').textContent='Start ↗';$('pause-button').disabled=true;$('pause-button').textContent='Pause';$('self-name').textContent='YOU';$('opponent-name').textContent='AI';document.querySelector('.deck.ai .card-label').textContent='AI';aiCardEl.setAttribute('aria-label','AI card');$('play-again').textContent='Again ↗';
-  const url=new URL(location.href);url.searchParams.delete('room');history.replaceState(null,'',url);stopTimers();roundActive=started=paused=false;p1Score=aiScore=round=0;updateScores();deal();$('round-label').textContent='Round 01';setStatus('Press Start when you’re ready.');if($('result-modal').open)$('result-modal').close();
+  const url=new URL(location.href);url.searchParams.delete('room');history.replaceState(null,'',url);stopTimers();roundActive=started=paused=false;p1Score=aiScore=round=0;updateScores();deal();$('round-label').textContent='Round 01';setStatus('Press Start when you’re ready.');if($('result-modal').open)$('result-modal').close();window.SPOT_MENU?.open();
  }
  $('pvp-button').addEventListener('click',()=>showJoin());$('leave-room').addEventListener('click',leave);
  $('cancel-room').addEventListener('click',()=>dialog.close());dialog.addEventListener('close',()=>{if(soloWasRunning&&!pvp&&started&&paused)togglePause();soloWasRunning=false});

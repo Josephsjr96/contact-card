@@ -26,10 +26,10 @@ await page.keyboard.press('Escape');
 for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:1000});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Portfolio overflow at '+width)}
 await page.setViewportSize({width:1440,height:1080});
 await page.locator('#proj-spot-it .button').click();assert.equal(page.url(),game);await page.screenshot({path:path.join(out,'ready.png'),fullPage:true});
-assert.equal(await page.locator('.symbol').count(),30);assert.equal(await page.locator('.splash').count(),0);assert.equal(await page.locator('#p1-card').isVisible(),true);assert.equal(await page.evaluate(()=>SYMBOLS.length),32);
+assert.equal(await page.locator('.symbol').count(),30);assert.equal(await page.locator('.splash').count(),0);assert.equal(await page.locator('#start-menu').isVisible(),true);assert.equal(await page.locator('#p1-card').isVisible(),false);assert.equal(await page.evaluate(()=>SYMBOLS.length),32);
 assert.equal(await page.evaluate(()=>{for(let i=0;i<1000;i++){const m=SYMBOLS[i%SYMBOLS.length],[a,b]=generatePair(m);if(a.length!==10||b.length!==10||new Set(a).size!==10||new Set(b).size!==10||a.filter(s=>b.includes(s)).length!==1)return false;}return true}),true);
 assert.equal(await page.evaluate(()=>SPOT_FIELD.stats().objects.every(key=>[...document.querySelectorAll('.card .symbol')].some(el=>el.dataset.s===key))),true);assert.equal(await page.evaluate(()=>roundActive),false);
-await page.locator('#start-button').click();await page.screenshot({path:path.join(out,'gameplay.png'),fullPage:true});
+await page.locator('#menu-solo').click();await page.screenshot({path:path.join(out,'gameplay.png'),fullPage:true});
 const shared=await page.evaluate(()=>match);const playerShared=page.locator('#p1-card [data-s="'+shared+'"]');
 assert.deepEqual(await page.evaluate(()=>[p1CardEl,aiCardEl].map(el=>[...el.querySelectorAll('.symbol')].filter(x=>[...tableEl.querySelectorAll('.symbol')].some(y=>y.dataset.s===x.dataset.s)).length)),[1,1]);
 await page.locator('#p1-card .symbol').filter({has:page.locator('svg')}).first().focus();
